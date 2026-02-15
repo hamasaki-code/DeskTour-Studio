@@ -44,6 +44,20 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_15_021142) do
     t.foreign_key "active_storage_blobs", column: "blob_id"
   end
 
+  create_table "posts", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "description", null: false
+    t.string "category"
+    t.string "theme"
+    t.string "tag_list"
+    t.integer "likes_count", default: 0, null: false
+    t.boolean "published", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_posts_on_created_at"
+    t.index ["published"], name: "index_posts_on_published"
+  end
+
   create_table "comments", force: :cascade do |t|
     t.bigint "post_id", null: false
     t.string "author_name", null: false
@@ -66,20 +80,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_15_021142) do
     t.index ["name"], name: "index_items_on_name"
     t.index ["post_id"], name: "index_items_on_post_id"
     t.foreign_key "posts"
-  end
-
-  create_table "posts", force: :cascade do |t|
-    t.string "title", null: false
-    t.text "description", null: false
-    t.string "category"
-    t.string "theme"
-    t.string "tag_list"
-    t.integer "likes_count", default: 0, null: false
-    t.boolean "published", default: true, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["created_at"], name: "index_posts_on_created_at"
-    t.index ["published"], name: "index_posts_on_published"
   end
 
 end
