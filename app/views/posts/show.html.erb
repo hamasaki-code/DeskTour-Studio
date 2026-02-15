@@ -1,0 +1,117 @@
+<% content_for :title, @post.title %>
+<% content_for :description, truncate(@post.description, length: 120) %>
+<% content_for :og_image_url, og_image_url(@post) %>
+
+<article class="space-y-8">
+  <header class="space-y-3">
+    <div class="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+      <span><%= l(@post.created_at.to_date) %></span>
+      <% if @post.category.present? %>
+        <span class="rounded-full bg-slate-100 px-2 py-1 text-slate-700"><%= @post.category %></span>
+      <% end %>
+      <% if @post.theme.present? %>
+        <span class="rounded-full bg-cyan-50 px-2 py-1 text-cyan-700"><%= @post.theme %></span>
+      <% end %>
+    </div>
+    <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl"><%= @post.title %></h1>
+  </header>
+
+  <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+    <% if @post.desk_image.attached? %>
+      <%= image_tag @post.desk_image, class: "w-full object-cover" %>
+    <% else %>
+      <div class="flex h-72 items-center justify-center bg-slate-100 text-sm text-slate-500">No Image</div>
+    <% end %>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-6">
+    <p class="whitespace-pre-wrap text-sm leading-7 text-slate-700"><%= @post.description %></p>
+  </div>
+
+  <% if @post.tags.any? %>
+    <div class="flex flex-wrap gap-2">
+      <% @post.tags.each do |tag| %>
+        <%= link_to "##{tag}", posts_path(tag: tag), class: "rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 hover:bg-blue-100" %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <section class="rounded-xl border border-slate-200 bg-white p-6">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <h2 class="text-lg font-semibold text-slate-900">紹介アイテム</h2>
+      <span class="text-sm text-slate-500">♥ <%= @post.likes_count %></span>
+    </div>
+    <% if @post.items.any? %>
+      <div class="mt-4 space-y-3">
+        <% @post.items.each do |item| %>
+          <div class="rounded-lg border border-slate-200 p-3">
+            <p class="text-sm font-medium text-slate-900"><%= item.name %></p>
+            <% if item.affiliate_url.present? %>
+              <%= link_to "商品ページを見る", item.affiliate_url, class: "mt-2 inline-block text-sm text-blue-600 hover:text-blue-700", target: "_blank", rel: "nofollow sponsored noopener" %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+      <p class="mt-4 text-xs text-slate-500">
+        ※このページのリンクにはアフィリエイト広告を含む場合があります。
+      </p>
+    <% else %>
+      <p class="mt-3 text-sm text-slate-500">登録されたアイテムはありません。</p>
+    <% end %>
+  </section>
+
+  <div class="flex flex-wrap items-center gap-3">
+    <%= button_to "いいねする", like_post_path(@post), method: :post, class: "rounded-lg bg-rose-500 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-600" %>
+    <%= link_to "Xでシェア", x_share_url(@post), target: "_blank", rel: "noopener", class: "rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" %>
+    <%= link_to "Threadsでシェア", threads_share_url(@post), target: "_blank", rel: "noopener", class: "rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" %>
+    <button type="button" data-copy-url="<%= post_share_url(@post) %>" class="rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100">URLをコピー</button>
+  </div>
+
+  <%= render "shared/ad_slot", slot: ENV["ADSENSE_SLOT_POST_BODY"] %>
+
+  <section id="comments" class="space-y-4 rounded-xl border border-slate-200 bg-white p-6">
+    <h2 class="text-lg font-semibold text-slate-900">コメント</h2>
+
+    <% if @comments.any? %>
+      <div class="space-y-3">
+        <% @comments.each do |comment| %>
+          <div class="rounded-lg border border-slate-100 bg-slate-50 p-3">
+            <p class="text-sm font-medium text-slate-800"><%= comment.author_name %></p>
+            <p class="mt-1 whitespace-pre-wrap text-sm text-slate-700"><%= comment.body %></p>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-sm text-slate-500">まだコメントはありません。</p>
+    <% end %>
+
+    <div class="border-t border-slate-200 pt-4">
+      <%= form_with model: [@post, @comment], class: "space-y-3" do |f| %>
+        <% if @comment.errors.any? %>
+          <div class="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+            <ul class="list-disc pl-5">
+              <% @comment.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div>
+          <%= f.label :author_name, "名前", class: "mb-1 block text-sm font-medium" %>
+          <%= f.text_field :author_name, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" %>
+        </div>
+        <div>
+          <%= f.label :body, "コメント", class: "mb-1 block text-sm font-medium" %>
+          <%= f.text_area :body, rows: 4, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" %>
+        </div>
+        <% if recaptcha_enabled? %>
+          <div class="g-recaptcha" data-sitekey="<%= recaptcha_site_key %>"></div>
+        <% end %>
+        <%= f.submit "コメントを送信", class: "rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700" %>
+      <% end %>
+    </div>
+  </section>
+
+  <%= render "shared/ad_slot", slot: ENV["ADSENSE_SLOT_POST_FOOTER"] %>
+</article>

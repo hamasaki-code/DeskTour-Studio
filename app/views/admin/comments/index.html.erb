@@ -1,0 +1,40 @@
+<% content_for :title, "コメント管理" %>
+
+<section class="space-y-4">
+  <h1 class="text-2xl font-bold text-slate-900">コメント管理</h1>
+  <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+    <table class="min-w-full text-left text-sm">
+      <thead class="bg-slate-50 text-slate-600">
+        <tr>
+          <th class="px-4 py-3">投稿</th>
+          <th class="px-4 py-3">投稿者</th>
+          <th class="px-4 py-3">本文</th>
+          <th class="px-4 py-3">状態</th>
+          <th class="px-4 py-3">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @comments.each do |comment| %>
+          <tr class="border-t border-slate-200 align-top">
+            <td class="px-4 py-3">
+              <% if comment.post.published? %>
+                <%= link_to comment.post.title, post_path(comment.post), class: "text-blue-600 hover:text-blue-700" %>
+              <% else %>
+                <span><%= comment.post.title %></span>
+              <% end %>
+            </td>
+            <td class="px-4 py-3"><%= comment.author_name %></td>
+            <td class="px-4 py-3"><%= truncate(comment.body, length: 80) %></td>
+            <td class="px-4 py-3"><%= comment.approved? ? "公開" : "非公開" %></td>
+            <td class="px-4 py-3">
+              <div class="flex flex-wrap gap-2">
+                <%= button_to(comment.approved? ? "非公開にする" : "公開する", admin_comment_path(comment, approved: !comment.approved?), method: :patch, class: "rounded border border-slate-300 px-3 py-1 text-xs hover:bg-slate-100") %>
+                <%= button_to "削除", admin_comment_path(comment), method: :delete, data: { turbo_confirm: "コメントを削除しますか？" }, class: "rounded border border-red-300 px-3 py-1 text-xs text-red-700 hover:bg-red-50" %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>

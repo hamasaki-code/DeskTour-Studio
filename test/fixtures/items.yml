@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  post: one
+  name: HHKB Keyboard
+  affiliate_url: https://www.amazon.co.jp/dp/example
+
+two:
+  post: two
+  name: Monitor Light
+  affiliate_url: https://example.com/product
