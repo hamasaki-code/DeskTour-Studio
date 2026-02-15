@@ -77,13 +77,18 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
+      - name: Create Test Database
+        run: DATABASE_URL=postgres://postgres:postgres@localhost:5432/desktour_studio_test bundle exec bin/rails db:create RAILS_ENV=test
+      - name: Load Test Schema
+        run: DATABASE_URL=postgres://postgres:postgres@localhost:5432/desktour_studio_test bundle exec bin/rails db:schema:load RAILS_ENV=test
+
       - name: Run tests
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/desktour_studio_test
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-        run: DATABASE_URL=postgres://postgres:postgres@localhost:5432/desktour_studio_test bundle exec bin/rails db:test:prepare test test:system
+        run: DATABASE_URL=postgres://postgres:postgres@localhost:5432/desktour_studio_test bundle exec bin/rails test test:system
 
       - name: Keep screenshots from failed system tests
         uses: actions/upload-artifact@v4
