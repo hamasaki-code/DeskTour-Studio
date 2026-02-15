@@ -312,7 +312,7 @@ DEPENDENCIES
   capybara
   debug
   dotenv-rails
-  error_highlight
+  error_highlight (~> 0.7.0)
   importmap-rails
   jbuilder
   pg (~> 1.1)

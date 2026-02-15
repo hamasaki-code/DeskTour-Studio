@@ -17,6 +17,7 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+          bundler: latest
 
       - name: Scan for common Rails security vulnerabilities
         run: bundle exec brakeman --no-pager
