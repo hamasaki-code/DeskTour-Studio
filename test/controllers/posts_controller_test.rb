@@ -14,9 +14,8 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should not show unpublished post" do
-    assert_raises ActiveRecord::RecordNotFound do
-      get post_url(posts(:two))
-    end
+    get post_url(posts(:two))
+    assert_response :not_found
   end
 
   test "should like post once" do

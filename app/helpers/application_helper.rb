@@ -18,7 +18,7 @@ module ApplicationHelper
     if post&.desk_image&.attached?
       url_for(post.desk_image)
     else
-      image_url("icon.png")
+      "#{request.base_url}/icon.png"
     end
   end
 
