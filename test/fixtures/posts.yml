@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: Minimal Desk Setup
+  description: Example description for published desk.
+  category: Engineering
+  theme: White
+  tag_list: keyboard, monitor
+  likes_count: 1
+  published: true
+
+two:
+  title: Hidden Desk Setup
+  description: Example description for hidden desk.
+  category: Design
+  theme: Dark
+  tag_list: camera, light
+  likes_count: 2
+  published: false

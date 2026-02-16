@@ -1,0 +1,15 @@
+<% content_for :title, "デスクを投稿" %>
+<% content_for :description, "DeskTour Studioにあなたの作業環境を投稿して、世界中にデスク構成を共有しましょう。" %>
+
+<section class="mx-auto w-full max-w-3xl space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold text-slate-900">デスク投稿</h1>
+    <p class="mt-2 text-sm text-slate-600">
+      投稿画像は、あなたが権利を持つもののみアップロードしてください。
+    </p>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-6">
+    <%= render "form", post: @post %>
+  </div>
+</section>
