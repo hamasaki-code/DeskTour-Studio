@@ -89,7 +89,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     }
     user = User.order(:id).last
 
-    image = fixture_file_upload("files/sample.jpg", "image/jpeg")
+    image = fixture_file_upload("sample.jpg", "image/jpeg")
     assert_difference("Post.count", 1) do
       post posts_url, params: {
         post: {
