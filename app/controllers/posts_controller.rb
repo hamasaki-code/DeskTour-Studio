@@ -1,5 +1,6 @@
 class PostsController < ApplicationController
-  before_action :set_post, only: %i[show like]
+  before_action :set_visible_post, only: %i[show like]
+  before_action :set_post, only: %i[edit update]
 
   def index
     @posts = Post.visible.includes(:items, desk_image_attachment: :blob).filtered(params)
@@ -12,27 +13,39 @@ class PostsController < ApplicationController
   end
 
   def new
-    @post = Post.new(published: true)
+    @post = Post.new(status: :draft)
     build_item_fields
   end
 
   def create
-    @post = Post.new(post_params)
+    @post = Post.new(post_params.merge(status: requested_status))
     @post.likes_count = 0
-    @post.published = true
 
     if @post.save
-      redirect_to @post, notice: "投稿を公開しました。"
+      redirect_after_save(@post)
     else
       build_item_fields
       render :new, status: :unprocessable_entity
     end
   end
 
+  def edit
+    build_item_fields
+  end
+
+  def update
+    if @post.update(post_params.merge(status: requested_status))
+      redirect_after_save(@post)
+    else
+      build_item_fields
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
   def like
     liked_ids = cookies.encrypted[:liked_post_ids].to_s.split(",").map(&:to_i)
     if liked_ids.include?(@post.id)
-      redirect_to @post, alert: "この投稿には既にいいね済みです。"
+      redirect_to @post, alert: "You already liked this post."
       return
     end
 
@@ -44,13 +57,17 @@ class PostsController < ApplicationController
       httponly: true
     }
 
-    redirect_to @post, notice: "いいねしました。"
+    redirect_to @post, notice: "Thanks for liking this post."
   end
 
   private
 
-  def set_post
+  def set_visible_post
     @post = Post.visible.includes(:items, desk_image_attachment: :blob).find(params[:id])
+  end
+
+  def set_post
+    @post = Post.includes(:items, desk_image_attachment: :blob).find(params[:id])
   end
 
   def post_params
@@ -67,5 +84,17 @@ class PostsController < ApplicationController
 
   def build_item_fields
     (3 - @post.items.size).times { @post.items.build }
+  end
+
+  def requested_status
+    params[:save_as_draft].present? ? :draft : :published
+  end
+
+  def redirect_after_save(post)
+    if post.draft?
+      redirect_to edit_post_path(post), notice: "Draft saved."
+    else
+      redirect_to post_path(post), notice: "Post published."
+    end
   end
 end

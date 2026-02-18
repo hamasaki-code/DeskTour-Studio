@@ -5,15 +5,17 @@ class Post < ApplicationRecord
 
   accepts_nested_attributes_for :items, allow_destroy: true, reject_if: :all_blank
 
-  scope :visible, -> { where(published: true) }
+  enum :status, { draft: 0, published: 1 }
+
+  scope :visible, -> { published }
   scope :latest, -> { order(created_at: :desc) }
 
-  validates :title, presence: true, length: { maximum: 120 }
-  validates :description, presence: true, length: { maximum: 2000 }
+  validates :title, presence: true, length: { maximum: 120 }, if: :published?
+  validates :description, presence: true, length: { maximum: 2000 }, if: :published?
   validate :desk_image_presence
 
   def self.filtered(params)
-    posts = latest
+    posts = all.latest
 
     if params[:q].present?
       query = "%#{sanitize_sql_like(params[:q].strip)}%"
@@ -41,6 +43,7 @@ class Post < ApplicationRecord
   private
 
   def desk_image_presence
+    return unless published?
     return if desk_image.attached?
 
     errors.add(:desk_image, "を選択してください")

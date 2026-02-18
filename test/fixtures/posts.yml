@@ -7,7 +7,7 @@ one:
   theme: White
   tag_list: keyboard, monitor
   likes_count: 1
-  published: true
+  status: published
 
 two:
   title: Hidden Desk Setup
@@ -16,4 +16,4 @@ two:
   theme: Dark
   tag_list: camera, light
   likes_count: 2
-  published: false
+  status: draft
