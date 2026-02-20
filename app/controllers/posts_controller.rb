@@ -11,8 +11,10 @@ class PostsController < ApplicationController
   end
 
   def show
-    @comments = @post.comments.visible.latest
-    @comment = @post.comments.new
+    @root_comments = @post.comments.visible.roots.includes(:user, replies: :user).latest
+    @comments = @root_comments
+    @reply_to_comment = @post.comments.visible.find_by(id: params[:reply_to])
+    @comment = @post.comments.new(parent_comment: @reply_to_comment)
     @unread_notifications_count = post_owner?(@post) ? @post.notifications.unread.count : 0
   end
 

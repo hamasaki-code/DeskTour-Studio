@@ -20,5 +20,16 @@
     <%= f.text_area :bio, rows: 5, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: "デスクへのこだわりや使い方を書いてください" %>
   </div>
 
+  <div>
+    <%= f.label :email, "メールアドレス", class: "mb-1 block text-sm font-medium" %>
+    <%= f.email_field :email, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: "you@example.com" %>
+    <p class="mt-1 text-xs text-slate-500">コメント返信通知の送信にのみ利用します。</p>
+  </div>
+
+  <div class="flex items-center gap-2">
+    <%= f.check_box :email_notifications_enabled, class: "h-4 w-4 rounded border-slate-300" %>
+    <%= f.label :email_notifications_enabled, "メール通知を受け取る", class: "text-sm text-slate-700" %>
+  </div>
+
   <%= f.submit submit_label, class: "rounded-lg bg-blue-500 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-600" %>
 <% end %>

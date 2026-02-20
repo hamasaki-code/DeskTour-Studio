@@ -1,0 +1,13 @@
+<%= @recipient.name.presence || "ユーザー" %> さん
+
+あなたのコメントに返信がありました。
+
+投稿: <%= @post.title %>
+あなたのコメント: <%= @parent_comment.body %>
+返信コメント: <%= @reply_comment.body %>
+
+以下のリンクから該当コメントへ直接移動できます。
+<%= @comment_url %>
+
+---
+DeskTour Studio

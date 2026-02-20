@@ -48,6 +48,27 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Updated Name", user.reload.name
   end
 
+  test "owner can enable email notifications with email address" do
+    post users_url, params: {
+      user: {
+        name: "Notify Profile",
+        bio: "Notify bio"
+      }
+    }
+    user = User.order(:id).last
+
+    patch user_url(user), params: {
+      user: {
+        email: "notify@example.com",
+        email_notifications_enabled: "1"
+      }
+    }
+
+    assert_redirected_to user_url(user)
+    assert user.reload.email_notifications_enabled?
+    assert_equal "notify@example.com", user.email
+  end
+
   test "non owner cannot edit profile" do
     get edit_user_url(users(:one))
     assert_redirected_to user_url(users(:one))

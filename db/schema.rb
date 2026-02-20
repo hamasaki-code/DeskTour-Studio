@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_18_090000) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_20_100010) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -48,9 +48,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_18_090000) do
     t.string "name", null: false
     t.text "bio"
     t.string "owner_token_digest", null: false
+    t.string "email"
+    t.boolean "email_notifications_enabled", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["created_at"], name: "index_users_on_created_at"
+    t.index ["email"], name: "index_users_on_email"
   end
 
   create_table "posts", force: :cascade do |t|
@@ -76,12 +79,37 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_18_090000) do
     t.string "author_name", null: false
     t.text "body", null: false
     t.boolean "approved", default: true, null: false
+    t.bigint "user_id"
+    t.bigint "parent_comment_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["approved"], name: "index_comments_on_approved"
     t.index ["created_at"], name: "index_comments_on_created_at"
+    t.index ["parent_comment_id"], name: "index_comments_on_parent_comment_id"
     t.index ["post_id"], name: "index_comments_on_post_id"
+    t.index ["user_id"], name: "index_comments_on_user_id"
+    t.foreign_key "comments", column: "parent_comment_id"
     t.foreign_key "posts"
+    t.foreign_key "users"
+  end
+
+  create_table "comment_reply_notifications", force: :cascade do |t|
+    t.bigint "recipient_user_id", null: false
+    t.bigint "comment_id", null: false
+    t.bigint "parent_comment_id", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "sent_at"
+    t.text "error_message"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["comment_id"], name: "index_comment_reply_notifications_on_comment_id", unique: true
+    t.index ["created_at"], name: "index_comment_reply_notifications_on_created_at"
+    t.index ["parent_comment_id"], name: "index_comment_reply_notifications_on_parent_comment_id"
+    t.index ["recipient_user_id"], name: "index_comment_reply_notifications_on_recipient_user_id"
+    t.index ["status"], name: "index_comment_reply_notifications_on_status"
+    t.foreign_key "comments"
+    t.foreign_key "comments", column: "parent_comment_id"
+    t.foreign_key "users", column: "recipient_user_id"
   end
 
   create_table "items", force: :cascade do |t|

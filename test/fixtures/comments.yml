@@ -2,8 +2,17 @@
 
 one:
   post: one
+  user: one
   author_name: Alice
   body: Looks great!
+  approved: true
+
+reply_one:
+  post: one
+  user: two
+  parent_comment: one
+  author_name: Bob
+  body: Thanks!
   approved: true
 
 two:
