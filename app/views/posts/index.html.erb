@@ -27,11 +27,7 @@
       <% @posts.each do |post| %>
         <article class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
           <%= link_to post_path(post), class: "block" do %>
-            <% if post.desk_image.attached? %>
-              <%= image_tag post.desk_image, class: "h-48 w-full object-cover" %>
-            <% else %>
-              <div class="flex h-48 items-center justify-center bg-slate-100 text-sm text-slate-500">No Image</div>
-            <% end %>
+            <%= optimized_post_image_tag(post, variant: :thumbnail, class: "h-48 w-full object-cover") %>
           <% end %>
 
           <div class="space-y-3 p-4">
