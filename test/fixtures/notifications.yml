@@ -1,0 +1,11 @@
+like_for_one:
+  post: one
+  kind: 0
+  message: あなたの投稿にいいねが付きました。
+  read_at:
+
+comment_for_one:
+  post: one
+  kind: 1
+  message: Testerさんがコメントしました。
+  read_at:

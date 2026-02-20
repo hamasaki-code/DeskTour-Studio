@@ -41,7 +41,12 @@
     <header class="border-b border-slate-200 bg-white/90 backdrop-blur">
       <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
         <%= link_to "DeskTour Studio", root_path, class: "text-lg font-bold text-slate-900" %>
-        <div class="flex items-center gap-3 text-sm font-medium">
+        <div class="flex items-center gap-2 text-sm font-medium">
+          <% if owned_users.any? %>
+            <%= link_to "マイプロフィール", user_path(owned_users.first), class: "rounded-lg border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-100" %>
+          <% else %>
+            <%= link_to "プロフィール作成", new_user_path, class: "rounded-lg border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-100" %>
+          <% end %>
           <%= link_to "投稿する", new_post_path, class: "rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600" %>
         </div>
       </div>
@@ -57,7 +62,7 @@
 
     <footer class="mt-10 border-t border-slate-200 bg-white">
       <div class="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-6 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-        <p>© <%= Date.current.year %> DeskTour Studio</p>
+        <p>&copy; <%= Date.current.year %> DeskTour Studio</p>
         <div class="flex flex-wrap gap-4">
           <%= link_to "利用規約", terms_path, class: "hover:text-slate-900" %>
           <%= link_to "プライバシーポリシー", privacy_policy_path, class: "hover:text-slate-900" %>
@@ -65,6 +70,7 @@
         </div>
       </div>
     </footer>
+
     <script>
       document.addEventListener("click", async (event) => {
         const button = event.target.closest("[data-copy-url]");

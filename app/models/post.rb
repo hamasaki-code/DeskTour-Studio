@@ -1,7 +1,11 @@
 class Post < ApplicationRecord
+  require "digest"
+
   has_one_attached :desk_image
+  belongs_to :user
   has_many :items, dependent: :destroy
   has_many :comments, dependent: :destroy
+  has_many :notifications, dependent: :destroy
 
   accepts_nested_attributes_for :items, allow_destroy: true, reject_if: :all_blank
 
@@ -10,7 +14,12 @@ class Post < ApplicationRecord
 
   validates :title, presence: true, length: { maximum: 120 }
   validates :description, presence: true, length: { maximum: 2000 }
+  validates :owner_token_digest, presence: true
   validate :desk_image_presence
+
+  def self.digest_owner_token(token)
+    Digest::SHA256.hexdigest(token.to_s)
+  end
 
   def self.filtered(params)
     posts = latest
@@ -36,6 +45,12 @@ class Post < ApplicationRecord
 
   def tags
     tag_list.to_s.split(",").map(&:strip).reject(&:blank?).uniq
+  end
+
+  def owned_by_token?(token)
+    return false if token.blank? || owner_token_digest.blank?
+
+    ActiveSupport::SecurityUtils.secure_compare(owner_token_digest, self.class.digest_owner_token(token))
   end
 
   private

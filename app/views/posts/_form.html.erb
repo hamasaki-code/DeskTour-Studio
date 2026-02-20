@@ -1,7 +1,10 @@
+<% submit_label ||= "投稿を公開" %>
+<% owned_users ||= [] %>
+
 <%= form_with model: post, class: "space-y-6" do |f| %>
   <% if post.errors.any? %>
     <div class="rounded-lg border border-red-300 bg-red-50 p-4 text-sm text-red-700">
-      <p class="mb-2 font-semibold">入力内容を確認してください</p>
+      <p class="mb-2 font-semibold">入力内容を確認してください。</p>
       <ul class="list-disc pl-5">
         <% post.errors.full_messages.each do |message| %>
           <li><%= message %></li>
@@ -11,6 +14,13 @@
   <% end %>
 
   <div class="grid gap-4 sm:grid-cols-2">
+    <% if owned_users.any? %>
+      <div class="sm:col-span-2">
+        <%= f.label :user_id, "投稿者プロフィール", class: "mb-1 block text-sm font-medium" %>
+        <%= f.collection_select :user_id, owned_users, :id, :name, {}, class: "w-full rounded-lg border border-slate-300 px-3 py-2" %>
+      </div>
+    <% end %>
+
     <div class="sm:col-span-2">
       <%= f.label :title, "タイトル", class: "mb-1 block text-sm font-medium" %>
       <%= f.text_field :title, class: "w-full rounded-lg border border-slate-300 px-3 py-2", placeholder: "例: Minimal Blue Desk Setup" %>
@@ -37,13 +47,13 @@
     </div>
 
     <div class="sm:col-span-2">
-      <%= f.label :desk_image, "デスク写真", class: "mb-1 block text-sm font-medium" %>
+      <%= f.label :desk_image, "デスク画像", class: "mb-1 block text-sm font-medium" %>
       <%= f.file_field :desk_image, class: "w-full rounded-lg border border-slate-300 px-3 py-2", accept: "image/*" %>
     </div>
   </div>
 
   <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-    <p class="mb-3 text-sm font-semibold text-slate-700">紹介アイテム（任意）</p>
+    <p class="mb-3 text-sm font-semibold text-slate-700">関連アイテム（任意）</p>
     <div class="space-y-4">
       <%= f.fields_for :items do |item_fields| %>
         <div class="grid gap-3 rounded-lg border border-slate-200 bg-white p-3 sm:grid-cols-2">
@@ -52,7 +62,7 @@
             <%= item_fields.text_field :name, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: "例: HHKB Professional" %>
           </div>
           <div>
-            <%= item_fields.label :affiliate_url, "商品URL", class: "mb-1 block text-xs font-medium text-slate-600" %>
+            <%= item_fields.label :affiliate_url, "購入URL", class: "mb-1 block text-xs font-medium text-slate-600" %>
             <%= item_fields.url_field :affiliate_url, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: "https://www.amazon.co.jp/..." %>
           </div>
         </div>
@@ -60,5 +70,5 @@
     </div>
   </div>
 
-  <%= f.submit "投稿を公開", class: "rounded-lg bg-blue-500 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-600" %>
+  <%= f.submit submit_label, class: "rounded-lg bg-blue-500 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-600" %>
 <% end %>
