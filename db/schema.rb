@@ -68,7 +68,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_18_090000) do
     t.index ["created_at"], name: "index_posts_on_created_at"
     t.index ["status"], name: "index_posts_on_status"
     t.index ["owner_token_digest"], name: "index_posts_on_owner_token_digest"
-    t.index ["published"], name: "index_posts_on_published"
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 

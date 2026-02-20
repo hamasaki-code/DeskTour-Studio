@@ -75,6 +75,8 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
     get root_url
     assert_includes @response.body, "Published Desk"
+  end
+
   test "non owner cannot edit or view notifications" do
     get edit_post_url(posts(:one))
     assert_redirected_to post_url(posts(:one))
