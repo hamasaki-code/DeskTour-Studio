@@ -1,4 +1,21 @@
 module ApplicationHelper
+  POST_IMAGE_VARIANTS = {
+    thumbnail: {
+      resize_to_fill: [ 640, 360 ],
+      format: :webp
+    },
+    main: {
+      resize_to_limit: [ 1600, 1600 ],
+      format: :webp
+    },
+    og: {
+      resize_to_fill: [ 1200, 630 ],
+      format: :jpg
+    }
+  }.freeze
+
+  FALLBACK_POST_IMAGE = "default-desk.svg"
+
   def page_title(custom_title = nil)
     base = "DeskTour Studio"
     return base if custom_title.blank?
@@ -7,7 +24,7 @@ module ApplicationHelper
   end
 
   def meta_description(custom_description = nil)
-    custom_description.presence || "世界中のクリエイター・エンジニアの作業環境を共有できるデスク構成ギャラリー。"
+    custom_description.presence || "Discover desk setup ideas and share your workspace on DeskTour Studio."
   end
 
   def canonical_url
@@ -16,10 +33,25 @@ module ApplicationHelper
 
   def og_image_url(post = nil)
     if post&.desk_image&.attached?
-      url_for(post.desk_image)
+      url_for(post.desk_image.variant(variant_options(:og)))
     else
-      "#{request.base_url}/icon.png"
+      "#{request.base_url}#{image_path(FALLBACK_POST_IMAGE)}"
     end
+  end
+
+  def optimized_post_image_source(post, variant: :thumbnail)
+    if post&.desk_image&.attached?
+      post.desk_image.variant(variant_options(variant))
+    else
+      FALLBACK_POST_IMAGE
+    end
+  end
+
+  def optimized_post_image_tag(post, variant: :thumbnail, **options)
+    image_tag(
+      optimized_post_image_source(post, variant: variant),
+      **default_image_tag_options(post, variant).merge(options)
+    )
   end
 
   def post_share_text(post)
@@ -36,5 +68,26 @@ module ApplicationHelper
 
   def threads_share_url(post)
     "https://www.threads.net/intent/post?text=#{ERB::Util.url_encode("#{post_share_text(post)} #{post_share_url(post)}")}"
+  end
+
+  private
+
+  def variant_options(key)
+    POST_IMAGE_VARIANTS.fetch(key)
+  rescue KeyError
+    raise ArgumentError, "Unknown image variant: #{key.inspect}"
+  end
+
+  def default_image_tag_options(post, variant)
+    base = {
+      alt: post&.title.presence || "Desk image",
+      decoding: "async"
+    }
+
+    if variant == :thumbnail
+      base.merge(loading: "lazy")
+    else
+      base.merge(loading: "eager", fetchpriority: "high")
+    end
   end
 end

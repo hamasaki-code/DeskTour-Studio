@@ -21,11 +21,7 @@
   </header>
 
   <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-    <% if @post.desk_image.attached? %>
-      <%= image_tag @post.desk_image, class: "w-full object-cover" %>
-    <% else %>
-      <div class="flex h-72 items-center justify-center bg-slate-100 text-sm text-slate-500">No Image</div>
-    <% end %>
+    <%= optimized_post_image_tag(@post, variant: :main, class: "w-full object-cover") %>
   </div>
 
   <div class="rounded-xl border border-slate-200 bg-white p-6">
