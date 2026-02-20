@@ -1,0 +1,9 @@
+one:
+  name: Desk Owner One
+  bio: Ruby engineer who likes minimalist desk layouts.
+  owner_token_digest: 8e69be240e1c76e8ab3259acbb2fcb540a746ef90979bd1857684cdc0ac2beeb
+
+two:
+  name: Desk Owner Two
+  bio: Designer focused on warm and natural desk themes.
+  owner_token_digest: 77fb66af69028dac493d88fa3945db824f95a238342604cc9c10fd14660596db

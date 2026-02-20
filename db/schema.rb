@@ -44,6 +44,15 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_18_090000) do
     t.foreign_key "active_storage_blobs", column: "blob_id"
   end
 
+  create_table "users", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "bio"
+    t.string "owner_token_digest", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_users_on_created_at"
+  end
+
   create_table "posts", force: :cascade do |t|
     t.string "title", null: false
     t.text "description", null: false
@@ -54,8 +63,13 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_18_090000) do
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.string "owner_token_digest", null: false
     t.index ["created_at"], name: "index_posts_on_created_at"
     t.index ["status"], name: "index_posts_on_status"
+    t.index ["owner_token_digest"], name: "index_posts_on_owner_token_digest"
+    t.index ["published"], name: "index_posts_on_published"
+    t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
   create_table "comments", force: :cascade do |t|
@@ -82,4 +96,18 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_18_090000) do
     t.foreign_key "posts"
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.bigint "post_id", null: false
+    t.integer "kind", default: 0, null: false
+    t.string "message", null: false
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_notifications_on_created_at"
+    t.index ["post_id"], name: "index_notifications_on_post_id"
+    t.index ["read_at"], name: "index_notifications_on_read_at"
+    t.foreign_key "posts"
+  end
+
+  add_foreign_key "posts", "users"
 end
