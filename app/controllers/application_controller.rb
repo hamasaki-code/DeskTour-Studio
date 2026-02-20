@@ -53,6 +53,19 @@ class ApplicationController < ActionController::Base
     write_owner_post_tokens(tokens)
   end
 
+  def queue_analytics_event(name, params = {})
+    event_name = name.to_s.strip
+    return if event_name.blank?
+
+    sanitized_params = params.to_h.each_with_object({}) do |(key, value), hash|
+      hash[key.to_s] = value
+    end
+
+    events = Array(flash[:analytics_events])
+    events << { name: event_name, params: sanitized_params }
+    flash[:analytics_events] = events
+  end
+
   private
 
   def owner_user_tokens

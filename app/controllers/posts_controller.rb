@@ -133,8 +133,10 @@ class PostsController < ApplicationController
 
   def redirect_after_save(post)
     if post.draft?
+      queue_analytics_event("post_draft_saved", post_id: post.id, trigger_action: action_name)
       redirect_to edit_post_path(post), notice: "Draft saved."
     else
+      queue_analytics_event("post_published", post_id: post.id, trigger_action: action_name)
       redirect_to post_path(post), notice: "Post published."
     end
   end
