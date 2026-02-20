@@ -1,0 +1,16 @@
+<p><%= @recipient.name.presence || "ユーザー" %> さん</p>
+
+<p>あなたのコメントに返信がありました。</p>
+
+<ul>
+  <li>投稿: <strong><%= @post.title %></strong></li>
+  <li>あなたのコメント: <%= @parent_comment.body %></li>
+  <li>返信コメント: <%= @reply_comment.body %></li>
+</ul>
+
+<p>
+  <a href="<%= @comment_url %>">返信コメントを確認する</a>
+</p>
+
+<hr>
+<p>DeskTour Studio</p>
