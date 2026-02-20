@@ -1,4 +1,5 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# NOTE: `posts` uses `status` enum. Do not add legacy `published` boolean keys.
 
 one:
   user: one
