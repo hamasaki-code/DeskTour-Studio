@@ -20,7 +20,9 @@ class UsersController < ApplicationController
   end
 
   def show
-    @posts = @user.posts.visible.latest.includes(:items, desk_image_attachment: :blob)
+    posts_scope = @user.posts.latest.includes(:items, desk_image_attachment: :blob)
+    @published_posts = posts_scope.published
+    @draft_posts = user_owner?(@user) ? posts_scope.draft : Post.none
   end
 
   def edit

@@ -44,9 +44,12 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should save draft and redirect to edit" do
+    user = create_owned_user
+
     assert_difference("Post.count", 1) do
       post posts_url, params: {
         post: {
+          user_id: user.id,
           title: "",
           description: ""
         },
@@ -60,10 +63,20 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should publish draft after update" do
-    draft_post = Post.create!(status: :draft, title: "", description: "")
+    user = create_owned_user
+    post posts_url, params: {
+      post: {
+        user_id: user.id,
+        title: "",
+        description: ""
+      },
+      save_as_draft: "1"
+    }
+    draft_post = Post.order(:id).last
 
     patch post_url(draft_post), params: {
       post: {
+        user_id: user.id,
         title: "Published Desk",
         description: "Now complete",
         desk_image: fixture_file_upload("sample.jpg", "image/jpeg")
@@ -114,14 +127,18 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-  def create_owned_post
+  def create_owned_user
     post users_url, params: {
       user: {
         name: "Owned User",
         bio: "Owned user bio"
       }
     }
-    user = User.order(:id).last
+    User.order(:id).last
+  end
+
+  def create_owned_post
+    user = create_owned_user
 
     image = fixture_file_upload("sample.jpg", "image/jpeg")
     assert_difference("Post.count", 1) do

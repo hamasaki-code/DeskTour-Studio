@@ -1,7 +1,7 @@
 require "test_helper"
 
 class PostTest < ActiveSupport::TestCase
-  fixtures :posts
+  fixtures :users, :posts
 
   test "tags splits comma separated list" do
     post = posts(:one)
@@ -9,12 +9,24 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "draft can be saved without required publish fields" do
-    post = Post.new(status: :draft, title: "", description: "")
+    post = Post.new(
+      user: users(:one),
+      owner_token_digest: "owner-token",
+      status: :draft,
+      title: "",
+      description: ""
+    )
     assert post.valid?
   end
 
   test "published requires title description and image" do
-    post = Post.new(status: :published, title: "", description: "")
+    post = Post.new(
+      user: users(:one),
+      owner_token_digest: "owner-token",
+      status: :published,
+      title: "",
+      description: ""
+    )
     assert_not post.valid?
     assert_includes post.errors.attribute_names, :title
     assert_includes post.errors.attribute_names, :description
