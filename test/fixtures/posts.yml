@@ -1,4 +1,5 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# NOTE: `posts` uses `status` enum. Do not add legacy `published` boolean keys.
 
 one:
   user: one
@@ -8,7 +9,7 @@ one:
   theme: White
   tag_list: keyboard, monitor
   likes_count: 1
-  published: true
+  status: published
   owner_token_digest: bf55f41fc5560015003986cb2f7b76ea4df32143102b06091040c476116f8a5a
 
 two:
@@ -19,5 +20,5 @@ two:
   theme: Dark
   tag_list: camera, light
   likes_count: 2
-  published: false
+  status: draft
   owner_token_digest: 5d03a3636109edfd47d91ad1d869f3b950f7cb0d5d1d942b51721c93a3cdafc0

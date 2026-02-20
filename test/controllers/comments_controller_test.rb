@@ -64,4 +64,17 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
 
     Post.order(:id).last
   end
+
+  test "should not create comment on draft post" do
+    assert_no_difference("Comment.count") do
+      post post_comments_url(posts(:two)), params: {
+        comment: {
+          author_name: "Tester",
+          body: "Should fail"
+        }
+      }
+    end
+
+    assert_response :not_found
+  end
 end

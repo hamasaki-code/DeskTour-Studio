@@ -15,7 +15,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should not show unpublished post" do
+  test "should not show draft post" do
     get post_url(posts(:two))
     assert_response :not_found
   end
@@ -41,6 +41,53 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to post_url(posts(:one))
+  end
+
+  test "should save draft and redirect to edit" do
+    user = create_owned_user
+
+    assert_difference("Post.count", 1) do
+      post posts_url, params: {
+        post: {
+          user_id: user.id,
+          title: "",
+          description: ""
+        },
+        save_as_draft: "1"
+      }
+    end
+
+    created_post = Post.order(:id).last
+    assert created_post.draft?
+    assert_redirected_to edit_post_url(created_post)
+  end
+
+  test "should publish draft after update" do
+    user = create_owned_user
+    post posts_url, params: {
+      post: {
+        user_id: user.id,
+        title: "",
+        description: ""
+      },
+      save_as_draft: "1"
+    }
+    draft_post = Post.order(:id).last
+
+    patch post_url(draft_post), params: {
+      post: {
+        user_id: user.id,
+        title: "Published Desk",
+        description: "Now complete",
+        desk_image: fixture_file_upload("sample.jpg", "image/jpeg")
+      }
+    }
+
+    assert_redirected_to post_url(draft_post)
+    assert draft_post.reload.published?
+
+    get root_url
+    assert_includes @response.body, "Published Desk"
   end
 
   test "non owner cannot edit or view notifications" do
@@ -80,14 +127,18 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-  def create_owned_post
+  def create_owned_user
     post users_url, params: {
       user: {
         name: "Owned User",
         bio: "Owned user bio"
       }
     }
-    user = User.order(:id).last
+    User.order(:id).last
+  end
+
+  def create_owned_post
+    user = create_owned_user
 
     image = fixture_file_upload("sample.jpg", "image/jpeg")
     assert_difference("Post.count", 1) do
