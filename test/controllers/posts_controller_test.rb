@@ -20,6 +20,13 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "should not show hidden post" do
+    posts(:one).update!(status: :hidden)
+
+    get post_url(posts(:one))
+    assert_response :not_found
+  end
+
   test "should like post once and create notification" do
     assert_difference -> { posts(:one).reload.likes_count }, 1 do
       assert_difference("Notification.count", 1) do

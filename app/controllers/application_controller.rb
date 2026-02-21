@@ -68,6 +68,19 @@ class ApplicationController < ActionController::Base
     flash[:analytics_events] = events
   end
 
+  def current_reporter_token
+    token = cookies.encrypted[:reporter_token].to_s
+    return token if token.present?
+
+    token = SecureRandom.hex(24)
+    cookies.encrypted[:reporter_token] = {
+      value: token,
+      expires: 1.year.from_now,
+      httponly: true
+    }
+    token
+  end
+
   private
 
   def owner_user_tokens

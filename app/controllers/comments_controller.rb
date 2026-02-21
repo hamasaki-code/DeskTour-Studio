@@ -93,6 +93,7 @@ class CommentsController < ApplicationController
     @root_comments = @post.comments.visible.roots.includes(:user, replies: :user).latest
     @comments = @root_comments
     @reply_to_comment = @comment.parent_comment
+    @report = @post.reports.new
     @unread_notifications_count = post_owner?(@post) ? @post.notifications.unread.count : 0
   end
 

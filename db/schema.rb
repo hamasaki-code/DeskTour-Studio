@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_20_100010) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_20_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -134,6 +134,27 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_20_100010) do
     t.index ["post_id"], name: "index_notifications_on_post_id"
     t.index ["read_at"], name: "index_notifications_on_read_at"
     t.foreign_key "posts"
+  end
+
+  create_table "reports", force: :cascade do |t|
+    t.bigint "post_id", null: false
+    t.bigint "reporter_user_id"
+    t.string "reporter_token", null: false
+    t.integer "reason", default: 0, null: false
+    t.text "details"
+    t.integer "status", default: 0, null: false
+    t.datetime "reviewed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_reports_on_created_at"
+    t.index ["post_id", "reporter_token"], name: "index_reports_on_post_id_and_reporter_token", unique: true
+    t.index ["post_id", "reporter_user_id"], name: "index_reports_on_post_id_and_reporter_user_id", unique: true, where: "(reporter_user_id IS NOT NULL)"
+    t.index ["post_id"], name: "index_reports_on_post_id"
+    t.index ["reporter_token", "created_at"], name: "index_reports_on_reporter_token_and_created_at"
+    t.index ["reporter_user_id"], name: "index_reports_on_reporter_user_id"
+    t.index ["status"], name: "index_reports_on_status"
+    t.foreign_key "posts"
+    t.foreign_key "users", column: "reporter_user_id"
   end
 
   add_foreign_key "posts", "users"

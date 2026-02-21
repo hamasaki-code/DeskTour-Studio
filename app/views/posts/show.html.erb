@@ -63,6 +63,11 @@
     <%= link_to "Share on X", x_share_url(@post), target: "_blank", rel: "noopener", class: "rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" %>
     <%= link_to "Share on Threads", threads_share_url(@post), target: "_blank", rel: "noopener", class: "rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" %>
     <button type="button" data-copy-url="<%= post_share_url(@post) %>" class="rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100">Copy URL</button>
+    <% unless post_owner?(@post) %>
+      <button type="button" data-open-report-modal="report-modal-<%= @post.id %>" class="rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-800 hover:bg-amber-100">
+        Report
+      </button>
+    <% end %>
   </div>
 
   <% if post_owner?(@post) %>
@@ -71,6 +76,38 @@
       <%= link_to "Notifications (#{@unread_notifications_count})", notifications_post_path(@post), class: "rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm hover:bg-slate-100" %>
       <%= button_to "Delete", post_path(@post), method: :delete, data: { turbo_confirm: "Delete this post?" }, class: "rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm text-red-700 hover:bg-red-100" %>
     </div>
+  <% end %>
+
+  <% unless post_owner?(@post) %>
+    <dialog id="report-modal-<%= @post.id %>" class="w-full max-w-md rounded-xl border border-slate-200 p-0 shadow-lg backdrop:bg-slate-900/30">
+      <div class="border-b border-slate-200 px-4 py-3">
+        <h2 class="text-base font-semibold text-slate-900">Report this post</h2>
+        <p class="mt-1 text-xs text-slate-500">If this post violates community rules, send a report for review.</p>
+      </div>
+      <%= form_with model: [@post, @report], class: "space-y-3 px-4 py-4" do |f| %>
+        <% if owned_users.any? %>
+          <div>
+            <%= f.label :reporter_user_id, "Report as profile (optional)", class: "mb-1 block text-sm font-medium" %>
+            <%= f.collection_select :reporter_user_id, owned_users, :id, :name, { include_blank: "Anonymous" }, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" %>
+          </div>
+        <% end %>
+
+        <div>
+          <%= f.label :reason, "Reason", class: "mb-1 block text-sm font-medium" %>
+          <%= f.select :reason, options_for_select(Report.reason_options), {}, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" %>
+        </div>
+
+        <div>
+          <%= f.label :details, "Details (optional)", class: "mb-1 block text-sm font-medium" %>
+          <%= f.text_area :details, rows: 4, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: "Add additional context for admins." %>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" data-close-report-modal="report-modal-<%= @post.id %>" class="rounded-lg border border-slate-300 px-3 py-2 text-sm hover:bg-slate-100">Cancel</button>
+          <%= f.submit "Submit report", class: "rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600" %>
+        </div>
+      <% end %>
+    </dialog>
   <% end %>
 
   <%= render "shared/ad_slot", slot: ENV["ADSENSE_SLOT_POST_BODY"] %>
@@ -151,3 +188,25 @@
 
   <%= render "shared/ad_slot", slot: ENV["ADSENSE_SLOT_POST_FOOTER"] %>
 </article>
+
+<script>
+  if (!window.__reportModalBindingInstalled) {
+    window.__reportModalBindingInstalled = true;
+    document.addEventListener("click", (event) => {
+      const openButton = event.target.closest("[data-open-report-modal]");
+      if (openButton) {
+        const modalId = openButton.getAttribute("data-open-report-modal");
+        const dialog = document.getElementById(modalId);
+        if (dialog && typeof dialog.showModal === "function") dialog.showModal();
+        return;
+      }
+
+      const closeButton = event.target.closest("[data-close-report-modal]");
+      if (closeButton) {
+        const modalId = closeButton.getAttribute("data-close-report-modal");
+        const dialog = document.getElementById(modalId);
+        if (dialog && typeof dialog.close === "function") dialog.close();
+      }
+    });
+  }
+</script>
