@@ -61,8 +61,10 @@ class ApplicationController < ActionController::Base
       hash[key.to_s] = value
     end
 
-    events = Array(flash[:analytics_events])
+    @queued_analytics_events ||= []
+    events = @queued_analytics_events
     events << { name: event_name, params: sanitized_params }
+    @queued_analytics_events = events
     flash[:analytics_events] = events
   end
 
