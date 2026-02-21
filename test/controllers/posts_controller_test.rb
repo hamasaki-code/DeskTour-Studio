@@ -59,6 +59,8 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
     created_post = Post.order(:id).last
     assert created_post.draft?
+    analytics_events = Array(flash[:analytics_events])
+    assert_equal "post_draft_saved", analytics_events.dig(0, "name") || analytics_events.dig(0, :name)
     assert_redirected_to edit_post_url(created_post)
   end
 
@@ -85,6 +87,8 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to post_url(draft_post)
     assert draft_post.reload.published?
+    analytics_events = Array(flash[:analytics_events])
+    assert_equal "post_published", analytics_events.dig(0, "name") || analytics_events.dig(0, :name)
 
     get root_url
     assert_includes @response.body, "Published Desk"

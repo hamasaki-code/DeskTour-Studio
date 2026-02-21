@@ -17,6 +17,9 @@
     <meta name="twitter:title" content="<%= page_title(content_for(:title)) %>">
     <meta name="twitter:description" content="<%= meta_description(content_for(:description)) %>">
     <meta name="twitter:image" content="<%= content_for(:og_image_url) || og_image_url %>">
+    <% if search_console_verification_token.present? %>
+      <meta name="google-site-verification" content="<%= search_console_verification_token %>">
+    <% end %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -29,6 +32,15 @@
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <% if ga4_enabled? %>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=<%= ga4_measurement_id %>"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        gtag("js", new Date());
+        gtag("config", "<%= ga4_measurement_id %>", { anonymize_ip: true });
+      </script>
+    <% end %>
     <% if recaptcha_enabled? %>
       <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <% end %>
@@ -38,22 +50,25 @@
   </head>
 
   <body class="min-h-screen bg-slate-50 text-slate-800">
+    <% tracked_events = analytics_events %>
+
     <header class="border-b border-slate-200 bg-white/90 backdrop-blur">
       <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
         <%= link_to "DeskTour Studio", root_path, class: "text-lg font-bold text-slate-900" %>
         <div class="flex items-center gap-2 text-sm font-medium">
           <% if owned_users.any? %>
-            <%= link_to "マイプロフィール", user_path(owned_users.first), class: "rounded-lg border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-100" %>
+            <%= link_to "マイプロフィール", user_path(owned_users.first), class: "rounded-lg border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-100", data: { ga_event: "navigation_profile_click", ga_category: "navigation", ga_label: "header_my_profile" } %>
           <% else %>
-            <%= link_to "プロフィール作成", new_user_path, class: "rounded-lg border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-100" %>
+            <%= link_to "プロフィール作成", new_user_path, class: "rounded-lg border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-100", data: { ga_event: "navigation_profile_create_click", ga_category: "navigation", ga_label: "header_create_profile" } %>
           <% end %>
-          <%= link_to "投稿する", new_post_path, class: "rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600" %>
+          <%= link_to "投稿する", new_post_path, class: "rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "header_create_post" } %>
         </div>
       </div>
     </header>
 
     <main class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6">
       <% flash.each do |type, message| %>
+        <% next if type.to_s == "analytics_events" %>
         <% tone = type.to_s == "alert" ? "border-red-300 bg-red-50 text-red-700" : "border-emerald-300 bg-emerald-50 text-emerald-700" %>
         <div class="mb-4 rounded-lg border px-4 py-3 text-sm <%= tone %>"><%= message %></div>
       <% end %>
@@ -84,5 +99,32 @@
         }
       });
     </script>
+    <% if ga4_enabled? && tracked_events.any? %>
+      <script>
+        document.addEventListener("turbo:load", () => {
+          if (typeof window.gtag !== "function") return;
+          const events = <%= raw(json_escape(tracked_events.to_json)) %>;
+          events.forEach((eventData) => {
+            window.gtag("event", eventData.name, eventData.params || {});
+          });
+        }, { once: true });
+      </script>
+    <% end %>
+    <% if ga4_enabled? %>
+      <script>
+        document.addEventListener("click", (event) => {
+          const trackedElement = event.target.closest("[data-ga-event]");
+          if (!trackedElement || typeof window.gtag !== "function") return;
+
+          const eventName = trackedElement.dataset.gaEvent;
+          if (!eventName) return;
+
+          const params = {};
+          if (trackedElement.dataset.gaCategory) params.event_category = trackedElement.dataset.gaCategory;
+          if (trackedElement.dataset.gaLabel) params.event_label = trackedElement.dataset.gaLabel;
+          window.gtag("event", eventName, params);
+        });
+      </script>
+    <% end %>
   </body>
 </html>

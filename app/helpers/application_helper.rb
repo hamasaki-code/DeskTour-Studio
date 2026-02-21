@@ -16,6 +16,34 @@ module ApplicationHelper
 
   FALLBACK_POST_IMAGE = "default-desk.svg"
 
+  def ga4_measurement_id
+    ENV["GA4_MEASUREMENT_ID"].to_s.strip.presence
+  end
+
+  def ga4_enabled?
+    Rails.env.production? && ga4_measurement_id.present?
+  end
+
+  def search_console_verification_token
+    return unless Rails.env.production?
+
+    ENV["SEARCH_CONSOLE_VERIFICATION_TOKEN"].to_s.strip.presence
+  end
+
+  def analytics_events
+    Array(flash[:analytics_events]).filter_map do |event|
+      next unless event.is_a?(Hash)
+
+      name = event["name"] || event[:name]
+      next if name.blank?
+
+      params = event["params"] || event[:params] || {}
+      next unless params.is_a?(Hash)
+
+      { name: name.to_s, params: params }
+    end
+  end
+
   def page_title(custom_title = nil)
     base = "DeskTour Studio"
     return base if custom_title.blank?

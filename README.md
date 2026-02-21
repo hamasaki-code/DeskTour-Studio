@@ -56,6 +56,10 @@ ADSENSE_SLOT_INDEX_BOTTOM=
 ADSENSE_SLOT_POST_BODY=
 ADSENSE_SLOT_POST_FOOTER=
 
+# Measurement (production only)
+GA4_MEASUREMENT_ID=
+SEARCH_CONSOLE_VERIFICATION_TOKEN=
+
 # Amazon Associate
 AMAZON_AFFILIATE_TAG=
 ```
@@ -76,4 +80,3 @@ AMAZON_AFFILIATE_TAG=
 - `/cookie-policy` Cookieポリシー
 - `/sitemap.xml` サイトマップ
 - `/admin/posts` 管理画面（Basic認証）
-
