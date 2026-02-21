@@ -19,6 +19,11 @@ class ReportTest < ActiveSupport::TestCase
     ENV["REPORT_AUTO_HIDE_THRESHOLD"] = "1"
 
     post = posts(:one)
+    post.desk_image.attach(
+      io: file_fixture("sample.jpg").open,
+      filename: "sample.jpg",
+      content_type: "image/jpeg"
+    )
     post.update!(status: :published)
 
     Report.create!(

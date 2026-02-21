@@ -14,7 +14,13 @@ class Admin::ReportsControllerTest < ActionDispatch::IntegrationTest
     ENV["ADMIN_USERNAME"] = "admin"
     ENV["ADMIN_PASSWORD"] = "secret"
 
-    posts(:one).update!(status: :hidden)
+    post = posts(:one)
+    post.desk_image.attach(
+      io: file_fixture("sample.jpg").open,
+      filename: "sample.jpg",
+      content_type: "image/jpeg"
+    )
+    post.update!(status: :hidden)
 
     patch restore_post_admin_report_url(reports(:queued_one)), headers: basic_auth_headers("admin", "secret")
 
