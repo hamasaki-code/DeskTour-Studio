@@ -3,6 +3,7 @@ class User < ApplicationRecord
 
   has_many :posts, dependent: :destroy
   has_many :comments, dependent: :nullify
+  has_many :reports, foreign_key: :reporter_user_id, dependent: :nullify
   has_many :comment_reply_notifications, foreign_key: :recipient_user_id, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 60 }

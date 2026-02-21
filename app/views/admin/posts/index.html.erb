@@ -1,7 +1,10 @@
 <% content_for :title, "Post Management" %>
 
 <section class="space-y-4">
-  <h1 class="text-2xl font-bold text-slate-900">Post Management</h1>
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h1 class="text-2xl font-bold text-slate-900">Post Management</h1>
+    <%= link_to "Report Queue", admin_reports_path, class: "rounded border border-slate-300 px-3 py-1 text-xs hover:bg-slate-100" %>
+  </div>
   <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
     <table class="min-w-full text-left text-sm">
       <thead class="bg-slate-50 text-slate-600">

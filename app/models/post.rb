@@ -6,10 +6,11 @@ class Post < ApplicationRecord
   has_many :items, dependent: :destroy
   has_many :comments, dependent: :destroy
   has_many :notifications, dependent: :destroy
+  has_many :reports, dependent: :destroy
 
   accepts_nested_attributes_for :items, allow_destroy: true, reject_if: :all_blank
 
-  enum :status, { draft: 0, published: 1 }
+  enum :status, { draft: 0, published: 1, hidden: 2 }
 
   scope :visible, -> { published }
   scope :latest, -> { order(created_at: :desc) }
