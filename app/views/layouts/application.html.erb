@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="<%= I18n.locale %>">
   <head>
     <title><%= page_title(content_for(:title)) %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -53,15 +53,20 @@
     <% tracked_events = analytics_events %>
 
     <header class="border-b border-slate-200 bg-white/90 backdrop-blur">
-      <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+      <div class="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-3 px-4 py-4 sm:flex-nowrap sm:px-6">
         <%= link_to "DeskTour Studio", root_path, class: "text-lg font-bold text-slate-900" %>
-        <div class="flex items-center gap-2 text-sm font-medium">
+        <div class="ml-auto flex items-center gap-2 text-sm font-medium">
+          <div class="rounded-full border border-slate-300 bg-white p-1 text-xs font-semibold text-slate-600" role="group" aria-label="<%= t('language.switch_aria') %>">
+            <%= link_to "日本語", locale_switch_path(:ja), class: "rounded-full px-2 py-1 #{locale_selected?(:ja) ? 'bg-slate-800 text-white' : 'text-slate-600 hover:bg-slate-100'}", aria: { current: (locale_selected?(:ja) ? "true" : nil) } %>
+            <span aria-hidden="true" class="px-1 text-slate-400">|</span>
+            <%= link_to "English", locale_switch_path(:en), class: "rounded-full px-2 py-1 #{locale_selected?(:en) ? 'bg-slate-800 text-white' : 'text-slate-600 hover:bg-slate-100'}", aria: { current: (locale_selected?(:en) ? "true" : nil) } %>
+          </div>
           <% if owned_users.any? %>
-            <%= link_to "マイプロフィール", user_path(owned_users.first), class: "rounded-lg border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-100", data: { ga_event: "navigation_profile_click", ga_category: "navigation", ga_label: "header_my_profile" } %>
+            <%= link_to t("navigation.my_profile"), user_path(owned_users.first), class: "rounded-lg border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-100", data: { ga_event: "navigation_profile_click", ga_category: "navigation", ga_label: "header_my_profile" } %>
           <% else %>
-            <%= link_to "プロフィール作成", new_user_path, class: "rounded-lg border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-100", data: { ga_event: "navigation_profile_create_click", ga_category: "navigation", ga_label: "header_create_profile" } %>
+            <%= link_to t("navigation.create_profile"), new_user_path, class: "rounded-lg border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-100", data: { ga_event: "navigation_profile_create_click", ga_category: "navigation", ga_label: "header_create_profile" } %>
           <% end %>
-          <%= link_to "投稿する", new_post_path, class: "rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "header_create_post" } %>
+          <%= link_to t("navigation.create_post"), new_post_path, class: "rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "header_create_post" } %>
         </div>
       </div>
     </header>
@@ -79,9 +84,9 @@
       <div class="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-6 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <p>&copy; <%= Date.current.year %> DeskTour Studio</p>
         <div class="flex flex-wrap gap-4">
-          <%= link_to "利用規約", terms_path, class: "hover:text-slate-900" %>
-          <%= link_to "プライバシーポリシー", privacy_policy_path, class: "hover:text-slate-900" %>
-          <%= link_to "Cookieポリシー", cookie_policy_path, class: "hover:text-slate-900" %>
+          <%= link_to t("footer.terms"), terms_path, class: "hover:text-slate-900" %>
+          <%= link_to t("footer.privacy_policy"), privacy_policy_path, class: "hover:text-slate-900" %>
+          <%= link_to t("footer.cookie_policy"), cookie_policy_path, class: "hover:text-slate-900" %>
         </div>
       </div>
     </footer>
@@ -93,9 +98,9 @@
         const target = button.getAttribute("data-copy-url");
         try {
           await navigator.clipboard.writeText(target);
-          button.textContent = "URLをコピーしました";
+          button.textContent = "<%= j(t('clipboard.copy_success')) %>";
         } catch (_) {
-          button.textContent = "コピーに失敗しました";
+          button.textContent = "<%= j(t('clipboard.copy_failed')) %>";
         }
       });
     </script>

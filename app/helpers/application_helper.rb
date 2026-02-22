@@ -52,7 +52,7 @@ module ApplicationHelper
   end
 
   def meta_description(custom_description = nil)
-    custom_description.presence || "Discover desk setup ideas and share your workspace on DeskTour Studio."
+    custom_description.presence || t("meta.default_description")
   end
 
   def canonical_url
