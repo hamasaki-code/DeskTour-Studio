@@ -26,8 +26,8 @@ Rails 7 + Tailwind CSS + PostgreSQLで構築されています。
 ## セットアップ
 
 ```bash
-gem install bundler:2.6.8
-bundle install
+gem install bundler -v 2.6.8
+bundle _2.6.8_ install
 bin/rails db:create db:migrate
 bin/dev
 ```
