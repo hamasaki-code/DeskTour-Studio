@@ -1,0 +1,16 @@
+ja:
+  language:
+    switch_aria: "言語切り替え"
+  navigation:
+    my_profile: "マイプロフィール"
+    create_profile: "プロフィール作成"
+    create_post: "投稿する"
+  footer:
+    terms: "利用規約"
+    privacy_policy: "プライバシーポリシー"
+    cookie_policy: "Cookieポリシー"
+  clipboard:
+    copy_success: "URLをコピーしました"
+    copy_failed: "コピーに失敗しました"
+  meta:
+    default_description: "DeskTour Studioでデスクセットアップのアイデアを探し、あなたのワークスペースを共有しましょう。"

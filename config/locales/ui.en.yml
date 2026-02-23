@@ -1,0 +1,16 @@
+en:
+  language:
+    switch_aria: "Language switch"
+  navigation:
+    my_profile: "My Profile"
+    create_profile: "Create Profile"
+    create_post: "Create Post"
+  footer:
+    terms: "Terms"
+    privacy_policy: "Privacy Policy"
+    cookie_policy: "Cookie Policy"
+  clipboard:
+    copy_success: "URL copied."
+    copy_failed: "Failed to copy."
+  meta:
+    default_description: "Discover desk setup ideas and share your workspace on DeskTour Studio."

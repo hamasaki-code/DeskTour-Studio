@@ -1,10 +1,14 @@
 class ApplicationController < ActionController::Base
+  before_action :set_locale
+
   helper_method :recaptcha_enabled?,
                 :recaptcha_site_key,
                 :adsense_enabled?,
                 :owned_users,
                 :user_owner?,
-                :post_owner?
+                :post_owner?,
+                :locale_switch_path,
+                :locale_selected?
 
   private
 
@@ -82,6 +86,82 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def set_locale
+    selected_locale = params_locale || cookie_locale || browser_locale || I18n.default_locale.to_s
+    I18n.locale = selected_locale
+
+    # Keep selection sticky across visits. A URL param is treated as explicit user intent.
+    persist_locale(selected_locale) if params_locale.present? || cookie_locale.blank?
+  end
+
+  def locale_switch_path(locale)
+    normalized = normalize_locale(locale)
+    return request.path unless locale_supported?(normalized)
+
+    params = request.query_parameters.merge(locale: normalized)
+    query = params.to_query
+    query.present? ? "#{request.path}?#{query}" : request.path
+  end
+
+  def locale_selected?(locale)
+    I18n.locale.to_s == normalize_locale(locale)
+  end
+
+  def params_locale
+    normalize_locale(params[:locale])
+  end
+
+  def cookie_locale
+    normalize_locale(cookies[:locale])
+  end
+
+  def browser_locale
+    parse_accept_language.each do |locale|
+      return locale if locale_supported?(locale)
+
+      base_locale = locale.split("_").first
+      return base_locale if locale_supported?(base_locale)
+    end
+
+    nil
+  end
+
+  def parse_accept_language
+    header = request.headers["Accept-Language"].to_s
+
+    header.split(",").filter_map do |entry|
+      tag, weight = entry.strip.split(";q=", 2)
+      locale = normalize_locale(tag)
+      next if locale.blank?
+
+      quality = weight.present? ? weight.to_f : 1.0
+      [ locale, quality ]
+    end
+      .sort_by { |(_, quality)| -quality }
+      .map(&:first)
+  end
+
+  def persist_locale(locale)
+    cookies[:locale] = {
+      value: locale,
+      expires: 1.year.from_now,
+      same_site: :lax
+    }
+  end
+
+  def normalize_locale(value)
+    locale = value.to_s.strip.downcase
+    return nil if locale.blank? || locale == "*"
+
+    locale.tr("-", "_")
+  end
+
+  def locale_supported?(locale)
+    return false if locale.blank?
+
+    I18n.available_locales.map(&:to_s).include?(locale)
+  end
 
   def owner_user_tokens
     parse_owner_tokens(cookies.encrypted[:owner_user_tokens])
