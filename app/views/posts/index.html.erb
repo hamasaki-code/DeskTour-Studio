@@ -35,7 +35,10 @@
               <h2 class="text-base font-semibold text-slate-900">
                 <%= link_to post.title, post_path(post), class: "hover:text-blue-600" %>
               </h2>
-              <span class="text-xs text-slate-500">♥ <%= post.likes_count %></span>
+              <span class="inline-flex items-center gap-1 text-xs text-slate-500">
+                <%= ui_icon(:heart, class_name: "h-3.5 w-3.5") %>
+                <span><%= t("metrics.likes") %>: <%= localized_number(post.likes_count) %></span>
+              </span>
             </div>
             <p class="text-xs text-slate-500">
               投稿者:

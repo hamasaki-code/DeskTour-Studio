@@ -1,0 +1,24 @@
+en:
+  number:
+    format:
+      delimiter: ","
+      separator: "."
+  metrics:
+    likes: "Likes"
+  status_levels:
+    success: "Success"
+    warning: "Warning"
+    error: "Error"
+    info: "Info"
+  report_status:
+    queued: "Queued"
+    dismissed: "Dismissed"
+    restored: "Restored"
+    unknown: "Unknown"
+  post_status:
+    draft: "Draft"
+    published: "Published"
+    hidden: "Hidden"
+    unknown: "Unknown"
+  notification_labels:
+    read: "Read"

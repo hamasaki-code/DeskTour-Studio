@@ -1,7 +1,8 @@
 ja:
   date:
     formats:
-      default: "%Y-%m-%d"
+      default: "%Y/%m/%d"
+      long: "%Y/%m/%d"
   time:
     formats:
-      short: "%Y-%m-%d %H:%M"
+      short: "%Y/%m/%d %H:%M"

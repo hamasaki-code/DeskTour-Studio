@@ -74,8 +74,23 @@
     <main class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6">
       <% flash.each do |type, message| %>
         <% next if type.to_s == "analytics_events" %>
-        <% tone = type.to_s == "alert" ? "border-red-300 bg-red-50 text-red-700" : "border-emerald-300 bg-emerald-50 text-emerald-700" %>
-        <div class="mb-4 rounded-lg border px-4 py-3 text-sm <%= tone %>"><%= message %></div>
+        <% visual = flash_visual(type) %>
+        <% tone = case visual[:level]
+        when :error
+          "border-red-300 bg-red-50 text-red-700"
+        when :warning
+          "border-amber-300 bg-amber-50 text-amber-800"
+        else
+          "border-emerald-300 bg-emerald-50 text-emerald-700"
+        end %>
+        <% role = visual[:level] == :error ? "alert" : "status" %>
+        <% live = visual[:level] == :error ? "assertive" : "polite" %>
+        <div class="mb-4 rounded-lg border px-4 py-3 text-sm <%= tone %>" role="<%= role %>" aria-live="<%= live %>">
+          <div class="flex items-start gap-2">
+            <%= status_badge(level: visual[:level], icon: visual[:icon], label: t(visual[:label_key])) %>
+            <p class="pt-0.5"><%= message %></p>
+          </div>
+        </div>
       <% end %>
       <%= yield %>
     </main>

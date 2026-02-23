@@ -1,0 +1,8 @@
+en:
+  date:
+    formats:
+      default: "%b %-d, %Y"
+      long: "%b %-d, %Y"
+  time:
+    formats:
+      short: "%b %-d, %Y %H:%M"

@@ -22,7 +22,10 @@
             <p class="mt-1 text-xs text-slate-500">
               <%= l(notification.created_at, format: :short) %>
               <% if notification.read_at.present? %>
-                <span class="ml-2 rounded bg-emerald-50 px-2 py-0.5 text-emerald-700">既読</span>
+                <span class="ml-2 inline-flex items-center gap-1 rounded border border-emerald-300 bg-emerald-50 px-2 py-0.5 text-emerald-700">
+                  <%= ui_icon(:check_circle, class_name: "h-3.5 w-3.5") %>
+                  <span><%= t("notification_labels.read") %></span>
+                </span>
               <% end %>
             </p>
           </div>

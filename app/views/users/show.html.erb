@@ -28,7 +28,10 @@
               <h3 class="text-base font-semibold text-slate-900">
                 <%= link_to post.title, post_path(post), class: "hover:text-blue-600" %>
               </h3>
-              <span class="text-xs text-slate-500">Likes: <%= post.likes_count %></span>
+              <span class="inline-flex items-center gap-1 text-xs text-slate-500">
+                <%= ui_icon(:heart, class_name: "h-3.5 w-3.5") %>
+                <span><%= t("metrics.likes") %>: <%= localized_number(post.likes_count) %></span>
+              </span>
             </div>
             <p class="mt-2 text-sm text-slate-600"><%= truncate(post.description, length: 140) %></p>
           </article>

@@ -15,6 +15,23 @@ module ApplicationHelper
   }.freeze
 
   FALLBACK_POST_IMAGE = "default-desk.svg"
+  FLASH_VISUALS = {
+    "notice" => {
+      level: :success,
+      icon: :check_circle,
+      label_key: "status_levels.success"
+    },
+    "warning" => {
+      level: :warning,
+      icon: :exclamation_triangle,
+      label_key: "status_levels.warning"
+    },
+    "alert" => {
+      level: :error,
+      icon: :x_circle,
+      label_key: "status_levels.error"
+    }
+  }.freeze
 
   def ga4_measurement_id
     ENV["GA4_MEASUREMENT_ID"].to_s.strip.presence
@@ -96,6 +113,94 @@ module ApplicationHelper
 
   def threads_share_url(post)
     "https://www.threads.net/intent/post?text=#{ERB::Util.url_encode("#{post_share_text(post)} #{post_share_url(post)}")}"
+  end
+
+  def localized_number(value)
+    number_with_delimiter(value, locale: I18n.locale)
+  end
+
+  def flash_visual(type)
+    FLASH_VISUALS.fetch(type.to_s, FLASH_VISUALS.fetch("notice"))
+  end
+
+  def status_badge(level:, label:, icon:)
+    tones = {
+      success: "border-emerald-300 bg-emerald-50 text-emerald-700",
+      warning: "border-amber-300 bg-amber-50 text-amber-800",
+      error: "border-red-300 bg-red-50 text-red-700",
+      info: "border-blue-200 bg-blue-50 text-blue-700"
+    }
+    tone = tones.fetch(level.to_sym, tones.fetch(:info))
+
+    content_tag(:span, class: "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium #{tone}") do
+      safe_join([ ui_icon(icon, class_name: "h-3.5 w-3.5"), content_tag(:span, label) ])
+    end
+  end
+
+  def report_status_badge(status)
+    variants = {
+      "queued" => { level: :warning, icon: :clock, label_key: "report_status.queued" },
+      "dismissed" => { level: :info, icon: :minus_circle, label_key: "report_status.dismissed" },
+      "restored" => { level: :success, icon: :check_circle, label_key: "report_status.restored" }
+    }
+    visual = variants.fetch(status.to_s, { level: :info, icon: :information_circle, label_key: "report_status.unknown" })
+
+    status_badge(level: visual[:level], icon: visual[:icon], label: t(visual[:label_key]))
+  end
+
+  def post_status_badge(status)
+    variants = {
+      "draft" => { level: :warning, icon: :clock, label_key: "post_status.draft" },
+      "published" => { level: :success, icon: :check_circle, label_key: "post_status.published" },
+      "hidden" => { level: :error, icon: :x_circle, label_key: "post_status.hidden" }
+    }
+    visual = variants.fetch(status.to_s, { level: :info, icon: :information_circle, label_key: "post_status.unknown" })
+
+    status_badge(level: visual[:level], icon: visual[:icon], label: t(visual[:label_key]))
+  end
+
+  def ui_icon(name, class_name: "h-4 w-4")
+    path_attrs = { "stroke-linecap": "round", "stroke-linejoin": "round" }
+    paths = case name.to_sym
+    when :check_circle
+      [
+        tag.path(path_attrs.merge(d: "m9 12.75 2.25 2.25 3.75-3.75")),
+        tag.path(path_attrs.merge(d: "M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"))
+      ]
+    when :exclamation_triangle
+      [
+        tag.path(path_attrs.merge(d: "M12 9v3.75m0 3.75h.008v.008H12v-.008Z")),
+        tag.path(path_attrs.merge(d: "m10.29 3.86-7.31 12.65A2 2 0 0 0 4.69 19.5h14.62a2 2 0 0 0 1.73-2.99L13.73 3.86a2 2 0 0 0-3.46 0Z"))
+      ]
+    when :x_circle
+      [
+        tag.path(path_attrs.merge(d: "m14.25 9.75-4.5 4.5m0-4.5 4.5 4.5")),
+        tag.path(path_attrs.merge(d: "M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"))
+      ]
+    when :information_circle
+      [
+        tag.path(path_attrs.merge(d: "m11.25 11.25.041-.02a.75.75 0 0 1 1.06.852l-.708 2.836a.75.75 0 0 0 1.06.852l.041-.02")),
+        tag.path(path_attrs.merge(d: "M12 8.25h.008v.008H12V8.25Z")),
+        tag.path(path_attrs.merge(d: "M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"))
+      ]
+    when :clock
+      [
+        tag.path(path_attrs.merge(d: "M12 6v6l4 2")),
+        tag.path(path_attrs.merge(d: "M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"))
+      ]
+    when :minus_circle
+      [
+        tag.path(path_attrs.merge(d: "M9.75 12h4.5")),
+        tag.path(path_attrs.merge(d: "M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"))
+      ]
+    when :heart
+      [ tag.path(path_attrs.merge(d: "m21 8.25c0-2.485-2.015-4.5-4.5-4.5-1.74 0-3.248.99-4 2.438A4.484 4.484 0 0 0 8.5 3.75C6.015 3.75 4 5.765 4 8.25c0 4.025 4.5 7.5 8 10.5 3.5-3 8-6.475 8-10.5Z"))
+      ]
+    else
+      [ tag.path(path_attrs.merge(d: "M12 6v6m0 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z")) ]
+    end
+
+    content_tag(:svg, safe_join(paths), xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", "stroke-width": "1.8", class: class_name, "aria-hidden": "true")
   end
 
   private

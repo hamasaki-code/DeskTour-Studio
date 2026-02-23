@@ -25,8 +25,8 @@
                 <span><%= post.title.presence || "(Untitled draft)" %></span>
               <% end %>
             </td>
-            <td class="px-4 py-3"><%= post.status %></td>
-            <td class="px-4 py-3"><%= post.comments.count %></td>
+            <td class="px-4 py-3"><%= post_status_badge(post.status) %></td>
+            <td class="px-4 py-3"><%= localized_number(post.comments.count) %></td>
             <td class="px-4 py-3">
               <div class="flex flex-wrap gap-2">
                 <% next_status = post.published? ? "draft" : "published" %>
