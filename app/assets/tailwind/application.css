@@ -1,1 +1,44 @@
 @import "tailwindcss";
+
+@layer base {
+  :root {
+    --ds-line-height-reading: 1.58;
+    --ds-letter-spacing-body: 0;
+    --ds-letter-spacing-heading: -0.012em;
+    --ds-letter-spacing-nav: 0.002em;
+  }
+
+  html[lang="ja"] {
+    --ds-line-height-reading: 1.75;
+    --ds-letter-spacing-body: 0.012em;
+    --ds-letter-spacing-heading: 0.015em;
+    --ds-letter-spacing-nav: 0.01em;
+  }
+
+  html[lang="en"] {
+    --ds-line-height-reading: 1.58;
+    --ds-letter-spacing-body: 0;
+    --ds-letter-spacing-heading: -0.012em;
+    --ds-letter-spacing-nav: 0.002em;
+  }
+
+  body {
+    letter-spacing: var(--ds-letter-spacing-body);
+  }
+
+  h1,
+  h2,
+  h3 {
+    letter-spacing: var(--ds-letter-spacing-heading);
+  }
+}
+
+@layer utilities {
+  .leading-reading {
+    line-height: var(--ds-line-height-reading);
+  }
+
+  .tracking-nav {
+    letter-spacing: var(--ds-letter-spacing-nav);
+  }
+}
