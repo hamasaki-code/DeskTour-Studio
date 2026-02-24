@@ -41,4 +41,24 @@
   .tracking-nav {
     letter-spacing: var(--ds-letter-spacing-nav);
   }
+
+  .ds-line-clamp-2 {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .tap-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  @media (max-width: 640px) {
+    .tap-target {
+      padding-top: 0.625rem;
+      padding-bottom: 0.625rem;
+    }
+  }
 }
