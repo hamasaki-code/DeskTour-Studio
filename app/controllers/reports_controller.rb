@@ -4,7 +4,7 @@ class ReportsController < ApplicationController
   def create
     reporter_user = selected_reporter_user
     if report_params[:reporter_user_id].present? && reporter_user.blank?
-      redirect_to post_path(@post), alert: "Selected profile is unavailable."
+      redirect_to post_path(@post), alert: t("reports.flash.profile_unavailable")
       return
     end
 
@@ -14,9 +14,9 @@ class ReportsController < ApplicationController
 
     if report.save
       if @post.reload.hidden?
-        redirect_to root_path, notice: "Thanks for your report. This post is temporarily hidden for review."
+        redirect_to root_path, notice: t("reports.flash.thanks_hidden")
       else
-        redirect_to post_path(@post), notice: "Thanks for your report."
+        redirect_to post_path(@post), notice: t("reports.flash.thanks")
       end
     else
       redirect_to post_path(@post), alert: report.errors.full_messages.to_sentence

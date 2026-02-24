@@ -2,27 +2,43 @@
 
 @layer base {
   :root {
+    --ds-font-sans: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     --ds-line-height-reading: 1.58;
     --ds-letter-spacing-body: 0;
     --ds-letter-spacing-heading: -0.012em;
     --ds-letter-spacing-nav: 0.002em;
+    --ds-space-content: 2rem;
+    --ds-space-form: 1.5rem;
   }
 
   html[lang="ja"] {
+    --ds-font-sans: "Hiragino Sans", "Yu Gothic UI", "Meiryo", "Noto Sans JP", sans-serif;
     --ds-line-height-reading: 1.75;
     --ds-letter-spacing-body: 0.012em;
     --ds-letter-spacing-heading: 0.015em;
     --ds-letter-spacing-nav: 0.01em;
+    --ds-space-content: 2.25rem;
+    --ds-space-form: 1.75rem;
   }
 
   html[lang="en"] {
+    --ds-font-sans: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     --ds-line-height-reading: 1.58;
     --ds-letter-spacing-body: 0;
     --ds-letter-spacing-heading: -0.012em;
     --ds-letter-spacing-nav: 0.002em;
   }
 
+  .lang-ja {
+    --ds-font-sans: "Hiragino Sans", "Yu Gothic UI", "Meiryo", "Noto Sans JP", sans-serif;
+  }
+
+  .lang-en {
+    --ds-font-sans: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+
   body {
+    font-family: var(--ds-font-sans);
     letter-spacing: var(--ds-letter-spacing-body);
   }
 
@@ -40,6 +56,14 @@
 
   .tracking-nav {
     letter-spacing: var(--ds-letter-spacing-nav);
+  }
+
+  .space-y-content > :not([hidden]) ~ :not([hidden]) {
+    margin-top: var(--ds-space-content);
+  }
+
+  .space-y-form > :not([hidden]) ~ :not([hidden]) {
+    margin-top: var(--ds-space-form);
   }
 
   .ds-line-clamp-2 {

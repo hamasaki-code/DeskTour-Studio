@@ -2,7 +2,7 @@
 <% content_for :description, truncate(@post.description, length: 120) %>
 <% content_for :og_image_url, og_image_url(@post) %>
 
-<article class="space-y-8">
+<article class="space-y-content">
   <header class="space-y-3">
     <div class="flex flex-wrap items-center gap-2 text-xs text-slate-500">
       <span><%= l(@post.created_at.to_date) %></span>
@@ -15,7 +15,7 @@
     </div>
     <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl"><%= @post.title %></h1>
     <p class="text-sm text-slate-600">
-      Posted by
+      <%= t("posts.show.posted_by") %>
       <%= link_to @post.user.name, user_path(@post.user), class: "font-medium text-blue-600 hover:text-blue-700" %>
     </p>
   </header>
@@ -38,7 +38,7 @@
 
   <section class="rounded-xl border border-slate-200 bg-white p-6">
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <h2 class="text-lg font-semibold text-slate-900">Related items</h2>
+      <h2 class="text-lg font-semibold text-slate-900"><%= t("posts.show.related_items") %></h2>
       <span class="inline-flex items-center gap-1 text-sm text-slate-500">
         <%= ui_icon(:heart, class_name: "h-4 w-4") %>
         <span><%= t("metrics.likes") %>: <%= localized_number(@post.likes_count) %></span>
@@ -51,24 +51,39 @@
           <div class="rounded-lg border border-slate-200 p-3">
             <p class="text-sm font-medium text-slate-900"><%= item.name %></p>
             <% if item.affiliate_url.present? %>
-              <%= link_to "Open product page", item.affiliate_url, class: "mt-2 inline-block text-sm text-blue-600 hover:text-blue-700", target: "_blank", rel: "nofollow sponsored noopener" %>
+              <%= link_to t("posts.show.open_product_page"), item.affiliate_url, class: "mt-2 inline-block text-sm text-blue-600 hover:text-blue-700", target: "_blank", rel: "nofollow sponsored noopener" %>
             <% end %>
           </div>
         <% end %>
       </div>
     <% else %>
-      <p class="mt-3 text-sm text-slate-500">No related items yet.</p>
+      <p class="mt-3 text-sm text-slate-500"><%= t("posts.show.no_related_items") %></p>
     <% end %>
   </section>
 
   <div class="hidden flex-wrap items-center gap-3 sm:flex">
-    <%= button_to "Like", like_post_path(@post), method: :post, class: "tap-target rounded-lg bg-rose-500 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-600" %>
-    <%= link_to "Share on X", x_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex items-center rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" %>
-    <%= link_to "Share on Threads", threads_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex items-center rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" %>
-    <button type="button" data-copy-url="<%= post_share_url(@post) %>" class="tap-target rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100">Copy URL</button>
+    <%= button_to like_post_path(@post), method: :post, class: "tap-target rounded-lg bg-rose-500 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-600" do %>
+      <span class="inline-flex items-center gap-1.5">
+        <%= ui_icon(:heart, class_name: "h-4 w-4") %>
+        <span><%= t("posts.show.actions.like") %></span>
+      </span>
+    <% end %>
+    <%= link_to x_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" do %>
+      <%= ui_icon(:share, class_name: "h-4 w-4") %>
+      <span><%= t("posts.show.actions.share_x") %></span>
+    <% end %>
+    <%= link_to threads_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" do %>
+      <%= ui_icon(:share, class_name: "h-4 w-4") %>
+      <span><%= t("posts.show.actions.share_threads") %></span>
+    <% end %>
+    <button type="button" data-copy-url="<%= post_share_url(@post) %>" class="tap-target inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100">
+      <%= ui_icon(:share, class_name: "h-4 w-4") %>
+      <span><%= t("posts.show.actions.copy_url") %></span>
+    </button>
     <% unless post_owner?(@post) %>
-      <button type="button" data-open-report-modal="report-modal-<%= @post.id %>" class="tap-target rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-800 hover:bg-amber-100">
-        Report
+      <button type="button" data-open-report-modal="report-modal-<%= @post.id %>" class="tap-target inline-flex items-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-800 hover:bg-amber-100">
+        <%= ui_icon(:flag, class_name: "h-4 w-4") %>
+        <span><%= t("posts.show.actions.report") %></span>
       </button>
     <% end %>
   </div>
@@ -76,12 +91,29 @@
   <div class="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 backdrop-blur sm:hidden">
     <div class="mx-auto w-full max-w-6xl px-4 pt-3" style="padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);">
       <div class="flex items-center gap-2 overflow-x-auto pb-1">
-        <%= button_to "Like", like_post_path(@post), method: :post, form: { class: "shrink-0" }, class: "tap-target whitespace-nowrap rounded-lg bg-rose-500 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-600" %>
-        <%= link_to "Share on X", x_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex shrink-0 items-center whitespace-nowrap rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" %>
-        <%= link_to "Share on Threads", threads_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex shrink-0 items-center whitespace-nowrap rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" %>
-        <button type="button" data-copy-url="<%= post_share_url(@post) %>" class="tap-target shrink-0 whitespace-nowrap rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100">Copy URL</button>
+        <%= button_to like_post_path(@post), method: :post, form: { class: "shrink-0" }, class: "tap-target whitespace-nowrap rounded-lg bg-rose-500 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-600" do %>
+          <span class="inline-flex items-center gap-1.5">
+            <%= ui_icon(:heart, class_name: "h-4 w-4") %>
+            <span><%= t("posts.show.actions.like") %></span>
+          </span>
+        <% end %>
+        <%= link_to x_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" do %>
+          <%= ui_icon(:share, class_name: "h-4 w-4") %>
+          <span><%= t("posts.show.actions.share_x") %></span>
+        <% end %>
+        <%= link_to threads_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" do %>
+          <%= ui_icon(:share, class_name: "h-4 w-4") %>
+          <span><%= t("posts.show.actions.share_threads") %></span>
+        <% end %>
+        <button type="button" data-copy-url="<%= post_share_url(@post) %>" class="tap-target inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100">
+          <%= ui_icon(:share, class_name: "h-4 w-4") %>
+          <span><%= t("posts.show.actions.copy_url") %></span>
+        </button>
         <% unless post_owner?(@post) %>
-          <button type="button" data-open-report-modal="report-modal-<%= @post.id %>" class="tap-target shrink-0 whitespace-nowrap rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-800 hover:bg-amber-100">Report</button>
+          <button type="button" data-open-report-modal="report-modal-<%= @post.id %>" class="tap-target inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-800 hover:bg-amber-100">
+            <%= ui_icon(:flag, class_name: "h-4 w-4") %>
+            <span><%= t("posts.show.actions.report") %></span>
+          </button>
         <% end %>
       </div>
     </div>
@@ -89,39 +121,48 @@
 
   <% if post_owner?(@post) %>
     <div class="flex flex-wrap items-center gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4">
-      <%= link_to "Edit", edit_post_path(@post), class: "tap-target inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm hover:bg-slate-100" %>
-      <%= link_to "Notifications (#{localized_number(@unread_notifications_count)})", notifications_post_path(@post), class: "tap-target inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm hover:bg-slate-100" %>
-      <%= button_to "Delete", post_path(@post), method: :delete, form: { class: "inline-block" }, data: { turbo_confirm: "Delete this post?" }, class: "tap-target rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm text-red-700 hover:bg-red-100" %>
+      <%= link_to edit_post_path(@post), class: "tap-target inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm hover:bg-slate-100" do %>
+        <%= ui_icon(:pencil_square, class_name: "h-4 w-4") %>
+        <span><%= t("posts.show.actions.edit") %></span>
+      <% end %>
+      <%= link_to notifications_post_path(@post), class: "tap-target inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm hover:bg-slate-100" do %>
+        <%= ui_icon(:bell, class_name: "h-4 w-4") %>
+        <span><%= t("posts.show.actions.notifications", count: localized_number(@unread_notifications_count)) %></span>
+      <% end %>
+      <%= button_to post_path(@post), method: :delete, form: { class: "inline-block" }, data: { turbo_confirm: t("posts.show.actions.delete_confirm") }, class: "tap-target inline-flex items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm text-red-700 hover:bg-red-100" do %>
+        <%= ui_icon(:trash, class_name: "h-4 w-4") %>
+        <span><%= t("posts.show.actions.delete") %></span>
+      <% end %>
     </div>
   <% end %>
 
   <% unless post_owner?(@post) %>
     <dialog id="report-modal-<%= @post.id %>" class="w-full max-w-md rounded-xl border border-slate-200 p-0 shadow-lg backdrop:bg-slate-900/30">
       <div class="border-b border-slate-200 px-4 py-3">
-        <h2 class="text-base font-semibold text-slate-900">Report this post</h2>
-        <p class="mt-1 text-xs text-slate-500">If this post violates community rules, send a report for review.</p>
+        <h2 class="text-base font-semibold text-slate-900"><%= t("posts.show.report.title") %></h2>
+        <p class="mt-1 text-xs text-slate-500"><%= t("posts.show.report.description") %></p>
       </div>
-      <%= form_with model: [@post, @report], class: "space-y-3 px-4 py-4" do |f| %>
+      <%= form_with model: [@post, @report], class: "space-y-form px-4 py-4" do |f| %>
         <% if owned_users.any? %>
           <div>
-            <%= f.label :reporter_user_id, "Report as profile (optional)", class: "mb-1 block text-sm font-medium" %>
-            <%= f.collection_select :reporter_user_id, owned_users, :id, :name, { include_blank: "Anonymous" }, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" %>
+            <%= f.label :reporter_user_id, t("posts.show.report.report_as_profile"), class: "mb-1 block text-sm font-medium" %>
+            <%= f.collection_select :reporter_user_id, owned_users, :id, :name, { include_blank: t("posts.show.report.anonymous") }, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" %>
           </div>
         <% end %>
 
         <div>
-          <%= f.label :reason, "Reason", class: "mb-1 block text-sm font-medium" %>
+          <%= f.label :reason, t("posts.show.report.reason"), class: "mb-1 block text-sm font-medium" %>
           <%= f.select :reason, options_for_select(Report.reason_options), {}, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" %>
         </div>
 
         <div>
-          <%= f.label :details, "Details (optional)", class: "mb-1 block text-sm font-medium" %>
-          <%= f.text_area :details, rows: 4, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: "Add additional context for admins." %>
+          <%= f.label :details, t("posts.show.report.details"), class: "mb-1 block text-sm font-medium" %>
+          <%= f.text_area :details, rows: 4, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.show.report.details_placeholder") %>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" data-close-report-modal="report-modal-<%= @post.id %>" class="tap-target rounded-lg border border-slate-300 px-3 py-2 text-sm hover:bg-slate-100">Cancel</button>
-          <%= f.submit "Submit report", class: "tap-target rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600" %>
+          <button type="button" data-close-report-modal="report-modal-<%= @post.id %>" class="tap-target rounded-lg border border-slate-300 px-3 py-2 text-sm hover:bg-slate-100"><%= t("posts.show.report.cancel") %></button>
+          <%= f.submit t("posts.show.report.submit"), class: "tap-target rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600" %>
         </div>
       <% end %>
     </dialog>
@@ -129,8 +170,11 @@
 
   <%= render "shared/ad_slot", slot: ENV["ADSENSE_SLOT_POST_BODY"] %>
 
-  <section id="comments" class="space-y-4 rounded-xl border border-slate-200 bg-white p-6">
-    <h2 class="text-lg font-semibold text-slate-900">Comments</h2>
+  <section id="comments" class="space-y-form rounded-xl border border-slate-200 bg-white p-6">
+    <h2 class="inline-flex items-center gap-1.5 text-lg font-semibold text-slate-900">
+      <%= ui_icon(:chat, class_name: "h-5 w-5") %>
+      <span><%= t("posts.show.comments.title") %></span>
+    </h2>
 
     <% if @root_comments.any? %>
       <div class="space-y-4">
@@ -138,15 +182,20 @@
           <article id="comment-<%= comment.id %>" class="rounded-lg border border-slate-100 bg-slate-50 p-4">
             <div class="flex items-center justify-between gap-3">
               <p class="text-sm font-medium text-slate-800"><%= comment.author_name %></p>
-              <%= link_to "Reply", post_path(@post, anchor: "comments", reply_to: comment.id), class: "text-xs text-blue-600 hover:text-blue-700" %>
+              <%= link_to post_path(@post, anchor: "comments", reply_to: comment.id), class: "tap-target inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700" do %>
+                <%= ui_icon(:arrow_uturn_left, class_name: "h-3.5 w-3.5") %>
+                <span><%= t("posts.show.comments.reply") %></span>
+              <% end %>
             </div>
+            <p class="mt-0.5 text-xs text-slate-500"><%= l(comment.created_at, format: :short) %></p>
             <p class="mt-1 whitespace-pre-wrap text-sm text-slate-700"><%= comment.body %></p>
 
             <% if comment.replies.any? %>
               <div class="mt-3 space-y-3 border-l-2 border-slate-200 pl-4">
                 <% comment.replies.each do |reply| %>
                   <div id="comment-<%= reply.id %>" class="rounded-md border border-slate-200 bg-white p-3">
-                    <p class="text-xs font-medium text-slate-700"><%= reply.author_name %> replied</p>
+                    <p class="text-xs font-medium text-slate-700"><%= t("posts.show.comments.replied_by", name: reply.author_name) %></p>
+                    <p class="mt-0.5 text-xs text-slate-500"><%= l(reply.created_at, format: :short) %></p>
                     <p class="mt-1 whitespace-pre-wrap text-sm text-slate-700"><%= reply.body %></p>
                   </div>
                 <% end %>
@@ -156,18 +205,18 @@
         <% end %>
       </div>
     <% else %>
-      <p class="text-sm text-slate-500">No comments yet.</p>
+      <p class="text-sm text-slate-500"><%= t("posts.show.comments.empty_state") %></p>
     <% end %>
 
     <div class="border-t border-slate-200 pt-4">
       <% if @reply_to_comment.present? %>
         <div class="mb-3 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">
-          Replying to <strong><%= @reply_to_comment.author_name %></strong>
-          <%= link_to "Cancel", post_path(@post, anchor: "comments"), class: "ml-2 text-blue-600 underline" %>
+          <%= t("posts.show.comments.replying_to", name: @reply_to_comment.author_name) %>
+          <%= link_to t("posts.show.comments.cancel"), post_path(@post, anchor: "comments"), class: "ml-2 text-blue-600 underline" %>
         </div>
       <% end %>
 
-      <%= form_with model: [@post, @comment], class: "space-y-3" do |f| %>
+      <%= form_with model: [@post, @comment], class: "space-y-form" do |f| %>
         <% if @comment.errors.any? %>
           <div class="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700">
             <ul class="list-disc pl-5">
@@ -180,25 +229,30 @@
 
         <% if owned_users.any? %>
           <div>
-            <%= f.label :user_id, "Comment as profile (optional)", class: "mb-1 block text-sm font-medium" %>
-            <%= f.collection_select :user_id, owned_users, :id, :name, { include_blank: "Post as guest" }, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" %>
+            <%= f.label :user_id, t("posts.show.comments.comment_as_profile"), class: "mb-1 block text-sm font-medium" %>
+            <%= f.collection_select :user_id, owned_users, :id, :name, { include_blank: t("posts.show.comments.post_as_guest") }, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" %>
           </div>
         <% end %>
 
         <%= f.hidden_field :parent_comment_id, value: @reply_to_comment&.id %>
 
         <div>
-          <%= f.label :author_name, "Name", class: "mb-1 block text-sm font-medium" %>
+          <%= f.label :author_name, t("posts.show.comments.name"), class: "mb-1 block text-sm font-medium" %>
           <%= f.text_field :author_name, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" %>
         </div>
         <div>
-          <%= f.label :body, "Comment", class: "mb-1 block text-sm font-medium" %>
+          <%= f.label :body, t("posts.show.comments.comment"), class: "mb-1 block text-sm font-medium" %>
           <%= f.text_area :body, rows: 4, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" %>
         </div>
         <% if recaptcha_enabled? %>
           <div class="g-recaptcha" data-sitekey="<%= recaptcha_site_key %>"></div>
         <% end %>
-        <%= f.submit(@reply_to_comment.present? ? "Reply" : "Post comment", class: "tap-target rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700") %>
+        <%= f.button type: :submit, class: "tap-target rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700" do %>
+          <span class="inline-flex items-center gap-1.5">
+            <%= ui_icon(:chat, class_name: "h-4 w-4") %>
+            <span><%= @reply_to_comment.present? ? t("posts.show.comments.reply") : t("posts.show.comments.post_comment") %></span>
+          </span>
+        <% end %>
       <% end %>
     </div>
   </section>

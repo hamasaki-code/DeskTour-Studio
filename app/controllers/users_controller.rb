@@ -13,7 +13,7 @@ class UsersController < ApplicationController
 
     if @user.save
       store_user_owner_token(@user, raw_owner_token)
-      redirect_to @user, notice: "プロフィールを作成しました。"
+      redirect_to @user, notice: t("users.flash.created")
     else
       render :new, status: :unprocessable_entity
     end
@@ -30,7 +30,7 @@ class UsersController < ApplicationController
 
   def update
     if @user.update(user_params)
-      redirect_to @user, notice: "プロフィールを更新しました。"
+      redirect_to @user, notice: t("users.flash.updated")
     else
       render :edit, status: :unprocessable_entity
     end
@@ -45,7 +45,7 @@ class UsersController < ApplicationController
   def require_user_owner!
     return if user_owner?(@user)
 
-    redirect_to user_path(@user), alert: "このプロフィールは本人のみ編集できます。"
+    redirect_to user_path(@user), alert: t("users.flash.owner_only")
   end
 
   def user_params
