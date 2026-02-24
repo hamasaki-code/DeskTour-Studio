@@ -62,16 +62,16 @@
             <%= link_to "English", locale_switch_path(:en), class: "rounded-full px-2 py-1 #{locale_selected?(:en) ? 'bg-slate-800 text-white' : 'text-slate-600 hover:bg-slate-100'}", aria: { current: (locale_selected?(:en) ? "true" : nil) } %>
           </div>
           <% if owned_users.any? %>
-            <%= link_to t("navigation.my_profile"), user_path(owned_users.first), class: "rounded-lg border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-100", data: { ga_event: "navigation_profile_click", ga_category: "navigation", ga_label: "header_my_profile" } %>
+            <%= link_to t("navigation.my_profile"), user_path(owned_users.first), class: "tap-target inline-flex items-center rounded-lg border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-100", data: { ga_event: "navigation_profile_click", ga_category: "navigation", ga_label: "header_my_profile" } %>
           <% else %>
-            <%= link_to t("navigation.create_profile"), new_user_path, class: "rounded-lg border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-100", data: { ga_event: "navigation_profile_create_click", ga_category: "navigation", ga_label: "header_create_profile" } %>
+            <%= link_to t("navigation.create_profile"), new_user_path, class: "tap-target inline-flex items-center rounded-lg border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-100", data: { ga_event: "navigation_profile_create_click", ga_category: "navigation", ga_label: "header_create_profile" } %>
           <% end %>
-          <%= link_to t("navigation.create_post"), new_post_path, class: "rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "header_create_post" } %>
+          <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target hidden items-center rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 sm:inline-flex", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "header_create_post" } %>
         </div>
       </div>
     </header>
 
-    <main class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6">
+    <main class="mx-auto w-full max-w-6xl px-4 pb-28 pt-8 sm:px-6 sm:pb-8">
       <% flash.each do |type, message| %>
         <% next if type.to_s == "analytics_events" %>
         <% visual = flash_visual(type) %>
@@ -94,6 +94,14 @@
       <% end %>
       <%= yield %>
     </main>
+
+    <% unless controller_name == "posts" && action_name == "show" %>
+      <div class="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur sm:hidden">
+        <div class="mx-auto w-full max-w-6xl px-4 pt-3" style="padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);">
+          <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target flex w-full items-center justify-center rounded-xl bg-blue-500 px-4 text-sm font-semibold text-white hover:bg-blue-600", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "mobile_create_post_bottom_bar" } %>
+        </div>
+      </div>
+    <% end %>
 
     <footer class="mt-10 border-t border-slate-200 bg-white">
       <div class="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-6 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between sm:px-6">

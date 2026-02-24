@@ -61,23 +61,37 @@
     <% end %>
   </section>
 
-  <div class="flex flex-wrap items-center gap-3">
-    <%= button_to "Like", like_post_path(@post), method: :post, class: "rounded-lg bg-rose-500 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-600" %>
-    <%= link_to "Share on X", x_share_url(@post), target: "_blank", rel: "noopener", class: "rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" %>
-    <%= link_to "Share on Threads", threads_share_url(@post), target: "_blank", rel: "noopener", class: "rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" %>
-    <button type="button" data-copy-url="<%= post_share_url(@post) %>" class="rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100">Copy URL</button>
+  <div class="hidden flex-wrap items-center gap-3 sm:flex">
+    <%= button_to "Like", like_post_path(@post), method: :post, class: "tap-target rounded-lg bg-rose-500 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-600" %>
+    <%= link_to "Share on X", x_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex items-center rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" %>
+    <%= link_to "Share on Threads", threads_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex items-center rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" %>
+    <button type="button" data-copy-url="<%= post_share_url(@post) %>" class="tap-target rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100">Copy URL</button>
     <% unless post_owner?(@post) %>
-      <button type="button" data-open-report-modal="report-modal-<%= @post.id %>" class="rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-800 hover:bg-amber-100">
+      <button type="button" data-open-report-modal="report-modal-<%= @post.id %>" class="tap-target rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-800 hover:bg-amber-100">
         Report
       </button>
     <% end %>
   </div>
 
+  <div class="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 backdrop-blur sm:hidden">
+    <div class="mx-auto w-full max-w-6xl px-4 pt-3" style="padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);">
+      <div class="flex items-center gap-2 overflow-x-auto pb-1">
+        <%= button_to "Like", like_post_path(@post), method: :post, form: { class: "shrink-0" }, class: "tap-target whitespace-nowrap rounded-lg bg-rose-500 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-600" %>
+        <%= link_to "Share on X", x_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex shrink-0 items-center whitespace-nowrap rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" %>
+        <%= link_to "Share on Threads", threads_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex shrink-0 items-center whitespace-nowrap rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" %>
+        <button type="button" data-copy-url="<%= post_share_url(@post) %>" class="tap-target shrink-0 whitespace-nowrap rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100">Copy URL</button>
+        <% unless post_owner?(@post) %>
+          <button type="button" data-open-report-modal="report-modal-<%= @post.id %>" class="tap-target shrink-0 whitespace-nowrap rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-800 hover:bg-amber-100">Report</button>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
   <% if post_owner?(@post) %>
     <div class="flex flex-wrap items-center gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4">
-      <%= link_to "Edit", edit_post_path(@post), class: "rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm hover:bg-slate-100" %>
-      <%= link_to "Notifications (#{localized_number(@unread_notifications_count)})", notifications_post_path(@post), class: "rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm hover:bg-slate-100" %>
-      <%= button_to "Delete", post_path(@post), method: :delete, data: { turbo_confirm: "Delete this post?" }, class: "rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm text-red-700 hover:bg-red-100" %>
+      <%= link_to "Edit", edit_post_path(@post), class: "tap-target inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm hover:bg-slate-100" %>
+      <%= link_to "Notifications (#{localized_number(@unread_notifications_count)})", notifications_post_path(@post), class: "tap-target inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm hover:bg-slate-100" %>
+      <%= button_to "Delete", post_path(@post), method: :delete, form: { class: "inline-block" }, data: { turbo_confirm: "Delete this post?" }, class: "tap-target rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm text-red-700 hover:bg-red-100" %>
     </div>
   <% end %>
 
@@ -106,8 +120,8 @@
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" data-close-report-modal="report-modal-<%= @post.id %>" class="rounded-lg border border-slate-300 px-3 py-2 text-sm hover:bg-slate-100">Cancel</button>
-          <%= f.submit "Submit report", class: "rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600" %>
+          <button type="button" data-close-report-modal="report-modal-<%= @post.id %>" class="tap-target rounded-lg border border-slate-300 px-3 py-2 text-sm hover:bg-slate-100">Cancel</button>
+          <%= f.submit "Submit report", class: "tap-target rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600" %>
         </div>
       <% end %>
     </dialog>
@@ -184,7 +198,7 @@
         <% if recaptcha_enabled? %>
           <div class="g-recaptcha" data-sitekey="<%= recaptcha_site_key %>"></div>
         <% end %>
-        <%= f.submit(@reply_to_comment.present? ? "Reply" : "Post comment", class: "rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700") %>
+        <%= f.submit(@reply_to_comment.present? ? "Reply" : "Post comment", class: "tap-target rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700") %>
       <% end %>
     </div>
   </section>

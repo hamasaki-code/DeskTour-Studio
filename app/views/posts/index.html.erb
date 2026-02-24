@@ -16,8 +16,8 @@
       <%= text_field_tag :theme, params[:theme], class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: "テーマ" %>
       <%= text_field_tag :tag, params[:tag], class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: "タグ" %>
       <div class="sm:col-span-4 flex flex-wrap gap-2">
-        <%= submit_tag "検索する", class: "rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700" %>
-        <%= link_to "リセット", root_path, class: "rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100" %>
+        <%= submit_tag "検索する", class: "tap-target rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700" %>
+        <%= link_to "リセット", root_path, class: "tap-target inline-flex items-center rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100" %>
       </div>
     <% end %>
   </div>
@@ -25,17 +25,17 @@
   <% if @posts.any? %>
     <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       <% @posts.each do |post| %>
-        <article class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <article class="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
           <%= link_to post_path(post), class: "block" do %>
             <%= optimized_post_image_tag(post, variant: :thumbnail, class: "h-48 w-full object-cover") %>
           <% end %>
 
-          <div class="space-y-3 p-4">
+          <div class="flex h-full flex-col space-y-3 p-4">
             <div class="flex items-start justify-between gap-3">
-              <h2 class="text-base font-semibold text-slate-900">
-                <%= link_to post.title, post_path(post), class: "hover:text-blue-600" %>
+              <h2 class="min-w-0 flex-1 text-base font-semibold text-slate-900">
+                <%= link_to post.title, post_path(post), class: "ds-line-clamp-2 block leading-6 hover:text-blue-600" %>
               </h2>
-              <span class="inline-flex items-center gap-1 text-xs text-slate-500">
+              <span class="inline-flex shrink-0 items-center gap-1 text-xs text-slate-500">
                 <%= ui_icon(:heart, class_name: "h-3.5 w-3.5") %>
                 <span><%= t("metrics.likes") %>: <%= localized_number(post.likes_count) %></span>
               </span>
