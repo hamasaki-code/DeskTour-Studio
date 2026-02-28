@@ -9,6 +9,8 @@
     --ds-letter-spacing-nav: 0.002em;
     --ds-space-content: 2rem;
     --ds-space-form: 1.5rem;
+    --ds-focus-ring-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+    --ds-focus-border-color: rgb(37, 99, 235);
   }
 
   html[lang="ja"] {
@@ -40,6 +42,30 @@
   body {
     font-family: var(--ds-font-sans);
     letter-spacing: var(--ds-letter-spacing-body);
+  }
+
+  a,
+  button,
+  input,
+  select,
+  textarea {
+    transition: box-shadow 0.16s ease, border-color 0.16s ease;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: var(--ds-focus-ring-shadow);
+  }
+
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    border-color: var(--ds-focus-border-color);
   }
 
   h1,
