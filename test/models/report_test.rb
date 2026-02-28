@@ -54,7 +54,7 @@ class ReportTest < ActiveSupport::TestCase
 
     second_report = Report.new(post: post, reporter_token: "rate-token", reason: :spam)
     assert_not second_report.valid?
-    assert_includes second_report.errors.full_messages.join(" "), "Too many reports"
+    assert_includes second_report.errors.full_messages.join(" "), I18n.t("reports.errors.rate_limited")
   ensure
     ENV["REPORT_DAILY_LIMIT"] = original_limit
   end

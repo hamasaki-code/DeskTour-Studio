@@ -32,7 +32,7 @@
                   <p class="mt-1 text-xs text-amber-700">Currently hidden</p>
                 <% end %>
               </td>
-              <td class="px-4 py-3"><%= Report::REASON_LABELS.fetch(report.reason.to_sym) %></td>
+              <td class="px-4 py-3"><%= Report.reason_label(report.reason) %></td>
               <td class="px-4 py-3"><%= report.reporter_user&.name.presence || "Anonymous" %></td>
               <td class="px-4 py-3"><%= truncate(report.details.to_s, length: 120) %></td>
               <td class="px-4 py-3"><%= l(report.created_at, format: :short) %></td>
@@ -72,7 +72,7 @@
           <% @reviewed_reports.each do |report| %>
             <tr class="border-t border-slate-200">
               <td class="px-4 py-3"><%= report.post&.title.presence || "(Deleted post)" %></td>
-              <td class="px-4 py-3"><%= Report::REASON_LABELS.fetch(report.reason.to_sym) %></td>
+              <td class="px-4 py-3"><%= Report.reason_label(report.reason) %></td>
               <td class="px-4 py-3"><%= report_status_badge(report.status) %></td>
               <td class="px-4 py-3"><%= report.reviewed_at.present? ? l(report.reviewed_at, format: :short) : "-" %></td>
             </tr>

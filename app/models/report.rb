@@ -1,13 +1,4 @@
 class Report < ApplicationRecord
-  REASON_LABELS = {
-    spam: "Spam / Misleading",
-    harassment: "Harassment / Abuse",
-    adult_content: "Adult / Sensitive Content",
-    copyright: "Copyright / Rights",
-    misinformation: "Misinformation",
-    other: "Other"
-  }.freeze
-
   belongs_to :post
   belongs_to :reporter_user, class_name: "User", optional: true
 
@@ -31,14 +22,18 @@ class Report < ApplicationRecord
   validates :reporter_token, presence: true, length: { maximum: 128 }
   validates :reason, presence: true
   validates :details, length: { maximum: 1000 }, allow_blank: true
-  validates :post_id, uniqueness: { scope: :reporter_token, message: "has already been reported by this browser" }
-  validates :post_id, uniqueness: { scope: :reporter_user_id, message: "has already been reported by this profile" }, if: -> { reporter_user_id.present? }
+  validates :post_id, uniqueness: { scope: :reporter_token, message: ->(*) { I18n.t("reports.errors.already_reported_browser") } }
+  validates :post_id, uniqueness: { scope: :reporter_user_id, message: ->(*) { I18n.t("reports.errors.already_reported_profile") } }, if: -> { reporter_user_id.present? }
   validate :report_frequency_within_limit, on: :create
 
   after_commit :auto_hide_post_if_needed, on: :create
 
   def self.reason_options
-    reasons.keys.map { |key| [ REASON_LABELS.fetch(key.to_sym), key ] }
+    reasons.keys.map { |key| [ reason_label(key), key ] }
+  end
+
+  def self.reason_label(key)
+    I18n.t("reports.reasons.#{key}")
   end
 
   def self.auto_hide_threshold
@@ -69,6 +64,6 @@ class Report < ApplicationRecord
     recent_count = scope.where("created_at >= ?", 24.hours.ago).count
     return if recent_count < self.class.daily_limit
 
-    errors.add(:base, "Too many reports in a short period. Please try again later.")
+    errors.add(:base, I18n.t("reports.errors.rate_limited"))
   end
 end

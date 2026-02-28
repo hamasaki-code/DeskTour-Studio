@@ -10,7 +10,7 @@ class CommentsController < ApplicationController
     end
 
     if recaptcha_enabled? && !verify_recaptcha
-      @comment.errors.add(:base, "reCAPTCHA verification failed.")
+      @comment.errors.add(:base, t("comments.flash.recaptcha_failed"))
       prepare_show_context
       render "posts/show", status: :unprocessable_entity
       return
@@ -19,7 +19,7 @@ class CommentsController < ApplicationController
     if @comment.save
       create_post_notification(@comment)
       enqueue_reply_notification(@comment)
-      redirect_to post_path(@post, anchor: "comments"), notice: "Comment posted."
+      redirect_to post_path(@post, anchor: "comments"), notice: t("comments.flash.posted")
     else
       prepare_show_context
       render "posts/show", status: :unprocessable_entity
@@ -60,14 +60,14 @@ class CommentsController < ApplicationController
     return true if comment_params[:parent_comment_id].blank?
     return true if @comment.parent_comment.present?
 
-    @comment.errors.add(:parent_comment_id, "is invalid")
+    @comment.errors.add(:parent_comment_id, t("comments.flash.invalid_parent"))
     false
   end
 
   def create_post_notification(comment)
     return if post_owner?(@post)
 
-    @post.notifications.create!(kind: :comment, message: "#{comment.author_name} commented on your post.")
+    @post.notifications.create!(kind: :comment, message: t("comments.flash.notification", author: comment.author_name))
   end
 
   def enqueue_reply_notification(comment)

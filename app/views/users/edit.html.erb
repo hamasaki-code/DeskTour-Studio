@@ -1,15 +1,15 @@
-<% content_for :title, "プロフィール編集" %>
-<% content_for :description, "投稿者プロフィールを編集します。" %>
+<% content_for :title, t("users.edit.title") %>
+<% content_for :description, t("users.edit.description") %>
 
-<section class="mx-auto w-full max-w-3xl space-y-6">
+<section class="mx-auto w-full max-w-3xl space-y-content">
   <div>
-    <h1 class="text-2xl font-bold text-slate-900">プロフィール編集</h1>
+    <h1 class="text-2xl font-bold text-slate-900"><%= t("users.edit.heading") %></h1>
     <p class="mt-2 text-sm text-slate-600">
-      このプロフィールは本人のみ編集できます。
+      <%= t("users.edit.lead") %>
     </p>
   </div>
 
   <div class="rounded-xl border border-slate-200 bg-white p-6">
-    <%= render "form", user: @user, submit_label: "更新する" %>
+    <%= render "form", user: @user, submit_label: t("users.form.submit_update") %>
   </div>
 </section>

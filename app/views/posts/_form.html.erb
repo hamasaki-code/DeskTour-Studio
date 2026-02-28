@@ -1,10 +1,10 @@
-<% submit_label ||= "投稿を公開" %>
+<% submit_label ||= t("posts.form.publish") %>
 <% owned_users ||= [] %>
 
-<%= form_with model: post, class: "space-y-6" do |f| %>
+<%= form_with model: post, class: "space-y-form" do |f| %>
 <% if post.errors.any? %>
 <div class="rounded-lg border border-red-300 bg-red-50 p-4 text-sm text-red-700">
-    <p class="mb-2 font-semibold">Please fix the following errors.</p>
+    <p class="mb-2 font-semibold"><%= t("posts.form.error_summary") %></p>
     <ul class="list-disc pl-5">
         <% post.errors.full_messages.each do |message| %>
         <li><%= message %></li>
@@ -16,54 +16,54 @@
 <div class="grid gap-4 sm:grid-cols-2">
     <% if owned_users.any? %>
     <div class="sm:col-span-2">
-        <%= f.label :user_id, "投稿者プロフィール", class: "mb-1 block text-sm font-medium" %>
+        <%= f.label :user_id, t("posts.form.profile_label"), class: "mb-1 block text-sm font-medium" %>
         <%= f.collection_select :user_id, owned_users, :id, :name, {}, class: "w-full rounded-lg border border-slate-300 px-3 py-2" %>
     </div>
     <% end %>
 
     <div class="sm:col-span-2">
-        <%= f.label :title, "Title", class: "mb-1 block text-sm font-medium" %>
-        <%= f.text_field :title, class: "w-full rounded-lg border border-slate-300 px-3 py-2", placeholder: "Minimal Blue Desk Setup" %>
+        <%= f.label :title, t("posts.form.title_label"), class: "mb-1 block text-sm font-medium" %>
+        <%= f.text_field :title, class: "w-full rounded-lg border border-slate-300 px-3 py-2", placeholder: t("posts.form.title_placeholder") %>
     </div>
 
     <div class="sm:col-span-2">
-        <%= f.label :description, "Description", class: "mb-1 block text-sm font-medium" %>
-        <%= f.text_area :description, rows: 7, class: "w-full rounded-lg border border-slate-300 px-3 py-2", placeholder: "Share details about your desk setup." %>
+        <%= f.label :description, t("posts.form.description_label"), class: "mb-1 block text-sm font-medium" %>
+        <%= f.text_area :description, rows: 7, class: "w-full rounded-lg border border-slate-300 px-3 py-2", placeholder: t("posts.form.description_placeholder") %>
     </div>
 
     <div>
-        <%= f.label :category, "Category", class: "mb-1 block text-sm font-medium" %>
-        <%= f.text_field :category, class: "w-full rounded-lg border border-slate-300 px-3 py-2", placeholder: "Engineering / Design" %>
+        <%= f.label :category, t("posts.form.category_label"), class: "mb-1 block text-sm font-medium" %>
+        <%= f.text_field :category, class: "w-full rounded-lg border border-slate-300 px-3 py-2", placeholder: t("posts.form.category_placeholder") %>
     </div>
 
     <div>
-        <%= f.label :theme, "Theme", class: "mb-1 block text-sm font-medium" %>
-        <%= f.text_field :theme, class: "w-full rounded-lg border border-slate-300 px-3 py-2", placeholder: "White / Dark / Wood" %>
+        <%= f.label :theme, t("posts.form.theme_label"), class: "mb-1 block text-sm font-medium" %>
+        <%= f.text_field :theme, class: "w-full rounded-lg border border-slate-300 px-3 py-2", placeholder: t("posts.form.theme_placeholder") %>
     </div>
 
     <div class="sm:col-span-2">
-        <%= f.label :tag_list, "Tags (comma-separated)", class: "mb-1 block text-sm font-medium" %>
-        <%= f.text_field :tag_list, class: "w-full rounded-lg border border-slate-300 px-3 py-2", placeholder: "mechanical keyboard, ultrawide, standing desk" %>
+        <%= f.label :tag_list, t("posts.form.tags_label"), class: "mb-1 block text-sm font-medium" %>
+        <%= f.text_field :tag_list, class: "w-full rounded-lg border border-slate-300 px-3 py-2", placeholder: t("posts.form.tags_placeholder") %>
     </div>
 
     <div class="sm:col-span-2">
-        <%= f.label :desk_image, "Desk image", class: "mb-1 block text-sm font-medium" %>
+        <%= f.label :desk_image, t("posts.form.image_label"), class: "mb-1 block text-sm font-medium" %>
         <%= f.file_field :desk_image, class: "w-full rounded-lg border border-slate-300 px-3 py-2", accept: "image/*" %>
     </div>
 </div>
 
 <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-    <p class="mb-3 text-sm font-semibold text-slate-700">Related items (optional)</p>
+    <p class="mb-3 text-sm font-semibold text-slate-700"><%= t("posts.form.related_items") %></p>
     <div class="space-y-4">
         <%= f.fields_for :items do |item_fields| %>
         <div class="grid gap-3 rounded-lg border border-slate-200 bg-white p-3 sm:grid-cols-2">
             <div>
-                <%= item_fields.label :name, "Item name", class: "mb-1 block text-xs font-medium text-slate-600" %>
-                <%= item_fields.text_field :name, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: "HHKB Professional" %>
+                <%= item_fields.label :name, t("posts.form.item_name_label"), class: "mb-1 block text-xs font-medium text-slate-600" %>
+                <%= item_fields.text_field :name, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.form.item_name_placeholder") %>
             </div>
             <div>
-                <%= item_fields.label :affiliate_url, "Affiliate URL", class: "mb-1 block text-xs font-medium text-slate-600" %>
-                <%= item_fields.url_field :affiliate_url, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: "https://www.amazon.co.jp/..." %>
+                <%= item_fields.label :affiliate_url, t("posts.form.affiliate_url_label"), class: "mb-1 block text-xs font-medium text-slate-600" %>
+                <%= item_fields.url_field :affiliate_url, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.form.affiliate_url_placeholder") %>
             </div>
         </div>
         <% end %>
@@ -71,7 +71,7 @@
 </div>
 
 <div class="flex flex-wrap gap-3">
-    <%= f.submit "Publish", class: "rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700" %>
-    <%= f.submit "Save draft", name: "save_as_draft", value: "1", class: "rounded-lg border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100" %>
+    <%= f.submit t("posts.form.publish"), class: "tap-target rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700" %>
+    <%= f.submit t("posts.form.save_draft"), name: "save_as_draft", value: "1", class: "tap-target rounded-lg border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100" %>
 </div>
 <% end %>

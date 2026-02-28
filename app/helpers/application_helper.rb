@@ -100,7 +100,7 @@ module ApplicationHelper
   end
 
   def post_share_text(post)
-    "DeskTour Studio: #{post.title}"
+    t("share.post_text", title: post.title)
   end
 
   def post_share_url(post)
@@ -196,6 +196,43 @@ module ApplicationHelper
     when :heart
       [ tag.path(path_attrs.merge(d: "m21 8.25c0-2.485-2.015-4.5-4.5-4.5-1.74 0-3.248.99-4 2.438A4.484 4.484 0 0 0 8.5 3.75C6.015 3.75 4 5.765 4 8.25c0 4.025 4.5 7.5 8 10.5 3.5-3 8-6.475 8-10.5Z"))
       ]
+    when :globe_alt
+      [
+        tag.path(path_attrs.merge(d: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z")),
+        tag.path(path_attrs.merge(d: "M3.6 9h16.8M3.6 15h16.8")),
+        tag.path(path_attrs.merge(d: "M12 3c2.4 2.4 3.6 5.4 3.6 9s-1.2 6.6-3.6 9m0-18c-2.4 2.4-3.6 5.4-3.6 9s1.2 6.6 3.6 9"))
+      ]
+    when :share
+      [
+        tag.path(path_attrs.merge(d: "M8.25 12a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Zm7.5 7.5a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Zm0-15a3.75 3.75 0 1 0 0 7.5 3.75 3.75 0 0 0 0-7.5Z")),
+        tag.path(path_attrs.merge(d: "m11.4 10.3 3 1.4m-3 2 3.1-1.5"))
+      ]
+    when :flag
+      [
+        tag.path(path_attrs.merge(d: "M5.25 21V4.5m0 0h10.5l-1.5 3 1.5 3H5.25Z"))
+      ]
+    when :chat
+      [
+        tag.path(path_attrs.merge(d: "M7.5 8.25h9m-9 3h6m-9 9 2.7-2.16a2.25 2.25 0 0 1 1.4-.5h7.65A2.25 2.25 0 0 0 18.75 15V6A2.25 2.25 0 0 0 16.5 3.75h-9A2.25 2.25 0 0 0 5.25 6v12.75Z"))
+      ]
+    when :arrow_uturn_left
+      [
+        tag.path(path_attrs.merge(d: "m9 9-4.5 4.5L9 18")),
+        tag.path(path_attrs.merge(d: "M4.5 13.5H15A4.5 4.5 0 0 1 19.5 18"))
+      ]
+    when :pencil_square
+      [
+        tag.path(path_attrs.merge(d: "M16.86 3.49a2.12 2.12 0 1 1 3 3L8.25 18.11 4.5 19.5l1.39-3.75L16.86 3.49Z")),
+        tag.path(path_attrs.merge(d: "M12 6.75H5.25A2.25 2.25 0 0 0 3 9v9.75A2.25 2.25 0 0 0 5.25 21h9.75A2.25 2.25 0 0 0 17.25 18v-6.75"))
+      ]
+    when :bell
+      [
+        tag.path(path_attrs.merge(d: "M14.25 18.75a2.25 2.25 0 0 1-4.5 0m8.25-2.25H6a1.5 1.5 0 0 1-1.35-2.14l.85-1.7a6.75 6.75 0 1 0 13 0l.85 1.7A1.5 1.5 0 0 1 18 16.5Z"))
+      ]
+    when :trash
+      [
+        tag.path(path_attrs.merge(d: "M6 7.5h12m-9 0v10.5m3-10.5v10.5M9 4.5h6m-8.25 3h10.5l-.75 11.25a2.25 2.25 0 0 1-2.25 2.1h-4.5a2.25 2.25 0 0 1-2.25-2.1L6.75 7.5Z"))
+      ]
     else
       [ tag.path(path_attrs.merge(d: "M12 6v6m0 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z")) ]
     end
@@ -213,7 +250,7 @@ module ApplicationHelper
 
   def default_image_tag_options(post, variant)
     base = {
-      alt: post&.title.presence || "Desk image",
+      alt: post&.title.presence || t("images.desk_alt"),
       decoding: "async"
     }
 
