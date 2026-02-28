@@ -26,7 +26,7 @@
 
   <div class="rounded-xl border border-slate-200 bg-white p-6">
     <div class="max-w-3xl">
-      <p class="whitespace-pre-wrap text-sm leading-reading text-slate-700"><%= @post.description %></p>
+      <p class="whitespace-pre-wrap text-base leading-reading text-slate-700"><%= @post.description %></p>
     </div>
   </div>
 
@@ -64,7 +64,7 @@
   </section>
 
   <div class="hidden flex-wrap items-center gap-3 sm:flex">
-    <%= button_to like_post_path(@post), method: :post, class: "tap-target rounded-lg border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100", data: { ga_event: "post_action_like_click", ga_category: "post_actions", ga_label: "desktop_like" } do %>
+    <%= button_to like_post_path(@post), method: :post, class: "tap-target rounded-lg bg-rose-500 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-600", data: { ga_event: "post_action_like_click", ga_category: "post_actions", ga_label: "desktop_like" } do %>
       <span class="inline-flex items-center gap-1.5">
         <%= ui_icon(:heart, class_name: "h-4 w-4") %>
         <span><%= t("posts.show.actions.like") %></span>
@@ -83,7 +83,7 @@
       <span><%= t("posts.show.actions.copy_url") %></span>
     </button>
     <% unless post_owner?(@post) %>
-      <button type="button" data-open-report-modal="report-modal-<%= @post.id %>" data-ga-event="post_action_report_click" data-ga-category="post_actions" data-ga-label="desktop_report" class="tap-target inline-flex items-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-800 hover:bg-amber-100">
+      <button type="button" data-open-report-modal="report-modal-<%= @post.id %>" data-ga-event="post_action_report_click" data-ga-category="post_actions" data-ga-label="desktop_report" class="tap-target inline-flex items-center gap-1.5 rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm text-amber-800 hover:bg-amber-50">
         <%= ui_icon(:flag, class_name: "h-4 w-4") %>
         <span><%= t("posts.show.actions.report") %></span>
       </button>
@@ -94,7 +94,7 @@
     <div class="mx-auto w-full max-w-6xl px-4 pt-3" style="padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);">
       <div class="relative pb-1">
         <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-2">
-          <%= button_to like_post_path(@post), method: :post, form: { class: "w-full" }, class: "tap-target w-full rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100", data: { ga_event: "post_action_like_click", ga_category: "post_actions", ga_label: "mobile_like_primary" } do %>
+          <%= button_to like_post_path(@post), method: :post, form: { class: "w-full" }, class: "tap-target w-full rounded-lg bg-rose-500 px-3 py-2 text-sm font-semibold text-white hover:bg-rose-600", data: { ga_event: "post_action_like_click", ga_category: "post_actions", ga_label: "mobile_like_primary" } do %>
             <span class="inline-flex items-center justify-center gap-1.5">
               <%= ui_icon(:heart, class_name: "h-4 w-4") %>
               <span><%= t("posts.show.actions.like") %></span>

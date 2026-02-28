@@ -5,7 +5,9 @@
 <% applied_filter_count = [params[:category], params[:theme], params[:tag]].count(&:present?) %>
 <% filtered_results = params[:q].present? || applied_filter_count.positive? %>
 <% detailed_toggle_label = t("posts.index.detailed_filters_toggle") %>
-<% detailed_status = detailed_filters_open ? "ON" : "OFF" %>
+<% detailed_status_shown_label = I18n.locale.to_s == "ja" ? "\u8A73\u7D30\u6761\u4EF6\u3092\u8868\u793A\u4E2D" : "Details shown" %>
+<% detailed_status_hidden_label = I18n.locale.to_s == "ja" ? "\u8A73\u7D30\u6761\u4EF6\u306F\u975E\u8868\u793A" : "Details hidden" %>
+<% detailed_status_label = detailed_filters_open ? detailed_status_shown_label : detailed_status_hidden_label %>
 <% applied_filters_label = I18n.locale.to_s == "ja" ? "\u9069\u7528\u4E2D\u30D5\u30A3\u30EB\u30BF" : "Applied filters" %>
 <% no_filters_label = I18n.locale.to_s == "ja" ? "\u306A\u3057" : "None" %>
 <% basic_search_label = I18n.locale.to_s == "ja" ? "\u57FA\u672C\u691C\u7D22" : "Basic search" %>
@@ -58,13 +60,13 @@
             <span><%= detailed_toggle_label %></span>
             <% if detailed_filter_count.positive? %>
               <span class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700" data-detailed-filter-count><%= detailed_filter_count %></span>
-            <% end %>
-          </span>
-          <span class="inline-flex items-center gap-2">
-            <span data-details-state-badge class="rounded-full px-2 py-0.5 text-xs font-semibold <%= detailed_filters_open ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600' %>"><%= detailed_status %></span>
-            <%= ui_icon(:chevron_down, class_name: "js-details-toggle-icon h-4 w-4 text-slate-500 transition-transform #{detailed_filters_open ? 'rotate-180' : ''}") %>
-          </span>
-        </button>
+          <% end %>
+        </span>
+        <span class="inline-flex items-center gap-2">
+          <span data-details-state-badge data-label-shown="<%= detailed_status_shown_label %>" data-label-hidden="<%= detailed_status_hidden_label %>" class="max-w-[10.5rem] truncate rounded-full px-2 py-0.5 text-xs font-semibold <%= detailed_filters_open ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600' %>"><%= detailed_status_label %></span>
+          <%= ui_icon(:chevron_down, class_name: "js-details-toggle-icon h-4 w-4 text-slate-500 transition-transform #{detailed_filters_open ? 'rotate-180' : ''}") %>
+        </span>
+      </button>
 
         <div data-details-panel class="mt-3 grid gap-3 sm:grid-cols-2 <%= detailed_filters_open ? '' : 'hidden' %>">
           <%= text_field_tag :theme, params[:theme], class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.index.theme_placeholder"), data: { search_filter_input: "theme" } %>
@@ -161,7 +163,9 @@
       panel.classList.toggle("hidden", expanded);
       if (icon) icon.classList.toggle("rotate-180", !expanded);
       if (stateLabel) {
-        stateLabel.textContent = nextExpanded ? "ON" : "OFF";
+        const shownLabel = stateLabel.dataset.labelShown || "Details shown";
+        const hiddenLabel = stateLabel.dataset.labelHidden || "Details hidden";
+        stateLabel.textContent = nextExpanded ? shownLabel : hiddenLabel;
         stateLabel.classList.toggle("bg-emerald-100", nextExpanded);
         stateLabel.classList.toggle("text-emerald-700", nextExpanded);
         stateLabel.classList.toggle("bg-slate-200", !nextExpanded);
