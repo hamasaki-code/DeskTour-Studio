@@ -20,6 +20,7 @@ ja:
       tag_placeholder: "タグ"
       search_button: "検索する"
       reset_button: "リセット"
+      detailed_filters_toggle: "詳細条件"
       author_label: "投稿者"
       empty_state: "条件に一致する投稿がありません。"
     new:
@@ -60,6 +61,7 @@ ja:
       no_related_items: "関連アイテムはまだありません。"
       actions:
         like: "いいね"
+        share: "共有"
         share_x: "Xでシェア"
         share_threads: "Threadsでシェア"
         copy_url: "URLをコピー"

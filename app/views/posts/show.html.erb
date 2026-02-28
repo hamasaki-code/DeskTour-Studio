@@ -62,59 +62,76 @@
   </section>
 
   <div class="hidden flex-wrap items-center gap-3 sm:flex">
-    <%= button_to like_post_path(@post), method: :post, class: "tap-target rounded-lg bg-rose-500 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-600" do %>
+    <%= button_to like_post_path(@post), method: :post, class: "tap-target rounded-lg bg-rose-500 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-600", data: { ga_event: "post_action_like_click", ga_category: "post_actions", ga_label: "desktop_like" } do %>
       <span class="inline-flex items-center gap-1.5">
         <%= ui_icon(:heart, class_name: "h-4 w-4") %>
         <span><%= t("posts.show.actions.like") %></span>
       </span>
     <% end %>
-    <%= link_to x_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" do %>
+    <%= link_to x_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100", data: { ga_event: "post_action_share_x_click", ga_category: "post_actions", ga_label: "desktop_share_x" } do %>
       <%= ui_icon(:share, class_name: "h-4 w-4") %>
       <span><%= t("posts.show.actions.share_x") %></span>
     <% end %>
-    <%= link_to threads_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" do %>
+    <%= link_to threads_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100", data: { ga_event: "post_action_share_threads_click", ga_category: "post_actions", ga_label: "desktop_share_threads" } do %>
       <%= ui_icon(:share, class_name: "h-4 w-4") %>
       <span><%= t("posts.show.actions.share_threads") %></span>
     <% end %>
-    <button type="button" data-copy-url="<%= post_share_url(@post) %>" class="tap-target inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100">
+    <button type="button" data-copy-url="<%= post_share_url(@post) %>" data-ga-event="post_action_copy_url_click" data-ga-category="post_actions" data-ga-label="desktop_copy_url" class="tap-target inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100">
       <%= ui_icon(:share, class_name: "h-4 w-4") %>
       <span><%= t("posts.show.actions.copy_url") %></span>
     </button>
     <% unless post_owner?(@post) %>
-      <button type="button" data-open-report-modal="report-modal-<%= @post.id %>" class="tap-target inline-flex items-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-800 hover:bg-amber-100">
+      <button type="button" data-open-report-modal="report-modal-<%= @post.id %>" data-ga-event="post_action_report_click" data-ga-category="post_actions" data-ga-label="desktop_report" class="tap-target inline-flex items-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-800 hover:bg-amber-100">
         <%= ui_icon(:flag, class_name: "h-4 w-4") %>
         <span><%= t("posts.show.actions.report") %></span>
       </button>
     <% end %>
   </div>
 
-  <div class="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 backdrop-blur sm:hidden">
+  <div class="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 backdrop-blur sm:hidden" data-mobile-actions-root>
     <div class="mx-auto w-full max-w-6xl px-4 pt-3" style="padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);">
-      <div class="flex items-center gap-2 overflow-x-auto pb-1">
-        <%= button_to like_post_path(@post), method: :post, form: { class: "shrink-0" }, class: "tap-target whitespace-nowrap rounded-lg bg-rose-500 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-600" do %>
-          <span class="inline-flex items-center gap-1.5">
-            <%= ui_icon(:heart, class_name: "h-4 w-4") %>
-            <span><%= t("posts.show.actions.like") %></span>
-          </span>
-        <% end %>
-        <%= link_to x_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" do %>
-          <%= ui_icon(:share, class_name: "h-4 w-4") %>
-          <span><%= t("posts.show.actions.share_x") %></span>
-        <% end %>
-        <%= link_to threads_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" do %>
-          <%= ui_icon(:share, class_name: "h-4 w-4") %>
-          <span><%= t("posts.show.actions.share_threads") %></span>
-        <% end %>
-        <button type="button" data-copy-url="<%= post_share_url(@post) %>" class="tap-target inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100">
-          <%= ui_icon(:share, class_name: "h-4 w-4") %>
-          <span><%= t("posts.show.actions.copy_url") %></span>
-        </button>
-        <% unless post_owner?(@post) %>
-          <button type="button" data-open-report-modal="report-modal-<%= @post.id %>" class="tap-target inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-800 hover:bg-amber-100">
-            <%= ui_icon(:flag, class_name: "h-4 w-4") %>
-            <span><%= t("posts.show.actions.report") %></span>
+      <div class="relative pb-1">
+        <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-2">
+          <%= button_to like_post_path(@post), method: :post, form: { class: "w-full" }, class: "tap-target w-full rounded-lg bg-rose-500 px-3 py-2 text-sm font-semibold text-white hover:bg-rose-600", data: { ga_event: "post_action_like_click", ga_category: "post_actions", ga_label: "mobile_like_primary" } do %>
+            <span class="inline-flex items-center justify-center gap-1.5">
+              <%= ui_icon(:heart, class_name: "h-4 w-4") %>
+              <span><%= t("posts.show.actions.like") %></span>
+            </span>
+          <% end %>
+          <button type="button" data-native-share-url="<%= post_share_url(@post) %>" data-native-share-text="<%= post_share_text(@post) %>" data-ga-event="post_action_share_primary_click" data-ga-category="post_actions" data-ga-label="mobile_share_primary" class="tap-target inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100">
+            <span class="inline-flex items-center gap-1.5">
+              <%= ui_icon(:share, class_name: "h-4 w-4") %>
+              <span><%= t("posts.show.actions.share") %></span>
+            </span>
           </button>
-        <% end %>
+          <button type="button" data-mobile-actions-toggle aria-expanded="false" aria-controls="mobile-post-actions-menu" data-ga-event="post_action_more_menu_toggle" data-ga-category="post_actions" data-ga-label="mobile_more_toggle" class="tap-target inline-flex items-center justify-center rounded-lg border border-slate-300 px-3 py-2 text-slate-700 hover:bg-slate-100">
+            <%= ui_icon(:ellipsis_horizontal, class_name: "h-5 w-5") %>
+            <span class="sr-only">More</span>
+          </button>
+        </div>
+
+        <div id="mobile-post-actions-menu" data-mobile-actions-menu class="absolute inset-x-0 bottom-full z-10 mb-2 hidden rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
+          <div class="grid gap-1">
+            <%= link_to x_share_url(@post), target: "_blank", rel: "noopener", data: { mobile_menu_action: true, ga_event: "post_action_share_x_click", ga_category: "post_actions", ga_label: "mobile_share_x_menu" }, class: "tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100" do %>
+              <%= ui_icon(:share, class_name: "h-4 w-4") %>
+              <span><%= t("posts.show.actions.share_x") %></span>
+            <% end %>
+            <%= link_to threads_share_url(@post), target: "_blank", rel: "noopener", data: { mobile_menu_action: true, ga_event: "post_action_share_threads_click", ga_category: "post_actions", ga_label: "mobile_share_threads_menu" }, class: "tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100" do %>
+              <%= ui_icon(:share, class_name: "h-4 w-4") %>
+              <span><%= t("posts.show.actions.share_threads") %></span>
+            <% end %>
+            <button type="button" data-mobile-menu-action data-copy-url="<%= post_share_url(@post) %>" data-ga-event="post_action_copy_url_click" data-ga-category="post_actions" data-ga-label="mobile_copy_url_menu" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100">
+              <%= ui_icon(:share, class_name: "h-4 w-4") %>
+              <span><%= t("posts.show.actions.copy_url") %></span>
+            </button>
+            <% unless post_owner?(@post) %>
+              <button type="button" data-mobile-menu-action data-open-report-modal="report-modal-<%= @post.id %>" data-ga-event="post_action_report_click" data-ga-category="post_actions" data-ga-label="mobile_report_menu" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-amber-800 hover:bg-amber-50">
+                <%= ui_icon(:flag, class_name: "h-4 w-4") %>
+                <span><%= t("posts.show.actions.report") %></span>
+              </button>
+            <% end %>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -170,33 +187,33 @@
 
   <%= render "shared/ad_slot", slot: ENV["ADSENSE_SLOT_POST_BODY"] %>
 
-  <section id="comments" class="space-y-form rounded-xl border border-slate-200 bg-white p-6">
+  <section id="comments" class="space-y-form rounded-xl border border-slate-200 bg-white p-4 sm:p-6">
     <h2 class="inline-flex items-center gap-1.5 text-lg font-semibold text-slate-900">
       <%= ui_icon(:chat, class_name: "h-5 w-5") %>
       <span><%= t("posts.show.comments.title") %></span>
     </h2>
 
     <% if @root_comments.any? %>
-      <div class="space-y-4">
+      <div class="space-y-5">
         <% @root_comments.each do |comment| %>
-          <article id="comment-<%= comment.id %>" class="rounded-lg border border-slate-100 bg-slate-50 p-4">
+          <article id="comment-<%= comment.id %>" class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
             <div class="flex items-center justify-between gap-3">
               <p class="text-sm font-medium text-slate-800"><%= comment.author_name %></p>
-              <%= link_to post_path(@post, anchor: "comments", reply_to: comment.id), class: "tap-target inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700" do %>
+              <%= link_to post_path(@post, anchor: "comments", reply_to: comment.id), class: "tap-target inline-flex items-center gap-1 rounded-md px-2 text-xs text-blue-600 hover:bg-blue-50 hover:text-blue-700", data: { ga_event: "comment_reply_click", ga_category: "comments", ga_label: "reply_to_parent" } do %>
                 <%= ui_icon(:arrow_uturn_left, class_name: "h-3.5 w-3.5") %>
                 <span><%= t("posts.show.comments.reply") %></span>
               <% end %>
             </div>
             <p class="mt-0.5 text-xs text-slate-500"><%= l(comment.created_at, format: :short) %></p>
-            <p class="mt-1 whitespace-pre-wrap text-sm text-slate-700"><%= comment.body %></p>
+            <p class="mt-2 whitespace-pre-wrap text-sm leading-reading text-slate-700"><%= comment.body %></p>
 
             <% if comment.replies.any? %>
-              <div class="mt-3 space-y-3 border-l-2 border-slate-200 pl-4">
+              <div class="mt-4 space-y-3 rounded-r-lg border-l-4 border-blue-200 bg-slate-50 px-3 py-3 sm:pl-4 sm:pr-3">
                 <% comment.replies.each do |reply| %>
-                  <div id="comment-<%= reply.id %>" class="rounded-md border border-slate-200 bg-white p-3">
+                  <div id="comment-<%= reply.id %>" class="rounded-lg border border-slate-300 bg-white p-3">
                     <p class="text-xs font-medium text-slate-700"><%= t("posts.show.comments.replied_by", name: reply.author_name) %></p>
                     <p class="mt-0.5 text-xs text-slate-500"><%= l(reply.created_at, format: :short) %></p>
-                    <p class="mt-1 whitespace-pre-wrap text-sm text-slate-700"><%= reply.body %></p>
+                    <p class="mt-1 whitespace-pre-wrap text-sm leading-reading text-slate-700"><%= reply.body %></p>
                   </div>
                 <% end %>
               </div>
@@ -263,12 +280,29 @@
 <script>
   if (!window.__reportModalBindingInstalled) {
     window.__reportModalBindingInstalled = true;
+
+    const closeMobileActionsMenu = (reason = "dismissed") => {
+      const menu = document.querySelector("[data-mobile-actions-menu]");
+      const toggle = document.querySelector("[data-mobile-actions-toggle]");
+      if (!menu || menu.classList.contains("hidden")) return;
+
+      menu.classList.add("hidden");
+      if (toggle) toggle.setAttribute("aria-expanded", "false");
+      if (typeof window.gtag === "function") {
+        window.gtag("event", "post_action_more_menu_close", {
+          event_category: "post_actions",
+          event_label: `mobile_more_menu_${reason}`
+        });
+      }
+    };
+
     document.addEventListener("click", (event) => {
       const openButton = event.target.closest("[data-open-report-modal]");
       if (openButton) {
         const modalId = openButton.getAttribute("data-open-report-modal");
         const dialog = document.getElementById(modalId);
         if (dialog && typeof dialog.showModal === "function") dialog.showModal();
+        closeMobileActionsMenu("modal_open");
         return;
       }
 
@@ -277,7 +311,51 @@
         const modalId = closeButton.getAttribute("data-close-report-modal");
         const dialog = document.getElementById(modalId);
         if (dialog && typeof dialog.close === "function") dialog.close();
+        return;
       }
+
+      const mobileActionsToggle = event.target.closest("[data-mobile-actions-toggle]");
+      if (mobileActionsToggle) {
+        const menu = document.querySelector("[data-mobile-actions-menu]");
+        if (!menu) return;
+        const expanded = mobileActionsToggle.getAttribute("aria-expanded") == "true";
+        menu.classList.toggle("hidden", expanded);
+        mobileActionsToggle.setAttribute("aria-expanded", String(!expanded));
+        return;
+      }
+
+      const mobileActionsMenu = document.querySelector("[data-mobile-actions-menu]");
+      if (mobileActionsMenu && !mobileActionsMenu.classList.contains("hidden")) {
+        const isMenuAction = event.target.closest("[data-mobile-menu-action]");
+        const isInsideMenu = event.target.closest("[data-mobile-actions-menu]");
+        if (isMenuAction) {
+          closeMobileActionsMenu("action_selected");
+          return;
+        }
+        if (!isInsideMenu) closeMobileActionsMenu("outside_tap");
+      }
+
+      const shareButton = event.target.closest("[data-native-share-url]");
+      if (shareButton) {
+        const url = shareButton.getAttribute("data-native-share-url");
+        const text = shareButton.getAttribute("data-native-share-text");
+
+        if (navigator.share) {
+          navigator.share({ text, url }).catch(async (error) => {
+            if (error && error.name === "AbortError") return;
+            try {
+              await navigator.clipboard.writeText(url);
+            } catch (_) {}
+          });
+        } else {
+          navigator.clipboard.writeText(url).catch(() => {});
+        }
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      closeMobileActionsMenu("escape");
     });
   }
 </script>

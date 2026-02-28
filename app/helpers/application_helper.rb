@@ -207,6 +207,10 @@ module ApplicationHelper
         tag.path(path_attrs.merge(d: "M8.25 12a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Zm7.5 7.5a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Zm0-15a3.75 3.75 0 1 0 0 7.5 3.75 3.75 0 0 0 0-7.5Z")),
         tag.path(path_attrs.merge(d: "m11.4 10.3 3 1.4m-3 2 3.1-1.5"))
       ]
+    when :ellipsis_horizontal
+      [
+        tag.path(path_attrs.merge(d: "M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm6 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm6 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"))
+      ]
     when :flag
       [
         tag.path(path_attrs.merge(d: "M5.25 21V4.5m0 0h10.5l-1.5 3 1.5 3H5.25Z"))
@@ -232,6 +236,14 @@ module ApplicationHelper
     when :trash
       [
         tag.path(path_attrs.merge(d: "M6 7.5h12m-9 0v10.5m3-10.5v10.5M9 4.5h6m-8.25 3h10.5l-.75 11.25a2.25 2.25 0 0 1-2.25 2.1h-4.5a2.25 2.25 0 0 1-2.25-2.1L6.75 7.5Z"))
+      ]
+    when :bars_3
+      [
+        tag.path(path_attrs.merge(d: "M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"))
+      ]
+    when :chevron_down
+      [
+        tag.path(path_attrs.merge(d: "m19.5 8.25-7.5 7.5-7.5-7.5"))
       ]
     else
       [ tag.path(path_attrs.merge(d: "M12 6v6m0 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z")) ]

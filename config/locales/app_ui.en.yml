@@ -20,6 +20,7 @@ en:
       tag_placeholder: "Tag"
       search_button: "Search"
       reset_button: "Reset"
+      detailed_filters_toggle: "Detailed filters"
       author_label: "Author"
       empty_state: "No posts match your filters."
     new:
@@ -60,6 +61,7 @@ en:
       no_related_items: "No related items yet."
       actions:
         like: "Like"
+        share: "Share"
         share_x: "Share on X"
         share_threads: "Share on Threads"
         copy_url: "Copy URL"
