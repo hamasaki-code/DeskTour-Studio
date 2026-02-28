@@ -4,9 +4,30 @@
 <% detailed_filter_count = [params[:theme], params[:tag]].count(&:present?) %>
 <% applied_filter_count = [params[:category], params[:theme], params[:tag]].count(&:present?) %>
 <% filtered_results = params[:q].present? || applied_filter_count.positive? %>
+<% detailed_toggle_label = t("posts.index.detailed_filters_toggle") %>
+<% detailed_status_label = "#{detailed_toggle_label}: #{detailed_filters_open ? 'ON' : 'OFF'}" %>
+<% applied_filters_label = I18n.locale.to_s == "ja" ? "適用中フィルタ" : "Applied filters" %>
+<% no_filters_label = I18n.locale.to_s == "ja" ? "なし" : "None" %>
+<% active_filters = {
+  category: params[:category].to_s.strip,
+  theme: params[:theme].to_s.strip,
+  tag: params[:tag].to_s.strip
+}.select { |_, value| value.present? } %>
+<% filter_labels = {
+  category: t("posts.index.category_placeholder"),
+  theme: t("posts.index.theme_placeholder"),
+  tag: t("posts.index.tag_placeholder")
+} %>
+<% persisted_query = {
+  q: params[:q].presence,
+  category: params[:category].presence,
+  theme: params[:theme].presence,
+  tag: params[:tag].presence,
+  details: params[:details].presence
+}.compact %>
 
-<section class="space-y-content">
-  <div class="rounded-2xl bg-gradient-to-br from-slate-900 via-blue-800 to-cyan-700 px-6 py-8 text-white">
+<section class="space-y-6 sm:space-y-8">
+  <div class="rounded-2xl bg-gradient-to-br from-slate-900 via-blue-800 to-cyan-700 px-6 py-6 text-white sm:py-8">
     <h1 class="text-2xl font-bold sm:text-3xl"><%= t("posts.index.hero_title") %></h1>
     <p class="mt-2 max-w-2xl text-sm text-blue-100 sm:text-base">
       <%= t("posts.index.hero_description") %>
@@ -27,17 +48,37 @@
 
       <button type="button" data-details-toggle aria-expanded="<%= detailed_filters_open %>" class="tap-target inline-flex w-full items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100" data-ga-event="post_search_details_toggle_click" data-ga-category="post_search" data-ga-label="index_search_details_toggle">
         <span class="inline-flex items-center gap-2">
-          <span><%= t("posts.index.detailed_filters_toggle") %></span>
+          <span><%= detailed_toggle_label %></span>
           <% if detailed_filter_count.positive? %>
             <span class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700" data-detailed-filter-count><%= detailed_filter_count %></span>
           <% end %>
         </span>
-        <%= ui_icon(:chevron_down, class_name: "js-details-toggle-icon h-4 w-4 text-slate-500 transition-transform #{detailed_filters_open ? 'rotate-180' : ''}") %>
+        <span class="inline-flex items-center gap-2">
+          <span data-details-state-label data-base-label="<%= detailed_toggle_label %>" class="text-xs font-semibold <%= detailed_filters_open ? 'text-emerald-700' : 'text-slate-500' %>"><%= detailed_status_label %></span>
+          <%= ui_icon(:chevron_down, class_name: "js-details-toggle-icon h-4 w-4 text-slate-500 transition-transform #{detailed_filters_open ? 'rotate-180' : ''}") %>
+        </span>
       </button>
 
       <div data-details-panel class="grid gap-3 sm:grid-cols-2 <%= detailed_filters_open ? '' : 'hidden' %>">
         <%= text_field_tag :theme, params[:theme], class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.index.theme_placeholder"), data: { search_filter_input: "theme" } %>
         <%= text_field_tag :tag, params[:tag], class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.index.tag_placeholder"), data: { search_filter_input: "tag" } %>
+      </div>
+
+      <div class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+        <p class="text-xs font-semibold text-slate-600"><%= applied_filters_label %></p>
+        <div class="mt-2 flex flex-wrap gap-2">
+          <% if active_filters.any? %>
+            <% active_filters.each do |key, value| %>
+              <% clear_params = persisted_query.except(key) %>
+              <%= link_to posts_path(clear_params), class: "tap-target inline-flex items-center gap-1 rounded-full border border-slate-300 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100", data: { ga_event: "post_search_filter_clear_click", ga_category: "post_search", ga_label: "index_clear_#{key}" } do %>
+                <span><%= "#{filter_labels[key]}: #{value}" %></span>
+                <span aria-hidden="true" class="text-slate-500">&times;</span>
+              <% end %>
+            <% end %>
+          <% else %>
+            <span class="text-xs text-slate-500"><%= no_filters_label %></span>
+          <% end %>
+        </div>
       </div>
     <% end %>
   </div>
@@ -57,17 +98,15 @@
 
             <p class="ds-line-clamp-3 text-sm leading-reading text-slate-700"><%= truncate(post.description, length: 110) %></p>
 
-            <div class="grid grid-cols-3 gap-2 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-700" aria-label="Post summary metrics">
-              <span class="truncate text-slate-600"><%= l(post.created_at.to_date) %></span>
-              <span class="inline-flex items-center justify-center gap-1 text-slate-600">
+            <div class="flex flex-wrap items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-xs" aria-label="Post summary metrics">
+              <% if post.category.present? %>
+                <span class="rounded-full bg-blue-100 px-2 py-1 font-semibold text-blue-700"><%= post.category %></span>
+              <% end %>
+              <span class="inline-flex items-center gap-1 font-medium text-slate-700">
                 <%= ui_icon(:heart, class_name: "h-3.5 w-3.5") %>
                 <span><%= localized_number(post.likes_count) %></span>
               </span>
-              <% if post.category.present? %>
-                <span class="truncate text-right font-medium text-slate-700"><%= post.category %></span>
-              <% else %>
-                <span aria-hidden="true"></span>
-              <% end %>
+              <span class="text-slate-600"><%= l(post.created_at.to_date) %></span>
             </div>
 
             <div class="mt-auto flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3 text-xs text-slate-500" aria-label="Post metadata">
@@ -103,13 +142,21 @@
       const form = toggle.closest("form");
       const panel = form ? form.querySelector("[data-details-panel]") : null;
       const icon = toggle.querySelector(".js-details-toggle-icon");
+      const stateLabel = toggle.querySelector("[data-details-state-label]");
       const stateInput = form ? form.querySelector("[data-details-state-input]") : null;
       if (!panel) return;
 
       const expanded = toggle.getAttribute("aria-expanded") == "true";
+      const nextExpanded = !expanded;
       toggle.setAttribute("aria-expanded", String(!expanded));
       panel.classList.toggle("hidden", expanded);
       if (icon) icon.classList.toggle("rotate-180", !expanded);
+      if (stateLabel) {
+        const baseLabel = stateLabel.dataset.baseLabel || "Details";
+        stateLabel.textContent = `${baseLabel}: ${nextExpanded ? "ON" : "OFF"}`;
+        stateLabel.classList.toggle("text-emerald-700", nextExpanded);
+        stateLabel.classList.toggle("text-slate-500", !nextExpanded);
+      }
       if (stateInput) stateInput.value = expanded ? "0" : "1";
     });
 
