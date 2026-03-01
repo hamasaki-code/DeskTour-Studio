@@ -38,9 +38,9 @@
               <td class="px-4 py-3"><%= l(report.created_at, format: :short) %></td>
               <td class="px-4 py-3">
                 <div class="flex flex-wrap gap-2">
-                  <%= button_to "Restore", restore_post_admin_report_path(report), method: :patch, class: "rounded border border-emerald-300 px-3 py-1 text-xs text-emerald-700 hover:bg-emerald-50" %>
-                  <%= button_to "Dismiss", dismiss_admin_report_path(report), method: :patch, class: "rounded border border-slate-300 px-3 py-1 text-xs hover:bg-slate-100" %>
-                  <%= button_to "Delete Post", delete_post_admin_report_path(report), method: :delete, data: { turbo_confirm: "Delete this post permanently?" }, class: "rounded border border-red-300 px-3 py-1 text-xs text-red-700 hover:bg-red-50" %>
+                  <%= button_to "Restore", restore_post_admin_report_path(report), method: :patch, class: "tap-target cta-secondary cta-compact" %>
+                  <%= button_to "Dismiss", dismiss_admin_report_path(report), method: :patch, class: "tap-target cta-tertiary cta-compact" %>
+                  <%= button_to "Delete Post", delete_post_admin_report_path(report), method: :delete, data: { turbo_confirm: "Delete this post permanently?" }, class: "tap-target cta-danger cta-compact" %>
                 </div>
               </td>
             </tr>

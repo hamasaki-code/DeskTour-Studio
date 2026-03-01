@@ -33,6 +33,59 @@ module ApplicationHelper
     }
   }.freeze
 
+  ITEM_BRAND_PATTERNS = {
+    "Apple" => [ /\bapple\b/i, /\bmacbook\b/i, /\bipad\b/i, /\biphone\b/i ],
+    "Logitech" => [ /\blogitech\b/i, /\blogi\b/i ],
+    "Razer" => [ /\brazer\b/i ],
+    "SteelSeries" => [ /\bsteelseries\b/i ],
+    "Dell" => [ /\bdell\b/i ],
+    "LG" => [ /\blg\b/i ],
+    "Samsung" => [ /\bsamsung\b/i ],
+    "BenQ" => [ /\bbenq\b/i ],
+    "Sony" => [ /\bsony\b/i ],
+    "Bose" => [ /\bbose\b/i ],
+    "Audio-Technica" => [ /\baudio[- ]?technica\b/i ],
+    "Sennheiser" => [ /\bsennheiser\b/i ],
+    "Anker" => [ /\banker\b/i, /\bpowerconf\b/i ],
+    "IKEA" => [ /\bikea\b/i ],
+    "Herman Miller" => [ /\bherman[\s\-]?miller\b/i ],
+    "NOBLECHAIRS" => [ /\bnoblechairs\b/i ],
+    "Keychron" => [ /\bkeychron\b/i ],
+    "HHKB" => [ /\bhhkb\b/i ]
+  }.freeze
+  ITEM_HOST_BRAND_HINTS = {
+    /apple\.com\z/i => "Apple",
+    /logitech\./i => "Logitech",
+    /razer\./i => "Razer",
+    /steelseries\./i => "SteelSeries",
+    /dell\.com\z/i => "Dell",
+    /lg\.com\z/i => "LG",
+    /samsung\.com\z/i => "Samsung",
+    /benq\./i => "BenQ",
+    /sony\./i => "Sony",
+    /bose\./i => "Bose",
+    /audio-technica\./i => "Audio-Technica",
+    /sennheiser\./i => "Sennheiser",
+    /anker\./i => "Anker",
+    /ikea\./i => "IKEA",
+    /hermanmiller\./i => "Herman Miller",
+    /keychron\./i => "Keychron"
+  }.freeze
+  ITEM_CATEGORY_KEYWORDS = {
+    keyboard: [ "keyboard", "keycap", "switch", "hhkb", "keychron" ],
+    monitor: [ "monitor", "display", "ultrawide", "screen", "4k" ],
+    laptop: [ "laptop", "macbook", "thinkpad", "notebook", "surface" ],
+    desk: [ "desk", "standing desk", "table", "workstation" ],
+    chair: [ "chair", "stool", "ergonomic chair" ],
+    audio: [ "headphone", "earphone", "speaker", "mic", "microphone", "dac" ],
+    lighting: [ "lamp", "light", "led", "light bar", "lighting" ],
+    pointer: [ "mouse", "trackpad", "trackball" ],
+    camera: [ "webcam", "camera", "cam" ],
+    dock: [ "dock", "hub", "kvm", "thunderbolt" ],
+    storage: [ "ssd", "hdd", "nas", "drive" ]
+  }.freeze
+  ITEM_GENERIC_BRAND_TOKENS = %w[desk setup monitor keyboard mouse chair table stand with for and the a an rgb].freeze
+
   def ga4_measurement_id
     ENV["GA4_MEASUREMENT_ID"].to_s.strip.presence
   end
@@ -122,7 +175,35 @@ module ApplicationHelper
   def flash_visual(type)
     FLASH_VISUALS.fetch(type.to_s, FLASH_VISUALS.fetch("notice"))
   end
+  def related_item_facts(item)
+    name = item.name.to_s.strip
+    url = item.affiliate_url.to_s.strip
+    downcased = name.downcase
+    host, url_text, query_params = extract_url_info(url)
 
+    facts = []
+    brand = extract_brand(name, host: host)
+    if brand.present?
+      facts << { key: :brand, label: t("posts.show.item_brand", default: "Brand"), value: brand }
+    end
+
+    category = guess_item_category("#{downcased} #{url_text}".strip)
+    if category.present?
+      category_label = t("posts.show.item_categories.#{category}", default: category.to_s.humanize)
+      facts << { key: :category, label: t("posts.show.item_category", default: "Category"), value: category_label }
+    end
+
+    price = extract_price(name: name, url_text: url_text, query_params: query_params)
+    if price.present?
+      facts << { key: :price, label: t("posts.show.item_price", default: "Price"), value: price }
+    end
+
+    if host.present?
+      facts << { key: :source, label: t("posts.show.item_source", default: "Source"), value: host }
+    end
+
+    facts.uniq { |fact| [ fact[:key], fact[:value] ] }.first(3)
+  end
   def status_badge(level:, label:, icon:)
     tones = {
       success: "border-emerald-300 bg-emerald-50 text-emerald-700",
@@ -253,7 +334,64 @@ module ApplicationHelper
   end
 
   private
+  def extract_url_info(url)
+    return [ "", "", {} ] if url.blank?
 
+    uri = URI.parse(url)
+    host = uri.host.to_s.sub(/\Awww\./, "")
+    text = URI.decode_www_form_component([ uri.path, uri.query ].compact.join(" "))
+    query_params = URI.decode_www_form(uri.query.to_s).to_h.transform_keys(&:downcase)
+    [ host, text, query_params ]
+  rescue URI::InvalidURIError, ArgumentError
+    [ "", "", {} ]
+  end
+
+  def extract_brand(name, host:)
+    ITEM_BRAND_PATTERNS.each do |label, patterns|
+      return label if patterns.any? { |pattern| name.match?(pattern) }
+    end
+
+    if host.present?
+      ITEM_HOST_BRAND_HINTS.each do |pattern, label|
+        return label if host.match?(pattern)
+      end
+    end
+
+    first_token = name.split(/\s+/).first.to_s.gsub(/[^0-9A-Za-z\-\+]/, "")
+    return if first_token.blank? || first_token.length < 3
+    return if ITEM_GENERIC_BRAND_TOKENS.include?(first_token.downcase)
+
+    first_token
+  end
+
+  def guess_item_category(name)
+    return if name.blank?
+
+    ITEM_CATEGORY_KEYWORDS.each do |category, keywords|
+      return category if keywords.any? { |word| name.include?(word) }
+    end
+
+    nil
+  end
+
+  def extract_price(name:, url_text:, query_params:)
+    text = [ name, url_text ].compact.join(" ")
+    return if text.blank?
+
+    currency_price_patterns = [
+      /(?:[$]|\u{00A5}|\u{20AC}|\u{00A3})\s?\d[\d,]*(?:\.\d{1,2})?(?:\s?-\s?(?:[$]|\u{00A5}|\u{20AC}|\u{00A3})?\s?\d[\d,]*(?:\.\d{1,2})?)?/,
+      /\b(?:USD|JPY|EUR|GBP)\s?\d[\d,]*(?:\.\d{1,2})?\b/i,
+      /\b\d[\d,]*(?:\.\d{1,2})?\s?(?:USD|JPY|EUR|GBP)\b/i
+    ]
+    detected = currency_price_patterns.lazy.map { |pattern| text[pattern] }.find(&:present?)
+    return detected.strip if detected.present?
+
+    price_value = query_params.values_at("price", "amount", "cost", "sale_price").find { |value| value.to_s.match?(/\A\d[\d,]*(?:\.\d{1,2})?\z/) }
+    return if price_value.blank?
+
+    currency = query_params["currency"].to_s.upcase
+    currency.present? ? "#{currency} #{price_value}" : price_value
+  end
   def variant_options(key)
     POST_IMAGE_VARIANTS.fetch(key)
   rescue KeyError

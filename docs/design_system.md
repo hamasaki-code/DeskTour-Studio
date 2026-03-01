@@ -81,6 +81,7 @@
 
 ## Design Audit Workflow
 - Pull requests that modify UI must complete a design-system checklist in the PR template.
+- PR body must include explicit results for: CTA hierarchy, empty/zero states, focus visibility, and mobile fixed-bar interference.
 - Reviewer must validate:
   - CTA count and hierarchy per screen
   - badge state semantics

@@ -25,6 +25,8 @@
 <% tag_list_error = field_error.call(:tag_list) %>
 <% image_error = field_error.call(:desk_image) %>
 <% profile_error = field_error.call(:user) %>
+<% optional_panel_open = [category_error, theme_error, tag_list_error, post.category, post.theme, post.tag_list].any?(&:present?) %>
+<% items_panel_open = post.items.any? { |item| item.name.present? || item.affiliate_url.present? || item.errors.any? } %>
 
 <%= form_with model: post, class: "space-y-form", data: { form_autofocus_errors: true } do |f| %>
   <% if post.errors.any? %>
@@ -85,13 +87,15 @@
     </div>
   </section>
 
-  <section class="space-y-4 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
-    <div>
-      <h2 class="ds-heading-md"><%= optional_section_label %></h2>
-      <p class="mt-1 ds-text-support"><%= optional_section_lead %></p>
-    </div>
+  <details class="rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-5" <%= "open" if optional_panel_open %>>
+    <summary class="cursor-pointer list-none">
+      <div>
+        <h2 class="ds-heading-md"><%= optional_section_label %></h2>
+        <p class="mt-1 ds-text-support"><%= optional_section_lead %></p>
+      </div>
+    </summary>
 
-    <div class="grid gap-4 sm:grid-cols-2">
+    <div class="mt-4 grid gap-4 sm:grid-cols-2">
       <div>
         <%= f.label :category, t("posts.form.category_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
         <%= f.text_field :category, class: input_class.call(category_error), placeholder: t("posts.form.category_placeholder"), list: "post-category-options", aria: { invalid: category_error.present? ? "true" : nil, describedby: "post_category_help post_category_error" } %>
@@ -119,26 +123,11 @@
         <% end %>
       </div>
     </div>
+  </details>
 
-    <% if category_suggestions.any? %>
-      <datalist id="post-category-options">
-        <% category_suggestions.each do |category| %>
-          <option value="<%= category %>"></option>
-        <% end %>
-      </datalist>
-    <% end %>
-    <% if tag_suggestions.any? %>
-      <datalist id="post-tag-options">
-        <% tag_suggestions.each do |tag| %>
-          <option value="<%= tag %>"></option>
-        <% end %>
-      </datalist>
-    <% end %>
-  </section>
-
-  <section class="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
-    <p class="text-sm font-semibold text-slate-700"><%= t("posts.form.related_items") %></p>
-    <div class="space-y-4">
+  <details class="rounded-xl border border-slate-200 bg-slate-50 p-4" <%= "open" if items_panel_open %>>
+    <summary class="cursor-pointer list-none text-sm font-semibold text-slate-700"><%= t("posts.form.related_items") %></summary>
+    <div class="mt-3 space-y-4">
       <%= f.fields_for :items do |item_fields| %>
         <div class="grid gap-3 rounded-lg border border-slate-200 bg-white p-3 sm:grid-cols-2">
           <div>
@@ -154,7 +143,22 @@
         </div>
       <% end %>
     </div>
-  </section>
+  </details>
+
+  <% if category_suggestions.any? %>
+    <datalist id="post-category-options">
+      <% category_suggestions.each do |category| %>
+        <option value="<%= category %>"></option>
+      <% end %>
+    </datalist>
+  <% end %>
+  <% if tag_suggestions.any? %>
+    <datalist id="post-tag-options">
+      <% tag_suggestions.each do |tag| %>
+        <option value="<%= tag %>"></option>
+      <% end %>
+    </datalist>
+  <% end %>
 
   <div class="flex flex-wrap gap-3">
     <%= f.submit t("posts.form.publish"), class: "tap-target cta-primary" %>
