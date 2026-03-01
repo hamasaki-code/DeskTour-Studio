@@ -1,40 +1,46 @@
-<% content_for :title, "コメント管琁E %>
+<% content_for :title, "Comment Management" %>
 
 <section class="space-y-4">
   <div class="flex flex-wrap items-center justify-between gap-3">
-    <h1 class="text-2xl font-bold text-slate-900">コメント管琁E/h1>
-    <%= link_to "通報キュー", admin_reports_path, class: "tap-target cta-tertiary cta-compact" %>
+    <h1 class="text-2xl font-bold text-slate-900">Comment Management</h1>
+    <%= link_to "Report Queue", admin_reports_path, class: "tap-target cta-tertiary cta-compact" %>
   </div>
   <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
     <table class="min-w-full text-left text-sm">
       <thead class="bg-slate-50 text-slate-600">
         <tr>
-          <th class="px-4 py-3">投稿</th>
-          <th class="px-4 py-3">投稿老E/th>
-          <th class="px-4 py-3">本斁E/th>
-          <th class="px-4 py-3">状慁E/th>
-          <th class="px-4 py-3">操佁E/th>
+          <th class="px-4 py-3">Post</th>
+          <th class="px-4 py-3">Author</th>
+          <th class="px-4 py-3">Body</th>
+          <th class="px-4 py-3">Status</th>
+          <th class="px-4 py-3">Actions</th>
         </tr>
       </thead>
       <tbody>
-        <% @comments.each do |comment| %>
-          <tr class="border-t border-slate-200 align-top">
-            <td class="px-4 py-3">
-              <% if comment.post.published? %>
-                <%= link_to comment.post.title, post_path(comment.post), class: "text-blue-600 hover:text-blue-700" %>
-              <% else %>
-                <span><%= comment.post.title %></span>
-              <% end %>
-            </td>
-            <td class="px-4 py-3"><%= comment.author_name %></td>
-            <td class="px-4 py-3"><%= truncate(comment.body, length: 80) %></td>
-            <td class="px-4 py-3"><%= comment.approved? ? "公閁E : "非�E閁E %></td>
-            <td class="px-4 py-3">
-              <div class="flex flex-wrap gap-2">
-                <%= button_to(comment.approved? ? "非�E開にする" : "公開すめE, admin_comment_path(comment, approved: !comment.approved?), method: :patch, class: "tap-target cta-tertiary cta-compact") %>
-                <%= button_to "削除", admin_comment_path(comment), method: :delete, data: { turbo_confirm: "コメントを削除しますか�E�E }, class: "tap-target cta-danger cta-compact" %>
-              </div>
-            </td>
+        <% if @comments.any? %>
+          <% @comments.each do |comment| %>
+            <tr class="border-t border-slate-200 align-top">
+              <td class="px-4 py-3">
+                <% if comment.post.published? %>
+                  <%= link_to comment.post.title, post_path(comment.post), class: "text-blue-600 hover:text-blue-700" %>
+                <% else %>
+                  <span><%= comment.post.title %></span>
+                <% end %>
+              </td>
+              <td class="px-4 py-3"><%= comment.author_name %></td>
+              <td class="px-4 py-3"><%= truncate(comment.body, length: 80) %></td>
+              <td class="px-4 py-3"><%= comment.approved? ? "Approved" : "Hidden" %></td>
+              <td class="px-4 py-3">
+                <div class="flex flex-wrap gap-2">
+                  <%= button_to(comment.approved? ? "Hide" : "Approve", admin_comment_path(comment, approved: !comment.approved?), method: :patch, class: "tap-target cta-tertiary cta-compact") %>
+                  <%= button_to "Delete", admin_comment_path(comment), method: :delete, data: { turbo_confirm: "Delete this comment?" }, class: "tap-target cta-danger cta-compact" %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr class="border-t border-slate-200">
+            <td colspan="5" class="px-4 py-6 text-center text-slate-500">No comments found.</td>
           </tr>
         <% end %>
       </tbody>
