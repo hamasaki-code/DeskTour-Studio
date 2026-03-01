@@ -90,6 +90,7 @@ module ApplicationHelper
     storage: [ "ssd", "hdd", "nas", "drive" ]
   }.freeze
   ITEM_GENERIC_BRAND_TOKENS = %w[desk setup monitor keyboard mouse chair table stand with for and the a an rgb].freeze
+  GENERIC_POST_TAGS = %w[desk setup workspace workstation minimal home office room pc].freeze
 
   def ga4_measurement_id
     ENV["GA4_MEASUREMENT_ID"].to_s.strip.presence
@@ -179,6 +180,25 @@ module ApplicationHelper
 
   def flash_visual(type)
     FLASH_VISUALS.fetch(type.to_s, FLASH_VISUALS.fetch("notice"))
+  end
+
+  def prioritized_post_tags(post, query:, category:, selected_tag:)
+    tags = post.tags.map(&:to_s).map(&:strip).reject(&:blank?)
+    return [] if tags.empty?
+
+    selected = selected_tag.to_s.downcase
+    category_down = category.to_s.downcase
+    query_tokens = query.to_s.downcase.split(/[\s,\/_-]+/).map(&:strip).reject(&:blank?).first(6)
+
+    tags.sort_by do |tag|
+      normalized = tag.downcase
+      score = 0
+      score += 8 if selected.present? && normalized == selected
+      score += 4 if category_down.present? && (normalized.include?(category_down) || category_down.include?(normalized))
+      score += 3 if query_tokens.any? { |token| normalized.include?(token) || token.include?(normalized) }
+      score -= 1 if GENERIC_POST_TAGS.include?(normalized)
+      [ -score, tag ]
+    end
   end
   def related_item_facts(item)
     name = item.name.to_s.strip
