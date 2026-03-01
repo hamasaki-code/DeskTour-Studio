@@ -13,6 +13,11 @@ module ApplicationHelper
       format: :jpg
     }
   }.freeze
+  POST_IMAGE_DIMENSIONS = {
+    thumbnail: [ 640, 360 ],
+    main: [ 1200, 750 ],
+    og: [ 1200, 630 ]
+  }.freeze
 
   FALLBACK_POST_IMAGE = "default-desk.svg"
   FLASH_VISUALS = {
@@ -399,15 +404,18 @@ module ApplicationHelper
   end
 
   def default_image_tag_options(post, variant)
+    width, height = POST_IMAGE_DIMENSIONS.fetch(variant, POST_IMAGE_DIMENSIONS[:main])
     base = {
       alt: post&.title.presence || t("images.desk_alt"),
-      decoding: "async"
+      decoding: "async",
+      width: width,
+      height: height
     }
 
     if variant == :thumbnail
-      base.merge(loading: "lazy")
+      base.merge(loading: "lazy", sizes: "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw")
     else
-      base.merge(loading: "eager", fetchpriority: "high")
+      base.merge(loading: "eager", fetchpriority: "high", sizes: "100vw")
     end
   end
 end

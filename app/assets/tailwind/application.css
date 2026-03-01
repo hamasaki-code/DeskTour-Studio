@@ -19,6 +19,12 @@
     --ds-text-support: rgb(51 65 85);
     --ds-text-meta: rgb(71 85 105);
     --ds-text-muted: rgb(71 85 105);
+    --ds-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --ds-safe-area-top: env(safe-area-inset-top, 0px);
+    --ds-motion-duration-fast: 160ms;
+    --ds-motion-duration-normal: 220ms;
+    --ds-skeleton-base: rgb(226 232 240);
+    --ds-skeleton-shimmer: rgb(241 245 249);
   }
 
   html[lang="ja"] {
@@ -56,12 +62,20 @@
     color: var(--ds-text-main);
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   a,
   button,
   input,
   select,
   textarea {
-    transition: box-shadow 0.16s ease, border-color 0.16s ease;
+    transition: box-shadow var(--ds-motion-duration-fast) ease,
+                border-color var(--ds-motion-duration-fast) ease,
+                background-color var(--ds-motion-duration-fast) ease,
+                color var(--ds-motion-duration-fast) ease,
+                transform var(--ds-motion-duration-fast) ease;
   }
 
   a:focus-visible,
@@ -85,6 +99,20 @@
   h3 {
     letter-spacing: var(--ds-letter-spacing-heading);
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 1ms !important;
+    }
+  }
 }
 
 @layer utilities {
@@ -98,6 +126,10 @@
 
   .ds-heading-md {
     @apply text-lg font-semibold;
+  }
+
+  .ds-heading-sm {
+    @apply text-base font-semibold;
   }
 
   .ds-text-body {
@@ -160,6 +192,19 @@
     line-clamp: 2;
   }
 
+  .ds-line-clamp-3 {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
+
+  .ds-break-words {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
   .tap-target {
     min-height: 44px;
     min-width: 44px;
@@ -187,6 +232,54 @@
 
   .ds-shadow-soft {
     box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
+  }
+
+  .ds-icon-button {
+    @apply inline-flex items-center justify-center rounded-lg;
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .ds-anchor-offset {
+    scroll-margin-top: 6rem;
+  }
+
+  .ds-media-frame {
+    @apply relative overflow-hidden rounded-xl border border-slate-200 bg-slate-100;
+  }
+
+  .ds-media-frame img {
+    @apply h-full w-full object-cover;
+  }
+
+  .ds-media-frame-card {
+    aspect-ratio: 16 / 9;
+  }
+
+  .ds-media-frame-main {
+    aspect-ratio: 16 / 10;
+  }
+
+  .ds-media-skeleton {
+    position: relative;
+    background: var(--ds-skeleton-base);
+  }
+
+  .ds-media-skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 20%, var(--ds-skeleton-shimmer) 45%, transparent 70%);
+    transform: translateX(-100%);
+    animation: ds-skeleton-shimmer 1.4s infinite linear;
+  }
+
+  .ds-media-loaded::after {
+    display: none;
+  }
+
+  .ds-section-card {
+    @apply rounded-xl border border-slate-200 bg-white p-5 sm:p-6;
   }
 
   .cta-primary {
@@ -226,6 +319,7 @@
   .mobile-sticky-bar {
     @apply fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 backdrop-blur;
     box-shadow: 0 -10px 24px rgba(15, 23, 42, 0.08);
+    padding-bottom: max(var(--ds-safe-area-bottom), 0px);
   }
 
   .ad-slot-surface {
@@ -234,6 +328,10 @@
 
   .ad-slot-label {
     @apply mb-2 text-center text-[11px] font-semibold uppercase tracking-wide text-slate-500;
+  }
+
+  .ad-slot-divider {
+    @apply mb-2 text-center text-xs font-medium text-slate-500;
   }
 
   .lang-ja .ds-reading-column {
@@ -253,6 +351,7 @@
     @apply inline-flex items-center justify-center whitespace-nowrap px-2.5 py-1;
     min-width: 5.25rem;
     max-width: 7.5rem;
+    min-height: 44px;
   }
 
   .ds-toast-region {
@@ -289,6 +388,12 @@
     }
   }
 
+  @keyframes ds-skeleton-shimmer {
+    to {
+      transform: translateX(100%);
+    }
+  }
+
   @media (max-width: 640px) {
     .tap-target {
       padding-top: 0.625rem;
@@ -302,6 +407,13 @@
 
     .ad-slot-surface {
       @apply py-5;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ds-toast,
+    .ds-media-skeleton::after {
+      animation: none !important;
     }
   }
 }
