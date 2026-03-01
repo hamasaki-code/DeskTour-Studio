@@ -51,12 +51,14 @@
 
   <body class="lang-<%= I18n.locale %> min-h-screen bg-slate-50 text-slate-800">
     <% tracked_events = analytics_events %>
+    <% mobile_sticky_active = controller_name == "posts" && action_name.in?(%w[index show]) %>
+    <% main_padding_class = mobile_sticky_active ? "pb-40 sm:pb-8" : "pb-10 sm:pb-8" %>
 
     <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur" data-mobile-header-root>
       <div class="mx-auto flex w-full max-w-6xl items-center gap-2 px-4 py-2 sm:px-6 sm:py-3">
         <%= link_to "DeskTour Studio", root_path, class: "min-w-0 flex-1 truncate text-base font-bold text-slate-900 sm:text-lg", data: { ga_event: "navigation_home_click", ga_category: "navigation", ga_label: "header_logo" } %>
 
-        <%= link_to new_post_path, class: "tap-target cta-primary px-3 sm:hidden", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "mobile_header_create_post_icon" } do %>
+        <%= link_to new_post_path, class: "tap-target cta-tertiary px-3 sm:hidden", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "mobile_header_create_post_icon" } do %>
           <%= ui_icon(:pencil_square, class_name: "h-4 w-4") %>
           <span class="sr-only"><%= t("navigation.create_post") %></span>
         <% end %>
@@ -76,7 +78,7 @@
           <% else %>
             <%= link_to t("navigation.create_profile"), new_user_path, class: "tap-target inline-flex items-center rounded-lg border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-100", data: { ga_event: "navigation_profile_create_click", ga_category: "navigation", ga_label: "desktop_header_create_profile" } %>
           <% end %>
-          <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target cta-primary", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "desktop_header_create_post" } %>
+          <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target cta-secondary", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "desktop_header_create_post" } %>
         </div>
       </div>
 
@@ -96,7 +98,7 @@
       </div>
     </header>
 
-    <main class="mx-auto w-full max-w-6xl px-4 pb-28 pt-8 sm:px-6 sm:pb-8">
+    <main class="mx-auto w-full max-w-6xl px-4 pt-8 <%= main_padding_class %> sm:px-6">
       <% flash.each do |type, message| %>
         <% next if type.to_s == "analytics_events" %>
         <% visual = flash_visual(type) %>
@@ -121,9 +123,9 @@
     </main>
 
     <% if controller_name == "posts" && action_name == "index" %>
-      <div class="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur sm:hidden">
+      <div class="mobile-sticky-bar sm:hidden">
         <div class="mx-auto w-full max-w-6xl px-4 pt-3" style="padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);">
-          <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target cta-primary flex w-full justify-center rounded-xl px-4", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "mobile_create_post_bottom_bar" } %>
+          <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target cta-secondary flex w-full justify-center rounded-xl px-4", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "mobile_create_post_bottom_bar" } %>
         </div>
       </div>
     <% end %>
@@ -138,10 +140,22 @@
         </div>
       </div>
     </footer>
+    <p id="ui-live-region" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
 
     <script>
       if (!window.__mobileHeaderBindingInstalled) {
         window.__mobileHeaderBindingInstalled = true;
+        const menuOpenedMessage = "<%= j(I18n.locale.to_s == 'ja' ? 'メニューを開きました' : 'Menu opened') %>";
+        const menuClosedMessage = "<%= j(I18n.locale.to_s == 'ja' ? 'メニューを閉じました' : 'Menu closed') %>";
+        window.dsAnnounce = (message) => {
+          if (!message) return;
+          const region = document.getElementById("ui-live-region");
+          if (!region) return;
+          region.textContent = "";
+          requestAnimationFrame(() => {
+            region.textContent = message;
+          });
+        };
 
         const closeMobileHeaderMenu = (reason = "dismissed") => {
           const menu = document.querySelector("[data-mobile-header-menu]");
@@ -150,6 +164,7 @@
 
           menu.classList.add("hidden");
           if (toggle) toggle.setAttribute("aria-expanded", "false");
+          window.dsAnnounce(menuClosedMessage);
           if (typeof window.gtag === "function") {
             window.gtag("event", "navigation_mobile_menu_close", {
               event_category: "navigation",
@@ -170,6 +185,7 @@
             } else {
               toggle.setAttribute("aria-expanded", "true");
               menu.classList.remove("hidden");
+              window.dsAnnounce(menuOpenedMessage);
             }
             return;
           }
@@ -198,11 +214,22 @@
         const button = event.target.closest("[data-copy-url]");
         if (!button) return;
         const target = button.getAttribute("data-copy-url");
+        const labelNode = button.querySelector("[data-copy-label]") || button.querySelector("span:last-child");
+        const defaultLabel = button.dataset.defaultLabel || (labelNode ? labelNode.textContent.trim() : "");
         try {
           await navigator.clipboard.writeText(target);
-          button.textContent = "<%= j(t('clipboard.copy_success')) %>";
+          if (labelNode) labelNode.textContent = "<%= j(t('clipboard.copy_success')) %>";
+          button.dataset.defaultLabel = defaultLabel;
+          if (typeof window.dsAnnounce === "function") window.dsAnnounce("<%= j(t('clipboard.copy_success')) %>");
         } catch (_) {
-          button.textContent = "<%= j(t('clipboard.copy_failed')) %>";
+          if (labelNode) labelNode.textContent = "<%= j(t('clipboard.copy_failed')) %>";
+          button.dataset.defaultLabel = defaultLabel;
+          if (typeof window.dsAnnounce === "function") window.dsAnnounce("<%= j(t('clipboard.copy_failed')) %>");
+        }
+        if (labelNode && defaultLabel.length > 0) {
+          window.setTimeout(() => {
+            labelNode.textContent = defaultLabel;
+          }, 1800);
         }
       });
     </script>
