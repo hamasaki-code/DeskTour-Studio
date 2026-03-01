@@ -6,6 +6,11 @@
 <% comment_empty_cta = I18n.locale.to_s == "ja" ? "最初のコメントを書く" : "Write the first comment" %>
 <% mobile_menu_open_label = I18n.locale.to_s == "ja" ? "操作メニューを開きました" : "Action menu opened" %>
 <% mobile_menu_close_label = I18n.locale.to_s == "ja" ? "操作メニューを閉じました" : "Action menu closed" %>
+<% item_preview_label = I18n.locale.to_s == "ja" ? "商品プレビュー" : "Item preview" %>
+<% item_price_unknown_label = I18n.locale.to_s == "ja" ? "価格: 情報なし" : "Price: unavailable" %>
+<% item_link_missing_label = I18n.locale.to_s == "ja" ? "リンク未設定" : "Link not available" %>
+<% related_items_owner_hint = I18n.locale.to_s == "ja" ? "関連アイテムを追加すると、読者が構成を比較しやすくなります。" : "Add related items to help readers compare your setup." %>
+<% mobile_more_label = I18n.locale.to_s == "ja" ? "その他の操作" : "More actions" %>
 
 <article class="space-y-content">
   <header class="space-y-3">
@@ -55,16 +60,40 @@
     <% if @post.items.any? %>
       <div class="mt-4 space-y-3">
         <% @post.items.each do |item| %>
-          <div class="rounded-lg border border-slate-200 p-3">
-            <p class="text-sm font-medium text-slate-900"><%= item.name %></p>
-            <% if item.affiliate_url.present? %>
-              <%= link_to t("posts.show.open_product_page"), item.affiliate_url, class: "mt-2 inline-block text-sm text-blue-600 hover:text-blue-700", target: "_blank", rel: "nofollow sponsored noopener" %>
-            <% end %>
-          </div>
+          <article class="rounded-lg border border-slate-200 bg-slate-50 p-3 sm:p-4">
+            <div class="grid gap-3 sm:grid-cols-[88px_minmax(0,1fr)] sm:items-center">
+              <div class="aspect-square rounded-md border border-slate-200 bg-white text-slate-400">
+                <div class="flex h-full items-center justify-center">
+                  <div class="text-center">
+                    <%= ui_icon(:information_circle, class_name: "mx-auto h-5 w-5") %>
+                    <p class="mt-1 text-[10px] font-medium"><%= item_preview_label %></p>
+                  </div>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <p class="text-sm font-semibold text-slate-900"><%= item.name %></p>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="ds-text-meta"><%= item_price_unknown_label %></span>
+                  <% if item.affiliate_url.present? %>
+                    <%= link_to t("posts.show.open_product_page"), item.affiliate_url, class: "tap-target cta-secondary cta-compact", target: "_blank", rel: "nofollow sponsored noopener" %>
+                  <% else %>
+                    <span class="ds-text-muted"><%= item_link_missing_label %></span>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </article>
         <% end %>
       </div>
     <% else %>
       <p class="mt-3 text-sm text-slate-600"><%= t("posts.show.no_related_items") %></p>
+      <% if post_owner?(@post) %>
+        <p class="mt-2 ds-text-support"><%= related_items_owner_hint %></p>
+        <%= link_to edit_post_path(@post), class: "mt-3 inline-flex tap-target cta-secondary cta-compact" do %>
+          <%= ui_icon(:pencil_square, class_name: "h-4 w-4") %>
+          <span><%= t("posts.show.actions.edit") %></span>
+        <% end %>
+      <% end %>
     <% end %>
   </section>
 
@@ -83,18 +112,14 @@
           <article id="comment-<%= comment.id %>" class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
             <div class="flex items-center justify-between gap-3">
               <p class="text-sm font-medium text-slate-800"><%= comment.author_name %></p>
-              <%= link_to post_path(@post, anchor: "comments", reply_to: comment.id), class: "tap-target inline-flex items-center gap-1 rounded-md px-2 text-xs text-blue-600 hover:bg-blue-50 hover:text-blue-700", data: { ga_event: "comment_reply_click", ga_category: "comments", ga_label: "reply_to_parent" } do %>
-                <%= ui_icon(:arrow_uturn_left, class_name: "h-3.5 w-3.5") %>
-                <span><%= t("posts.show.comments.reply") %></span>
-              <% end %>
             </div>
             <p class="mt-0.5 text-xs text-slate-600"><%= l(comment.created_at, format: :short) %></p>
             <p class="mt-2 whitespace-pre-wrap text-sm leading-reading text-slate-700"><%= comment.body %></p>
 
             <% if comment.replies.any? %>
-              <div class="mt-4 space-y-3 rounded-r-lg border-l-4 border-blue-200 bg-slate-50 px-3 py-3 sm:pl-4 sm:pr-3">
+              <div class="mt-4 space-y-2 rounded-lg bg-slate-50 px-3 py-3 sm:pl-4 sm:pr-3">
                 <% comment.replies.each do |reply| %>
-                  <div id="comment-<%= reply.id %>" class="rounded-lg border border-slate-300 bg-white p-3">
+                  <div id="comment-<%= reply.id %>" class="rounded-md bg-white/85 px-3 py-2">
                     <p class="text-xs font-medium text-slate-700"><%= t("posts.show.comments.replied_by", name: reply.author_name) %></p>
                     <p class="mt-0.5 text-xs text-slate-600"><%= l(reply.created_at, format: :short) %></p>
                     <p class="mt-1 whitespace-pre-wrap text-sm leading-reading text-slate-700"><%= reply.body %></p>
@@ -102,6 +127,13 @@
                 <% end %>
               </div>
             <% end %>
+
+            <div class="mt-3 border-t border-slate-100 pt-3">
+              <%= link_to post_path(@post, anchor: "comments", reply_to: comment.id), class: "tap-target inline-flex items-center gap-1 rounded-md px-2 text-xs text-blue-600 hover:bg-blue-50 hover:text-blue-700", data: { ga_event: "comment_reply_click", ga_category: "comments", ga_label: "reply_to_parent" } do %>
+                <%= ui_icon(:arrow_uturn_left, class_name: "h-3.5 w-3.5") %>
+                <span><%= t("posts.show.comments.reply") %></span>
+              <% end %>
+            </div>
           </article>
         <% end %>
       </div>
@@ -191,27 +223,25 @@
   <div class="mobile-sticky-bar transition-all duration-200 sm:hidden" data-mobile-actions-root>
     <div class="mx-auto w-full max-w-6xl px-4 pt-3" style="padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);">
       <div class="relative pb-1">
-        <div class="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-1.5">
+        <div class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-1.5">
           <%= button_to like_post_path(@post), method: :post, form: { class: "w-full" }, class: "tap-target cta-primary w-full justify-center", data: { ga_event: "post_action_like_click", ga_category: "post_actions", ga_label: "mobile_like_primary" } do %>
             <span class="inline-flex items-center justify-center gap-1.5">
               <%= ui_icon(:heart, class_name: "h-4 w-4") %>
               <span><%= t("posts.show.actions.like") %></span>
             </span>
           <% end %>
-          <button type="button" data-native-share-url="<%= post_share_url(@post) %>" data-native-share-text="<%= post_share_text(@post) %>" data-ga-event="post_action_share_primary_click" data-ga-category="post_actions" data-ga-label="mobile_share_primary" class="tap-target inline-flex items-center justify-center gap-1 rounded-lg px-2.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900">
-            <span class="inline-flex items-center gap-1.5">
-              <%= ui_icon(:share, class_name: "h-4 w-4") %>
-              <span><%= t("posts.show.actions.share") %></span>
-            </span>
-          </button>
           <button type="button" data-mobile-actions-toggle aria-expanded="false" aria-controls="mobile-post-actions-menu" data-ga-event="post_action_more_menu_toggle" data-ga-category="post_actions" data-ga-label="mobile_more_toggle" class="tap-target inline-flex items-center justify-center rounded-lg px-2.5 py-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900">
             <%= ui_icon(:ellipsis_horizontal, class_name: "h-5 w-5") %>
-            <span class="sr-only">More</span>
+            <span class="sr-only"><%= mobile_more_label %></span>
           </button>
         </div>
 
         <div id="mobile-post-actions-menu" data-mobile-actions-menu class="absolute inset-x-0 bottom-full z-20 mb-2 hidden rounded-xl border border-slate-300 bg-white/98 p-2 shadow-2xl ring-1 ring-slate-900/5">
           <div class="grid gap-1">
+            <button type="button" data-mobile-menu-action data-native-share-url="<%= post_share_url(@post) %>" data-native-share-text="<%= post_share_text(@post) %>" data-ga-event="post_action_share_primary_click" data-ga-category="post_actions" data-ga-label="mobile_share_primary_menu" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100">
+              <%= ui_icon(:share, class_name: "h-4 w-4") %>
+              <span><%= t("posts.show.actions.share") %></span>
+            </button>
             <%= link_to x_share_url(@post), target: "_blank", rel: "noopener", data: { mobile_menu_action: true, ga_event: "post_action_share_x_click", ga_category: "post_actions", ga_label: "mobile_share_x_menu" }, class: "tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100" do %>
               <%= ui_icon(:share, class_name: "h-4 w-4") %>
               <span><%= t("posts.show.actions.share_x") %></span>
@@ -341,17 +371,32 @@
       }
 
       const mobileActionsMenu = document.querySelector("[data-mobile-actions-menu]");
+      const shareButton = event.target.closest("[data-native-share-url]");
       if (mobileActionsMenu && !mobileActionsMenu.classList.contains("hidden")) {
         const isMenuAction = event.target.closest("[data-mobile-menu-action]");
         const isInsideMenu = event.target.closest("[data-mobile-actions-menu]");
         if (isMenuAction) {
+          if (shareButton) {
+            const url = shareButton.getAttribute("data-native-share-url");
+            const text = shareButton.getAttribute("data-native-share-text");
+
+            if (navigator.share) {
+              navigator.share({ text, url }).catch(async (error) => {
+                if (error && error.name === "AbortError") return;
+                try {
+                  await navigator.clipboard.writeText(url);
+                } catch (_) {}
+              });
+            } else {
+              navigator.clipboard.writeText(url).catch(() => {});
+            }
+          }
           closeMobileActionsMenu("action_selected");
           return;
         }
         if (!isInsideMenu) closeMobileActionsMenu("outside_tap");
       }
 
-      const shareButton = event.target.closest("[data-native-share-url]");
       if (shareButton) {
         const url = shareButton.getAttribute("data-native-share-url");
         const text = shareButton.getAttribute("data-native-share-text");
@@ -377,12 +422,19 @@
     const mobileActionsRoot = document.querySelector("[data-mobile-actions-root]");
     const commentForm = document.querySelector("#comment-form form");
     if (mobileActionsRoot && commentForm) {
-      commentForm.addEventListener("focusin", () => {
-        mobileActionsRoot.classList.add("translate-y-full", "opacity-0", "pointer-events-none");
-      });
-      commentForm.addEventListener("focusout", (event) => {
-        const next = event.relatedTarget;
-        if (next && commentForm.contains(next)) return;
+      const setMobileBarVisibility = () => {
+        const activeElement = document.activeElement;
+        const shouldHide = activeElement && commentForm.contains(activeElement);
+        mobileActionsRoot.classList.toggle("translate-y-full", shouldHide);
+        mobileActionsRoot.classList.toggle("opacity-0", shouldHide);
+        mobileActionsRoot.classList.toggle("pointer-events-none", shouldHide);
+      };
+
+      document.addEventListener("focusin", setMobileBarVisibility, true);
+      document.addEventListener("focusout", () => {
+        window.setTimeout(setMobileBarVisibility, 0);
+      }, true);
+      commentForm.addEventListener("submit", () => {
         mobileActionsRoot.classList.remove("translate-y-full", "opacity-0", "pointer-events-none");
       });
     }
