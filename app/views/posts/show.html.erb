@@ -12,11 +12,14 @@
 <% related_items_owner_hint = t("posts.show.related_items_owner_hint", default: "Add related items to help readers compare your setup.") %>
 <% mobile_more_label = t("posts.show.mobile_more_label", default: "More actions") %>
 <% comments_count = @root_comments.sum { |comment| 1 + comment.replies.size } %>
-<% comments_count_label = I18n.locale.to_s == "ja" ? "コメント #{localized_number(comments_count)}件" : "#{localized_number(comments_count)} comments" %>
-<% more_actions_label = I18n.locale.to_s == "ja" ? "その他の操作" : "More actions" %>
-<% owner_action_heading = I18n.locale.to_s == "ja" ? "オーナー操作" : "Owner actions" %>
-<% danger_zone_label = I18n.locale.to_s == "ja" ? "削除操作" : "Danger zone" %>
-<% danger_zone_lead = I18n.locale.to_s == "ja" ? "投稿の削除は取り消せません。" : "Post deletion cannot be undone." %>
+<% comments_count_label = t("posts.show.comments_count_label", count: comments_count, localized_count: localized_number(comments_count), default: "#{localized_number(comments_count)} comments") %>
+<% more_actions_label = t("posts.show.more_actions", default: "More actions") %>
+<% owner_action_heading = t("posts.show.owner_actions", default: "Owner actions") %>
+<% danger_zone_label = t("posts.show.danger_zone", default: "Danger zone") %>
+<% danger_zone_lead = t("posts.show.danger_zone_lead", default: "Post deletion cannot be undone.") %>
+<% value_summary = truncate(@post.description.to_s.squish, length: 170) %>
+<% comment_required_label = t("posts.show.comments.required", default: "Required") %>
+<% comment_optional_label = t("posts.show.comments.optional", default: "Optional") %>
 
 <article class="space-y-content">
   <header class="space-y-4">
@@ -40,51 +43,8 @@
       <%= t("posts.show.posted_by") %>
       <%= link_to @post.user.name, user_path(@post.user), class: "font-medium text-blue-600 hover:text-blue-700" %>
     </p>
-
-    <div class="hidden sm:block">
-      <div class="relative flex flex-wrap items-center gap-2" data-desktop-post-actions-root>
-        <%= button_to like_post_path(@post), method: :post, class: "tap-target cta-primary", data: { ga_event: "post_action_like_click", ga_category: "post_actions", ga_label: "desktop_like_primary" } do %>
-          <span class="inline-flex items-center gap-1.5">
-            <%= ui_icon(:heart, class_name: "h-4 w-4") %>
-            <span><%= t("posts.show.actions.like") %></span>
-          </span>
-        <% end %>
-
-        <button type="button" data-desktop-post-actions-toggle aria-expanded="false" aria-controls="desktop-post-actions-menu" class="tap-target cta-secondary">
-          <span class="inline-flex items-center gap-1.5">
-            <%= ui_icon(:ellipsis_horizontal, class_name: "h-4 w-4") %>
-            <span><%= more_actions_label %></span>
-          </span>
-        </button>
-
-        <div id="desktop-post-actions-menu" data-desktop-post-actions-menu class="absolute left-0 top-full z-20 mt-2 hidden min-w-64 rounded-xl border border-slate-300 bg-white p-2 shadow-2xl ring-1 ring-slate-900/5">
-          <div class="grid gap-1">
-            <button type="button" data-desktop-actions-menu-item data-native-share-url="<%= post_share_url(@post) %>" data-native-share-text="<%= post_share_text(@post) %>" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100">
-              <%= ui_icon(:share, class_name: "h-4 w-4") %>
-              <span><%= t("posts.show.actions.share") %></span>
-            </button>
-            <%= link_to x_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100", data: { desktop_actions_menu_item: true, ga_event: "post_action_share_x_click", ga_category: "post_actions", ga_label: "desktop_share_x_menu" } do %>
-              <%= ui_icon(:share, class_name: "h-4 w-4") %>
-              <span><%= t("posts.show.actions.share_x") %></span>
-            <% end %>
-            <%= link_to threads_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100", data: { desktop_actions_menu_item: true, ga_event: "post_action_share_threads_click", ga_category: "post_actions", ga_label: "desktop_share_threads_menu" } do %>
-              <%= ui_icon(:share, class_name: "h-4 w-4") %>
-              <span><%= t("posts.show.actions.share_threads") %></span>
-            <% end %>
-            <button type="button" data-desktop-actions-menu-item data-copy-url="<%= post_share_url(@post) %>" data-ga-event="post_action_copy_url_click" data-ga-category="post_actions" data-ga-label="desktop_copy_url_menu" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100">
-              <%= ui_icon(:share, class_name: "h-4 w-4") %>
-              <span data-copy-label><%= t("posts.show.actions.copy_url") %></span>
-            </button>
-            <% unless post_owner?(@post) %>
-              <button type="button" data-desktop-actions-menu-item data-open-report-modal="report-modal-<%= @post.id %>" data-ga-event="post_action_report_click" data-ga-category="post_actions" data-ga-label="desktop_report_menu" class="tap-target cta-warning cta-compact justify-start">
-                <%= ui_icon(:flag, class_name: "h-4 w-4") %>
-                <span><%= t("posts.show.actions.report") %></span>
-              </button>
-            <% end %>
-          </div>
-        </div>
-      </div>
-    </div>
+    <p class="ds-text-body ds-break-words max-w-3xl"><%= value_summary %></p>
+    <a href="#comments" class="tap-target cta-tertiary cta-compact"><%= t("posts.show.comments.title") %></a>
   </header>
 
   <div class="ds-media-frame ds-media-frame-main ds-media-skeleton" data-media-skeleton>
@@ -104,6 +64,56 @@
         <% end %>
       </div>
     <% end %>
+  </section>
+
+  <section class="ds-section-card hidden space-y-3 sm:block">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <h2 class="ds-heading-sm text-slate-900"><%= t("posts.show.actions.title", default: "Actions") %></h2>
+      <p class="ds-text-meta"><%= t("posts.show.actions.lead", default: "Like is primary. Share, copy, and report are in More actions.") %></p>
+    </div>
+
+    <div class="relative flex flex-wrap items-center gap-2" data-desktop-post-actions-root>
+      <%= button_to like_post_path(@post), method: :post, class: "tap-target cta-primary", data: { ga_event: "post_action_like_click", ga_category: "post_actions", ga_label: "desktop_like_primary" } do %>
+        <span class="inline-flex items-center gap-1.5">
+          <%= ui_icon(:heart, class_name: "h-4 w-4") %>
+          <span><%= t("posts.show.actions.like") %></span>
+        </span>
+      <% end %>
+
+      <button type="button" data-desktop-post-actions-toggle aria-expanded="false" aria-controls="desktop-post-actions-menu" class="tap-target cta-secondary">
+        <span class="inline-flex items-center gap-1.5">
+          <%= ui_icon(:ellipsis_horizontal, class_name: "h-4 w-4") %>
+          <span><%= more_actions_label %></span>
+        </span>
+      </button>
+
+      <div id="desktop-post-actions-menu" data-desktop-post-actions-menu class="absolute left-0 top-full z-20 mt-2 hidden min-w-64 rounded-xl border border-slate-300 bg-white p-2 shadow-2xl ring-1 ring-slate-900/5">
+        <div class="grid gap-1">
+          <button type="button" data-desktop-actions-menu-item data-native-share-url="<%= post_share_url(@post) %>" data-native-share-text="<%= post_share_text(@post) %>" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100">
+            <%= ui_icon(:share, class_name: "h-4 w-4") %>
+            <span><%= t("posts.show.actions.share") %></span>
+          </button>
+          <%= link_to x_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100", data: { desktop_actions_menu_item: true, ga_event: "post_action_share_x_click", ga_category: "post_actions", ga_label: "desktop_share_x_menu" } do %>
+            <%= ui_icon(:share, class_name: "h-4 w-4") %>
+            <span><%= t("posts.show.actions.share_x") %></span>
+          <% end %>
+          <%= link_to threads_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100", data: { desktop_actions_menu_item: true, ga_event: "post_action_share_threads_click", ga_category: "post_actions", ga_label: "desktop_share_threads_menu" } do %>
+            <%= ui_icon(:share, class_name: "h-4 w-4") %>
+            <span><%= t("posts.show.actions.share_threads") %></span>
+          <% end %>
+          <button type="button" data-desktop-actions-menu-item data-copy-url="<%= post_share_url(@post) %>" data-ga-event="post_action_copy_url_click" data-ga-category="post_actions" data-ga-label="desktop_copy_url_menu" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100">
+            <%= ui_icon(:share, class_name: "h-4 w-4") %>
+            <span data-copy-label><%= t("posts.show.actions.copy_url") %></span>
+          </button>
+          <% unless post_owner?(@post) %>
+            <button type="button" data-desktop-actions-menu-item data-open-report-modal="report-modal-<%= @post.id %>" data-ga-event="post_action_report_click" data-ga-category="post_actions" data-ga-label="desktop_report_menu" class="tap-target cta-warning cta-compact justify-start">
+              <%= ui_icon(:flag, class_name: "h-4 w-4") %>
+              <span><%= t("posts.show.actions.report") %></span>
+            </button>
+          <% end %>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section class="ds-section-card space-y-4">
@@ -227,17 +237,20 @@
       </div>
     <% end %>
 
-    <div class="ds-anchor-offset border-t border-slate-200 pt-4" id="comment-form">
+    <div class="ds-anchor-offset border-t border-slate-200 pt-4" id="comment-form" data-comment-form-root>
       <% if @reply_to_comment.present? %>
-        <div class="mb-3 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">
-          <%= t("posts.show.comments.replying_to", name: @reply_to_comment.author_name) %>
-          <%= link_to t("posts.show.comments.cancel"), post_path(@post, anchor: "comments"), class: "ml-2 text-blue-600 underline" %>
+        <div class="mb-3 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800" data-reply-context>
+          <p>
+            <%= t("posts.show.comments.replying_to", name: @reply_to_comment.author_name) %>
+            <%= link_to t("posts.show.comments.cancel"), post_path(@post, anchor: "comments"), class: "ml-2 text-blue-600 underline" %>
+          </p>
+          <p class="mt-1 text-xs text-blue-700 ds-break-words"><%= truncate(@reply_to_comment.body.to_s.squish, length: 100) %></p>
         </div>
       <% end %>
 
       <%= form_with model: [@post, @comment], class: "space-y-form", data: { form_autofocus_errors: true } do |f| %>
         <% if @comment.errors.any? %>
-          <div class="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700" role="alert">
+          <div id="comment-error-summary" class="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700" role="alert" tabindex="-1">
             <p class="mb-2 font-semibold"><%= t("posts.form.error_summary", default: "Please fix the following errors.") %></p>
             <ul class="list-disc pl-5">
               <% @comment.errors.full_messages.each do |message| %>
@@ -249,28 +262,39 @@
 
         <% if owned_users.any? %>
           <div>
-            <%= f.label :user_id, t("posts.show.comments.comment_as_profile"), class: "mb-1 block text-sm font-medium" %>
-            <%= f.collection_select :user_id, owned_users, :id, :name, { include_blank: t("posts.show.comments.post_as_guest") }, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" %>
+            <%= f.label :user_id, class: "mb-1 inline-flex items-center gap-1.5 text-sm font-medium" do %>
+              <span><%= t("posts.show.comments.comment_as_profile") %></span>
+              <span class="ds-badge-info"><%= comment_optional_label %></span>
+            <% end %>
+            <%= f.collection_select :user_id, owned_users, :id, :name, { include_blank: t("posts.show.comments.post_as_guest") }, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", data: { comment_input: "user_id" } %>
+            <p class="mt-1 ds-text-muted"><%= t("posts.show.comments.profile_help", default: "Optional: choose a profile, or post as guest.") %></p>
           </div>
         <% end %>
 
         <%= f.hidden_field :parent_comment_id, value: @reply_to_comment&.id %>
 
         <div>
-          <%= f.label :author_name, t("posts.show.comments.name"), class: "mb-1 block text-sm font-medium" %>
-          <%= f.text_field :author_name, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" %>
+          <%= f.label :author_name, class: "mb-1 inline-flex items-center gap-1.5 text-sm font-medium" do %>
+            <span><%= t("posts.show.comments.name") %></span>
+            <span class="ds-badge-active"><%= comment_required_label %></span>
+          <% end %>
+          <%= f.text_field :author_name, required: true, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.show.comments.name_example", default: "Example: Alex"), data: { comment_input: "author_name" } %>
         </div>
 
         <div>
-          <%= f.label :body, t("posts.show.comments.comment"), class: "mb-1 block text-sm font-medium" %>
-          <%= f.text_area :body, rows: 4, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" %>
+          <%= f.label :body, class: "mb-1 inline-flex items-center gap-1.5 text-sm font-medium" do %>
+            <span><%= t("posts.show.comments.comment") %></span>
+            <span class="ds-badge-active"><%= comment_required_label %></span>
+          <% end %>
+          <%= f.text_area :body, rows: 4, required: true, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm ds-break-words", placeholder: t("posts.show.comments.body_example", default: "What part of this setup stood out to you?"), data: { comment_input: "body" } %>
+          <p class="mt-1 ds-text-muted"><%= t("posts.show.comments.body_help", default: "Tip: include one concrete point to get a better reply.") %></p>
         </div>
 
         <% if recaptcha_enabled? %>
-          <div class="g-recaptcha" data-sitekey="<%= recaptcha_site_key %>"></div>
+          <div class="g-recaptcha" data-sitekey="<%= recaptcha_site_key %>" data-recaptcha-shell></div>
         <% end %>
 
-        <%= f.button type: :submit, class: "tap-target cta-primary" do %>
+        <%= f.button type: :submit, class: "tap-target cta-primary", data: { ga_event: "comment_submit_click", ga_category: "comments", ga_label: (@reply_to_comment.present? ? "reply_submit" : "root_submit") } do %>
           <span class="inline-flex items-center gap-1.5">
             <%= ui_icon(:chat, class_name: "h-4 w-4") %>
             <span><%= @reply_to_comment.present? ? t("posts.show.comments.reply") : t("posts.show.comments.post_comment") %></span>
@@ -385,12 +409,12 @@
   <% end %>
 
   <div class="space-y-2">
-    <p class="ad-slot-divider"><%= I18n.locale.to_s == "ja" ? "関連スポンサー枠" : "Sponsored placement" %></p>
+    <p class="ad-slot-divider"><%= t("ads.sponsored_placement", default: "Sponsored placement") %></p>
     <%= render "shared/ad_slot", slot: ENV["ADSENSE_SLOT_POST_BODY"] %>
   </div>
 
   <div class="space-y-2">
-    <p class="ad-slot-divider"><%= I18n.locale.to_s == "ja" ? "関連スポンサー枠" : "Sponsored placement" %></p>
+    <p class="ad-slot-divider"><%= t("ads.sponsored_placement", default: "Sponsored placement") %></p>
     <%= render "shared/ad_slot", slot: ENV["ADSENSE_SLOT_POST_FOOTER"] %>
   </div>
 </article>
@@ -402,6 +426,7 @@
     const mobileMenuOpenMessage = "<%= j(mobile_menu_open_label) %>";
     const mobileMenuCloseMessage = "<%= j(mobile_menu_close_label) %>";
     let lastModalTrigger = null;
+    let commentFormStarted = false;
 
     const markLoadedMedia = (scope = document) => {
       scope.querySelectorAll("[data-media-skeleton]").forEach((frame) => {
@@ -499,12 +524,21 @@
       const root = document.querySelector("[data-mobile-actions-root]");
       const menu = document.querySelector("[data-mobile-actions-menu]");
       const modal = document.querySelector("[data-report-modal][open]");
-      const commentForm = document.querySelector("#comment-form form");
+      const commentFormRoot = document.querySelector("[data-comment-form-root]");
+      const commentForm = commentFormRoot ? commentFormRoot.querySelector("form") : null;
+      const recaptchaShell = commentFormRoot ? commentFormRoot.querySelector("[data-recaptcha-shell]") : null;
       if (!root) return;
 
       const focusedOnComment = commentForm ? commentForm.contains(document.activeElement) : false;
+      const replyMode = Boolean(commentFormRoot && commentFormRoot.querySelector("[data-reply-context]"));
+      const recaptchaFocused = recaptchaShell ? recaptchaShell.contains(document.activeElement) : false;
+      const recaptchaVisible = (() => {
+        if (!recaptchaShell) return false;
+        const rect = recaptchaShell.getBoundingClientRect();
+        return rect.top < window.innerHeight && rect.bottom > 0;
+      })();
       const menuOpen = menu && !menu.classList.contains("hidden");
-      const shouldHide = focusedOnComment || keyboardOpen() || Boolean(modal);
+      const shouldHide = focusedOnComment || keyboardOpen() || Boolean(modal) || replyMode || recaptchaFocused || recaptchaVisible;
 
       root.classList.toggle("translate-y-full", shouldHide);
       root.classList.toggle("opacity-0", shouldHide);
@@ -607,8 +641,31 @@
       if (activeDialog) closeModal(activeDialog);
     });
 
-    document.addEventListener("focusin", syncMobileActionBar, true);
+    document.addEventListener("focusin", (event) => {
+      syncMobileActionBar();
+      const form = event.target.closest("#comment-form form");
+      if (!form || commentFormStarted || typeof window.gtag !== "function") return;
+
+      commentFormStarted = true;
+      window.gtag("event", "comment_form_start", {
+        event_category: "comments",
+        event_label: document.querySelector("[data-reply-context]") ? "reply_mode" : "new_comment"
+      });
+    }, true);
     document.addEventListener("focusout", () => window.setTimeout(syncMobileActionBar, 0), true);
+    document.addEventListener("submit", (event) => {
+      const form = event.target.closest("#comment-form form");
+      if (!form || typeof window.gtag !== "function") return;
+
+      const hasProfile = ((form.querySelector("[name='comment[user_id]']")?.value || "").trim().length > 0);
+      const bodyLength = (form.querySelector("[name='comment[body]']")?.value || "").trim().length;
+      window.gtag("event", "comment_submit_attempt", {
+        event_category: "comments",
+        event_label: document.querySelector("[data-reply-context]") ? "reply_mode" : "new_comment",
+        has_profile: hasProfile,
+        body_length: bodyLength
+      });
+    });
     window.addEventListener("resize", syncMobileActionBar);
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", syncMobileActionBar);

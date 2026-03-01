@@ -16,9 +16,9 @@
     --ds-focus-border-color: rgb(37, 99, 235);
     --ds-text-main: rgb(15 23 42);
     --ds-text-body: rgb(51 65 85);
-    --ds-text-support: rgb(51 65 85);
-    --ds-text-meta: rgb(71 85 105);
-    --ds-text-muted: rgb(71 85 105);
+    --ds-text-support: rgb(30 41 59);
+    --ds-text-meta: rgb(51 65 85);
+    --ds-text-muted: rgb(51 65 85);
     --ds-safe-area-bottom: env(safe-area-inset-bottom, 0px);
     --ds-safe-area-top: env(safe-area-inset-top, 0px);
     --ds-motion-duration-fast: 160ms;
@@ -280,6 +280,14 @@
 
   .ds-section-card {
     @apply rounded-xl border border-slate-200 bg-white p-5 sm:p-6;
+  }
+
+  .ds-filter-shell {
+    @apply bg-slate-50/70;
+  }
+
+  .ds-filter-shell-collapsed {
+    @apply border-slate-200/80 bg-slate-50/35;
   }
 
   .cta-primary {

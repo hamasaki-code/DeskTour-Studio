@@ -68,7 +68,7 @@
           <div class="relative" data-desktop-utility-root>
             <button type="button" data-desktop-utility-toggle aria-expanded="false" aria-controls="desktop-utility-menu" class="tap-target cta-tertiary" data-ga-event="navigation_desktop_utility_toggle_click" data-ga-category="navigation" data-ga-label="desktop_utility_toggle">
               <span class="inline-flex items-center gap-1.5">
-                <span><%= I18n.locale.to_s == "ja" ? "その他" : "Utility" %></span>
+                <span><%= t("navigation.utility_menu", default: "Utility") %></span>
                 <%= ui_icon(:chevron_down, class_name: "h-4 w-4 text-slate-600") %>
               </span>
             </button>

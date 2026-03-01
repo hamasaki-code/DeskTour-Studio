@@ -145,6 +145,21 @@
   - Hypothesis
   - Affected KPI(s)
   - Expected direction and guardrail metric
+- Ship in small batches:
+  - One UX change should map to one primary KPI.
+  - Keep each rollout independently reversible.
+  - Compare against a 7-day baseline before the next batch.
+
+## UX Polish Mapping
+- Search hierarchy and filter contrast:
+  - KPI: search submit-to-result CTR
+  - Guardrail: filter abandonment rate
+- Detail first-view value emphasis:
+  - KPI: detail-to-comment scroll reach rate
+  - Guardrail: bounce rate on detail page
+- Comment form simplification and reply context:
+  - KPI: comment completion rate
+  - Guardrail: comment error re-submit rate
 
 ## Design Audit Workflow
 - Pull requests that modify UI must complete a design-system checklist in the PR template.
