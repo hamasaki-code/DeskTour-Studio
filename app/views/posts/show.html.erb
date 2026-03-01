@@ -185,26 +185,26 @@
   <div class="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 backdrop-blur sm:hidden" data-mobile-actions-root>
     <div class="mx-auto w-full max-w-6xl px-4 pt-3" style="padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);">
       <div class="relative pb-1">
-        <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-2">
-          <%= button_to like_post_path(@post), method: :post, form: { class: "w-full" }, class: "tap-target cta-secondary w-full justify-center", data: { ga_event: "post_action_like_click", ga_category: "post_actions", ga_label: "mobile_like_primary" } do %>
+        <div class="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-1.5">
+          <%= button_to like_post_path(@post), method: :post, form: { class: "w-full" }, class: "tap-target cta-primary w-full justify-center", data: { ga_event: "post_action_like_click", ga_category: "post_actions", ga_label: "mobile_like_primary" } do %>
             <span class="inline-flex items-center justify-center gap-1.5">
               <%= ui_icon(:heart, class_name: "h-4 w-4") %>
               <span><%= t("posts.show.actions.like") %></span>
             </span>
           <% end %>
-          <button type="button" data-native-share-url="<%= post_share_url(@post) %>" data-native-share-text="<%= post_share_text(@post) %>" data-ga-event="post_action_share_primary_click" data-ga-category="post_actions" data-ga-label="mobile_share_primary" class="tap-target cta-secondary w-full justify-center">
+          <button type="button" data-native-share-url="<%= post_share_url(@post) %>" data-native-share-text="<%= post_share_text(@post) %>" data-ga-event="post_action_share_primary_click" data-ga-category="post_actions" data-ga-label="mobile_share_primary" class="tap-target inline-flex items-center justify-center gap-1 rounded-lg px-2.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900">
             <span class="inline-flex items-center gap-1.5">
               <%= ui_icon(:share, class_name: "h-4 w-4") %>
               <span><%= t("posts.show.actions.share") %></span>
             </span>
           </button>
-          <button type="button" data-mobile-actions-toggle aria-expanded="false" aria-controls="mobile-post-actions-menu" data-ga-event="post_action_more_menu_toggle" data-ga-category="post_actions" data-ga-label="mobile_more_toggle" class="tap-target cta-secondary px-3 text-slate-700">
+          <button type="button" data-mobile-actions-toggle aria-expanded="false" aria-controls="mobile-post-actions-menu" data-ga-event="post_action_more_menu_toggle" data-ga-category="post_actions" data-ga-label="mobile_more_toggle" class="tap-target inline-flex items-center justify-center rounded-lg px-2.5 py-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900">
             <%= ui_icon(:ellipsis_horizontal, class_name: "h-5 w-5") %>
             <span class="sr-only">More</span>
           </button>
         </div>
 
-        <div id="mobile-post-actions-menu" data-mobile-actions-menu class="absolute inset-x-0 bottom-full z-10 mb-2 hidden rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
+        <div id="mobile-post-actions-menu" data-mobile-actions-menu class="absolute inset-x-0 bottom-full z-20 mb-2 hidden rounded-xl border border-slate-300 bg-white/98 p-2 shadow-2xl ring-1 ring-slate-900/5">
           <div class="grid gap-1">
             <%= link_to x_share_url(@post), target: "_blank", rel: "noopener", data: { mobile_menu_action: true, ga_event: "post_action_share_x_click", ga_category: "post_actions", ga_label: "mobile_share_x_menu" }, class: "tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100" do %>
               <%= ui_icon(:share, class_name: "h-4 w-4") %>

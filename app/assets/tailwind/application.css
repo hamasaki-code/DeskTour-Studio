@@ -113,6 +113,13 @@
     @apply inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100;
   }
 
+  .cta-primary:focus-visible,
+  .cta-secondary:focus-visible {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: var(--ds-focus-ring-shadow);
+  }
+
   @media (max-width: 640px) {
     .tap-target {
       padding-top: 0.625rem;
