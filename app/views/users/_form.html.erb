@@ -1,4 +1,10 @@
-<%= form_with model: user, class: "space-y-form" do |f| %>
+<% field_error = ->(attr) { user.errors.full_messages_for(attr).first } %>
+<% input_class = ->(error) { "w-full rounded-lg border px-3 py-2 text-sm #{error.present? ? 'border-red-400 bg-red-50' : 'border-slate-300'}" } %>
+<% name_error = field_error.call(:name) %>
+<% bio_error = field_error.call(:bio) %>
+<% email_error = field_error.call(:email) %>
+
+<%= form_with model: user, class: "space-y-form", data: { form_autofocus_errors: true } do |f| %>
   <% if user.errors.any? %>
     <div class="rounded-lg border border-red-300 bg-red-50 p-4 text-sm text-red-700">
       <p class="mb-2 font-semibold"><%= t("users.form.error_summary") %></p>
@@ -12,18 +18,27 @@
 
   <div>
     <%= f.label :name, t("users.form.name_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
-    <%= f.text_field :name, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("users.form.name_placeholder") %>
+    <%= f.text_field :name, class: input_class.call(name_error), placeholder: t("users.form.name_placeholder"), aria: { invalid: name_error.present? ? "true" : nil, describedby: "user_name_error" } %>
+    <% if name_error.present? %>
+      <p id="user_name_error" class="mt-1 text-xs font-medium text-red-700"><%= name_error %></p>
+    <% end %>
   </div>
 
   <div>
     <%= f.label :bio, t("users.form.bio_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
-    <%= f.text_area :bio, rows: 5, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("users.form.bio_placeholder") %>
+    <%= f.text_area :bio, rows: 5, class: input_class.call(bio_error), placeholder: t("users.form.bio_placeholder"), aria: { invalid: bio_error.present? ? "true" : nil, describedby: "user_bio_error" } %>
+    <% if bio_error.present? %>
+      <p id="user_bio_error" class="mt-1 text-xs font-medium text-red-700"><%= bio_error %></p>
+    <% end %>
   </div>
 
   <div>
     <%= f.label :email, t("users.form.email_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
-    <%= f.email_field :email, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: "you@example.com" %>
-    <p class="mt-1 ds-text-muted"><%= t("users.form.email_hint") %></p>
+    <%= f.email_field :email, class: input_class.call(email_error), placeholder: "you@example.com", aria: { invalid: email_error.present? ? "true" : nil, describedby: "user_email_hint user_email_error" } %>
+    <p id="user_email_hint" class="mt-1 ds-text-muted"><%= t("users.form.email_hint") %></p>
+    <% if email_error.present? %>
+      <p id="user_email_error" class="mt-1 text-xs font-medium text-red-700"><%= email_error %></p>
+    <% end %>
   </div>
 
   <div class="flex items-center gap-2">
@@ -33,3 +48,23 @@
 
   <%= f.submit submit_label, class: "tap-target cta-primary" %>
 <% end %>
+
+<script>
+  if (!window.__userFormErrorAutofocusInstalled) {
+    window.__userFormErrorAutofocusInstalled = true;
+
+    const focusFirstErrorField = () => {
+      const form = document.querySelector("[data-form-autofocus-errors]");
+      if (!form) return;
+      const firstInvalid = form.querySelector("[aria-invalid='true']");
+      if (!firstInvalid) return;
+      firstInvalid.focus();
+      if (typeof firstInvalid.scrollIntoView === "function") {
+        firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    };
+
+    document.addEventListener("turbo:load", focusFirstErrorField);
+    document.addEventListener("DOMContentLoaded", focusFirstErrorField);
+  }
+</script>
