@@ -35,21 +35,28 @@
   tag: params[:tag].presence,
   details: params[:details].presence
 }.compact %>
+<% empty_primary_cta = I18n.locale.to_s == "ja" ? "\u6700\u521D\u306E\u6295\u7A3F\u3092\u4F5C\u6210" : "Create your first post" %>
 
 <section class="space-y-section">
-  <div class="rounded-2xl bg-gradient-to-br from-slate-900 via-blue-800 to-cyan-700 px-6 py-6 text-white sm:py-8">
-    <h1 class="ds-heading-xl"><%= t("posts.index.hero_title") %></h1>
-    <p class="ds-text-support ds-reading-column mt-2 max-w-2xl text-blue-100">
-      <%= t("posts.index.hero_description") %>
-    </p>
-    <a href="#index-search" class="mt-4 inline-flex tap-target cta-secondary cta-compact"><%= t("posts.index.search_button") %></a>
+  <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-blue-900 to-cyan-800 px-5 py-6 text-white sm:px-6 sm:py-8">
+    <div class="absolute inset-0 bg-slate-950/20" aria-hidden="true"></div>
+    <div class="relative max-w-3xl rounded-xl bg-slate-950/35 p-4 sm:p-5">
+      <h1 class="ds-heading-xl"><%= t("posts.index.hero_title") %></h1>
+      <p class="ds-text-support ds-reading-column mt-2 max-w-2xl text-blue-100 ds-break-words">
+        <%= t("posts.index.hero_description") %>
+      </p>
+      <div class="mt-4 flex flex-wrap items-center gap-2">
+        <a href="#index-search" class="tap-target cta-primary"><%= t("posts.index.search_button") %></a>
+        <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target cta-tertiary cta-compact text-white hover:bg-white/20 hover:text-white" %>
+      </div>
+    </div>
   </div>
 
-  <div id="index-search" class="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 sm:p-5" data-index-search-root>
+  <div id="index-search" class="ds-card p-4 sm:p-5" data-index-search-root>
     <%= form_with url: posts_path, method: :get, local: true, class: "space-y-block", data: { search_form: true } do %>
       <%= hidden_field_tag :details, detailed_filters_open ? "1" : "0", data: { details_state_input: true } %>
 
-      <div class="rounded-xl border border-slate-200 bg-white p-4">
+      <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
         <p class="ds-text-meta font-semibold uppercase tracking-wide"><%= quick_search_label %></p>
         <div class="mt-2.5 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
           <%= text_field_tag :q, params[:q], class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.index.search_placeholder"), data: { search_keyword_input: true } %>
@@ -86,7 +93,7 @@
           <% else %>
             <span class="ds-badge-info"><%= no_filters_label %></span>
           <% end %>
-          <%= link_to t("posts.index.reset_button"), root_path, class: "tap-target cta-tertiary cta-compact", data: { ga_event: "post_search_reset_click", ga_category: "post_search", ga_label: "index_search_reset" } %>
+          <%= link_to t("posts.index.reset_button"), posts_path, class: "tap-target cta-tertiary cta-compact", data: { ga_event: "post_search_reset_click", ga_category: "post_search", ga_label: "index_search_reset" } %>
         </div>
 
         <div data-details-panel class="mt-3 space-y-component <%= detailed_filters_open ? '' : 'hidden' %>">
@@ -101,54 +108,49 @@
     <% end %>
   </div>
 
-      <% if @posts.any? %>
+  <% if @posts.any? %>
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <% @posts.each do |post| %>
         <% visible_tags = post.tags.first(max_card_tags) %>
         <% hidden_tag_count = [post.tags.size - visible_tags.size, 0].max %>
-        <article class="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          <%= link_to post_path(post), class: "block", data: { ga_event: "post_card_open", ga_category: "post_index", ga_label: filtered_results ? "from_filtered_results" : "from_default_results" } do %>
-            <%= optimized_post_image_tag(post, variant: :thumbnail, class: "h-40 w-full object-cover sm:h-44") %>
+        <article class="ds-card ds-shadow-soft flex h-full flex-col overflow-hidden">
+          <%= link_to post_path(post), class: "block", data: { post_card_link: true, post_id: post.id, ga_event: "post_card_open", ga_category: "post_index", ga_label: filtered_results ? "from_filtered_results" : "from_default_results" } do %>
+            <div class="ds-media-frame ds-media-frame-card ds-media-skeleton" data-media-skeleton>
+              <%= optimized_post_image_tag(post, variant: :thumbnail, class: "h-full w-full object-cover") %>
+            </div>
           <% end %>
 
           <div class="flex h-full flex-col p-4">
-            <h2 class="text-base font-semibold text-slate-900">
-              <%= link_to post.title, post_path(post), class: "ds-line-clamp-2 block leading-5 hover:text-blue-600", data: { ga_event: "post_card_open", ga_category: "post_index", ga_label: "title_click" } %>
+            <h2 class="ds-heading-sm ds-line-clamp-2 ds-break-words text-slate-900">
+              <%= link_to post.title, post_path(post), class: "block leading-6 hover:text-blue-600", data: { post_card_link: true, post_id: post.id, ga_event: "post_card_open", ga_category: "post_index", ga_label: "title_click" } %>
             </h2>
 
-            <p class="mt-2 ds-line-clamp-2 text-sm leading-6 text-slate-600"><%= truncate(post.description, length: 90) %></p>
+            <p class="mt-2 ds-line-clamp-2 ds-text-support ds-break-words"><%= truncate(post.description, length: 100) %></p>
 
-            <div class="mt-3 flex flex-wrap items-center gap-1.5" aria-label="Post tags">
-              <% if post.tags.any? %>
-                <% visible_tags.each do |tag| %>
-                  <%= link_to "##{tag}", posts_path(tag: tag, details: params[:details]), class: "tap-target ds-badge-info", data: { ga_event: "post_tag_filter_click", ga_category: "post_index", ga_label: "tag_filter_from_card" } %>
-                <% end %>
-                <% if hidden_tag_count.positive? %>
-                  <span class="ds-badge-info">+<%= hidden_tag_count %></span>
-                <% end %>
-              <% else %>
-                <span class="ds-text-muted"><%= "#{t('posts.index.tag_placeholder')}: #{no_filters_label}" %></span>
+            <div class="mt-3 flex flex-wrap items-center gap-1.5" aria-label="Post classification">
+              <% if post.category.present? %>
+                <span class="ds-badge-inactive"><%= post.category %></span>
+              <% end %>
+              <% visible_tags.each do |tag| %>
+                <%= link_to "##{tag}", posts_path(tag: tag, details: params[:details]), class: "tap-target ds-badge-info", data: { ga_event: "post_tag_filter_click", ga_category: "post_index", ga_label: "tag_filter_from_card" } %>
+              <% end %>
+              <% if hidden_tag_count.positive? %>
+                <span class="ds-badge-info">+<%= hidden_tag_count %></span>
               <% end %>
             </div>
 
-            <div class="mt-auto rounded-lg bg-slate-50/80 px-2.5 py-2 ds-text-meta text-slate-500" aria-label="Post metadata">
-              <div class="flex flex-wrap items-center justify-between gap-2">
-                <div class="flex flex-wrap items-center gap-2">
-                  <span>
-                    <%= t("posts.index.author_label") %>:
-                    <%= link_to post.user.name, user_path(post.user), class: "font-medium text-slate-700 underline-offset-2 hover:text-slate-900 hover:underline", data: { ga_event: "post_author_open", ga_category: "post_index", ga_label: "author_profile_click" } %>
-                  </span>
-                  <% if post.category.present? %>
-                    <span class="ds-badge-inactive"><%= post.category %></span>
-                  <% end %>
-                </div>
-                <div class="flex items-center gap-2">
+            <div class="mt-auto border-t border-slate-100 pt-3" aria-label="Post metadata">
+              <div class="flex flex-wrap items-center justify-between gap-2 ds-text-meta text-slate-600">
+                <span class="inline-flex items-center gap-1.5">
+                  <%= ui_icon(:heart, class_name: "h-3.5 w-3.5") %>
+                  <span><%= localized_number(post.likes_count) %></span>
+                  <span aria-hidden="true">•</span>
                   <span><%= l(post.created_at.to_date) %></span>
-                  <span class="inline-flex items-center gap-1">
-                    <%= ui_icon(:heart, class_name: "h-3.5 w-3.5") %>
-                    <span><%= localized_number(post.likes_count) %></span>
-                  </span>
-                </div>
+                </span>
+                <span>
+                  <%= t("posts.index.author_label") %>:
+                  <%= link_to post.user.name, user_path(post.user), class: "font-medium text-slate-700 underline-offset-2 hover:text-slate-900 hover:underline", data: { ga_event: "post_author_open", ga_category: "post_index", ga_label: "author_profile_click" } %>
+                </span>
               </div>
             </div>
           </div>
@@ -162,9 +164,9 @@
         <p class="mt-2 text-sm font-semibold text-slate-700"><%= no_results_title %></p>
         <p class="mt-1 ds-text-support"><%= no_results_hint %></p>
         <div class="mt-4">
-          <%= link_to clear_all_label, root_path, class: "tap-target cta-primary", data: { ga_event: "post_search_reset_click", ga_category: "post_search", ga_label: "index_empty_clear_all" } %>
+          <%= link_to clear_all_label, posts_path, class: "tap-target cta-primary", data: { ga_event: "post_search_reset_click", ga_category: "post_search", ga_label: "index_empty_clear_all" } %>
         </div>
-        <div class="mt-3 flex flex-wrap items-center justify-center gap-1">
+        <div class="mt-3 flex flex-wrap items-center justify-center gap-2">
           <% if params[:q].present? %>
             <%= link_to remove_keyword_label, posts_path(persisted_query.except(:q)), class: "tap-target cta-tertiary cta-compact", data: { ga_event: "post_search_filter_clear_click", ga_category: "post_search", ga_label: "index_empty_remove_keyword" } %>
           <% end %>
@@ -173,8 +175,9 @@
           <% end %>
         </div>
       <% else %>
-        <div class="mt-4">
-          <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target cta-secondary" %>
+        <div class="mt-4 space-y-2">
+          <%= link_to empty_primary_cta, new_post_path, class: "tap-target cta-primary" %>
+          <p class="ds-text-muted"><%= I18n.locale.to_s == "ja" ? "まず1件作成してタイムラインを始めましょう。" : "Start your timeline with a single post." %></p>
         </div>
       <% end %>
     </div>
@@ -186,6 +189,26 @@
 <script>
   if (!window.__postIndexSearchBindingInstalled) {
     window.__postIndexSearchBindingInstalled = true;
+    const LIST_SCROLL_KEY = "post_index_scroll_y";
+    const LIST_RESTORE_KEY = "post_index_restore";
+
+    const markLoadedMedia = (scope = document) => {
+      scope.querySelectorAll("[data-media-skeleton]").forEach((frame) => {
+        const image = frame.querySelector("img");
+        if (!image) {
+          frame.classList.add("ds-media-loaded");
+          return;
+        }
+
+        if (image.complete) {
+          frame.classList.add("ds-media-loaded");
+          return;
+        }
+
+        image.addEventListener("load", () => frame.classList.add("ds-media-loaded"), { once: true });
+        image.addEventListener("error", () => frame.classList.add("ds-media-loaded"), { once: true });
+      });
+    };
 
     document.addEventListener("click", (event) => {
       const toggle = event.target.closest("[data-details-toggle]");
@@ -211,10 +234,18 @@
       if (stateInput) stateInput.value = nextExpanded ? "1" : "0";
     });
 
+    document.addEventListener("click", (event) => {
+      const link = event.target.closest("[data-post-card-link]");
+      if (!link) return;
+
+      sessionStorage.setItem(LIST_SCROLL_KEY, String(window.scrollY || window.pageYOffset || 0));
+      sessionStorage.setItem(LIST_RESTORE_KEY, "1");
+    });
+
     let lastScrollY = window.scrollY || window.pageYOffset || 0;
     const keyboardOpen = () => {
       if (!window.visualViewport) return false;
-      return (window.innerHeight - window.visualViewport.height) > 140;
+      return (window.innerHeight - window.visualViewport.height) > 130;
     };
 
     const syncMobileIndexCta = () => {
@@ -228,19 +259,29 @@
       const theme = (form.querySelector("[name='theme']")?.value || "").trim();
       const tag = (form.querySelector("[name='tag']")?.value || "").trim();
       const hasSearchState = [keyword, category, theme, tag].some((value) => value.length > 0);
-      const activeElement = document.activeElement;
-      const focusedInSearch = activeElement && searchRoot.contains(activeElement);
-      const currentY = window.scrollY || window.pageYOffset || 0;
-      const scrollingDown = currentY > (lastScrollY + 6);
+      const focusedInSearch = searchRoot.contains(document.activeElement);
+      const detailsOpen = form.querySelector("[data-details-state-input]")?.value === "1";
 
       const rect = searchRoot.getBoundingClientRect();
-      const searchVisible = rect.top < window.innerHeight && rect.bottom > 64;
-      const shouldHide = searchVisible || hasSearchState || focusedInSearch || keyboardOpen() || scrollingDown;
+      const searchVisible = rect.top < window.innerHeight && rect.bottom > 72;
+
+      const currentY = window.scrollY || window.pageYOffset || 0;
+      const scrollingDown = currentY > (lastScrollY + 6);
+      const shouldHide = keyboardOpen() || focusedInSearch || hasSearchState || searchVisible || (detailsOpen && searchVisible) || (scrollingDown && currentY > 72);
 
       cta.classList.toggle("translate-y-full", shouldHide);
       cta.classList.toggle("opacity-0", shouldHide);
       cta.classList.toggle("pointer-events-none", shouldHide);
       lastScrollY = currentY;
+    };
+
+    const restoreListPosition = () => {
+      if (sessionStorage.getItem(LIST_RESTORE_KEY) !== "1") return;
+      const storedY = Number(sessionStorage.getItem(LIST_SCROLL_KEY) || "0");
+      window.setTimeout(() => {
+        window.scrollTo({ top: Number.isFinite(storedY) ? storedY : 0, behavior: "auto" });
+        sessionStorage.setItem(LIST_RESTORE_KEY, "0");
+      }, 0);
     };
 
     document.addEventListener("scroll", syncMobileIndexCta, { passive: true });
@@ -249,23 +290,25 @@
       window.visualViewport.addEventListener("resize", syncMobileIndexCta);
       window.visualViewport.addEventListener("scroll", syncMobileIndexCta);
     }
+
     document.addEventListener("input", (event) => {
       if (!event.target.closest("[data-search-form]")) return;
       syncMobileIndexCta();
     });
+
     document.addEventListener("change", (event) => {
       if (!event.target.closest("[data-search-form]")) return;
       syncMobileIndexCta();
     });
+
     document.addEventListener("focusin", (event) => {
       if (!event.target.closest("[data-index-search-root]")) return;
       syncMobileIndexCta();
     }, true);
+
     document.addEventListener("focusout", () => {
       window.setTimeout(syncMobileIndexCta, 0);
     }, true);
-    document.addEventListener("turbo:load", syncMobileIndexCta);
-    document.addEventListener("DOMContentLoaded", syncMobileIndexCta);
 
     document.addEventListener("submit", (event) => {
       const form = event.target.closest("[data-search-form]");
@@ -300,6 +343,21 @@
       });
     });
 
-    window.setTimeout(syncMobileIndexCta, 0);
+    document.addEventListener("turbo:load", () => {
+      markLoadedMedia();
+      syncMobileIndexCta();
+      restoreListPosition();
+    });
+    document.addEventListener("DOMContentLoaded", () => {
+      markLoadedMedia();
+      syncMobileIndexCta();
+      restoreListPosition();
+    });
+
+    window.setTimeout(() => {
+      markLoadedMedia();
+      syncMobileIndexCta();
+      restoreListPosition();
+    }, 0);
   }
 </script>

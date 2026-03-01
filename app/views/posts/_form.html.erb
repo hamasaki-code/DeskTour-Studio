@@ -4,18 +4,9 @@
 <% tag_suggestions ||= [] %>
 <% locale_ja = I18n.locale.to_s == "ja" %>
 <% required_section_label = locale_ja ? "必須の基本情報" : "Required basics" %>
-<% required_section_lead = locale_ja ? "まずは投稿内容の核となる情報を入力します。" : "Start with the core information for your post." %>
+<% required_section_lead = locale_ja ? "まずは投稿の中心となる情報を入力します。" : "Start with the core information for your post." %>
 <% optional_section_label = locale_ja ? "任意の詳細情報" : "Optional details" %>
-<% optional_section_lead = locale_ja ? "カテゴリ・テーマ・タグで見つけやすくできます。" : "Add category, theme, and tags to improve discoverability." %>
-<% profile_example = locale_ja ? "例: メインの投稿プロフィールを選択" : "Example: select your default posting profile" %>
-<% title_example = locale_ja ? "例: 木目とブラックで統一した開発デスク" : "Example: Black and walnut developer desk setup" %>
-<% description_example = locale_ja ? "例: デバイス構成、レイアウトの工夫、1日の使い方を3〜5文で。" : "Example: describe your devices, layout choices, and daily workflow in 3-5 sentences." %>
-<% image_example = locale_ja ? "推奨: 横長で明るい写真（1200px以上）" : "Recommended: bright landscape photo (1200px or wider)" %>
-<% category_example = locale_ja ? "例: Engineering, Design, Writing" : "Example: Engineering, Design, Writing" %>
-<% theme_example = locale_ja ? "例: Dark, Minimal, Natural" : "Example: Dark, Minimal, Natural" %>
-<% tags_example = locale_ja ? "例: mechanical keyboard, standing desk（カンマ区切り）" : "Example: mechanical keyboard, standing desk (comma-separated)" %>
-<% item_name_example = locale_ja ? "例: HHKB Professional HYBRID Type-S" : "Example: HHKB Professional HYBRID Type-S" %>
-<% item_url_example = locale_ja ? "例: https://www.amazon.co.jp/... または公式ストアURL" : "Example: https://www.amazon.com/... or the official store URL" %>
+<% optional_section_lead = locale_ja ? "カテゴリ・テーマ・タグを追加すると見つけやすくなります。" : "Add category, theme, and tags to improve discoverability." %>
 <% field_error = ->(attr) { post.errors.full_messages_for(attr).first } %>
 <% input_class = ->(error) { "w-full rounded-lg border px-3 py-2 text-sm #{error.present? ? 'border-red-400 bg-red-50' : 'border-slate-300'}" } %>
 <% title_error = field_error.call(:title) %>
@@ -30,11 +21,29 @@
 
 <%= form_with model: post, class: "space-y-form", data: { form_autofocus_errors: true } do |f| %>
   <% if post.errors.any? %>
-    <div class="rounded-lg border border-red-300 bg-red-50 p-4 text-sm text-red-700">
+    <div class="rounded-lg border border-red-300 bg-red-50 p-4 text-sm text-red-700" role="alert" aria-live="assertive">
       <p class="mb-2 font-semibold"><%= t("posts.form.error_summary") %></p>
       <ul class="list-disc pl-5">
-        <% post.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
+        <% if profile_error.present? %>
+          <li><a href="#post_user_id" class="underline"><%= profile_error %></a></li>
+        <% end %>
+        <% if title_error.present? %>
+          <li><a href="#post_title" class="underline"><%= title_error %></a></li>
+        <% end %>
+        <% if description_error.present? %>
+          <li><a href="#post_description" class="underline"><%= description_error %></a></li>
+        <% end %>
+        <% if image_error.present? %>
+          <li><a href="#post_desk_image" class="underline"><%= image_error %></a></li>
+        <% end %>
+        <% if category_error.present? %>
+          <li><a href="#post_category" class="underline"><%= category_error %></a></li>
+        <% end %>
+        <% if theme_error.present? %>
+          <li><a href="#post_theme" class="underline"><%= theme_error %></a></li>
+        <% end %>
+        <% if tag_list_error.present? %>
+          <li><a href="#post_tag_list" class="underline"><%= tag_list_error %></a></li>
         <% end %>
       </ul>
     </div>
@@ -51,7 +60,7 @@
         <div class="sm:col-span-2">
           <%= f.label :user_id, t("posts.form.profile_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
           <%= f.collection_select :user_id, owned_users, :id, :name, {}, class: input_class.call(profile_error), aria: { invalid: profile_error.present? ? "true" : nil, describedby: "post_user_id_help post_user_id_error" } %>
-          <p id="post_user_id_help" class="mt-1 ds-text-muted"><%= profile_example %></p>
+          <p id="post_user_id_help" class="mt-1 ds-text-muted"><%= locale_ja ? "既定で使う投稿プロフィールを選択します。" : "Choose the profile used for this post." %></p>
           <% if profile_error.present? %>
             <p id="post_user_id_error" class="mt-1 text-xs font-medium text-red-700"><%= profile_error %></p>
           <% end %>
@@ -61,7 +70,7 @@
       <div class="sm:col-span-2">
         <%= f.label :title, t("posts.form.title_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
         <%= f.text_field :title, class: input_class.call(title_error), placeholder: t("posts.form.title_placeholder"), aria: { invalid: title_error.present? ? "true" : nil, describedby: "post_title_help post_title_error" } %>
-        <p id="post_title_help" class="mt-1 ds-text-muted"><%= title_example %></p>
+        <p id="post_title_help" class="mt-1 ds-text-muted"><%= locale_ja ? "例: ブラックと木目で統一した作業デスク" : "Example: Black and walnut developer desk setup" %></p>
         <% if title_error.present? %>
           <p id="post_title_error" class="mt-1 text-xs font-medium text-red-700"><%= title_error %></p>
         <% end %>
@@ -70,7 +79,7 @@
       <div class="sm:col-span-2">
         <%= f.label :description, t("posts.form.description_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
         <%= f.text_area :description, rows: 7, class: input_class.call(description_error), placeholder: t("posts.form.description_placeholder"), aria: { invalid: description_error.present? ? "true" : nil, describedby: "post_description_help post_description_error" } %>
-        <p id="post_description_help" class="mt-1 ds-text-muted"><%= description_example %></p>
+        <p id="post_description_help" class="mt-1 ds-text-muted"><%= locale_ja ? "配置、利用デバイス、用途を3-5文で書くと伝わりやすくなります。" : "Describe layout, devices, and workflow in 3-5 sentences." %></p>
         <% if description_error.present? %>
           <p id="post_description_error" class="mt-1 text-xs font-medium text-red-700"><%= description_error %></p>
         <% end %>
@@ -79,7 +88,7 @@
       <div class="sm:col-span-2">
         <%= f.label :desk_image, t("posts.form.image_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
         <%= f.file_field :desk_image, class: input_class.call(image_error), accept: "image/*", aria: { invalid: image_error.present? ? "true" : nil, describedby: "post_image_help post_image_error" } %>
-        <p id="post_image_help" class="mt-1 ds-text-muted"><%= image_example %></p>
+        <p id="post_image_help" class="mt-1 ds-text-muted"><%= locale_ja ? "明るめの横長画像（1200px以上推奨）" : "Use a bright landscape image (1200px+ recommended)." %></p>
         <% if image_error.present? %>
           <p id="post_image_error" class="mt-1 text-xs font-medium text-red-700"><%= image_error %></p>
         <% end %>
@@ -99,7 +108,7 @@
       <div>
         <%= f.label :category, t("posts.form.category_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
         <%= f.text_field :category, class: input_class.call(category_error), placeholder: t("posts.form.category_placeholder"), list: "post-category-options", aria: { invalid: category_error.present? ? "true" : nil, describedby: "post_category_help post_category_error" } %>
-        <p id="post_category_help" class="mt-1 ds-text-muted"><%= category_example %></p>
+        <p id="post_category_help" class="mt-1 ds-text-muted"><%= locale_ja ? "例: Engineering, Design, Writing" : "Example: Engineering, Design, Writing" %></p>
         <% if category_error.present? %>
           <p id="post_category_error" class="mt-1 text-xs font-medium text-red-700"><%= category_error %></p>
         <% end %>
@@ -108,7 +117,7 @@
       <div>
         <%= f.label :theme, t("posts.form.theme_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
         <%= f.text_field :theme, class: input_class.call(theme_error), placeholder: t("posts.form.theme_placeholder"), aria: { invalid: theme_error.present? ? "true" : nil, describedby: "post_theme_help post_theme_error" } %>
-        <p id="post_theme_help" class="mt-1 ds-text-muted"><%= theme_example %></p>
+        <p id="post_theme_help" class="mt-1 ds-text-muted"><%= locale_ja ? "例: Dark, Minimal, Natural" : "Example: Dark, Minimal, Natural" %></p>
         <% if theme_error.present? %>
           <p id="post_theme_error" class="mt-1 text-xs font-medium text-red-700"><%= theme_error %></p>
         <% end %>
@@ -117,7 +126,7 @@
       <div class="sm:col-span-2">
         <%= f.label :tag_list, t("posts.form.tags_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
         <%= f.text_field :tag_list, class: input_class.call(tag_list_error), placeholder: t("posts.form.tags_placeholder"), list: "post-tag-options", aria: { invalid: tag_list_error.present? ? "true" : nil, describedby: "post_tag_list_help post_tag_list_error" } %>
-        <p id="post_tag_list_help" class="mt-1 ds-text-muted"><%= tags_example %></p>
+        <p id="post_tag_list_help" class="mt-1 ds-text-muted"><%= locale_ja ? "例: mechanical keyboard, standing desk（カンマ区切り）" : "Example: mechanical keyboard, standing desk (comma-separated)" %></p>
         <% if tag_list_error.present? %>
           <p id="post_tag_list_error" class="mt-1 text-xs font-medium text-red-700"><%= tag_list_error %></p>
         <% end %>
@@ -133,12 +142,12 @@
           <div>
             <%= item_fields.label :name, t("posts.form.item_name_label"), class: "mb-1 block text-xs font-medium text-slate-700" %>
             <%= item_fields.text_field :name, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.form.item_name_placeholder") %>
-            <p class="mt-1 ds-text-muted"><%= item_name_example %></p>
+            <p class="mt-1 ds-text-muted"><%= locale_ja ? "例: HHKB Professional HYBRID Type-S" : "Example: HHKB Professional HYBRID Type-S" %></p>
           </div>
           <div>
             <%= item_fields.label :affiliate_url, t("posts.form.affiliate_url_label"), class: "mb-1 block text-xs font-medium text-slate-700" %>
             <%= item_fields.url_field :affiliate_url, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.form.affiliate_url_placeholder") %>
-            <p class="mt-1 ds-text-muted"><%= item_url_example %></p>
+            <p class="mt-1 ds-text-muted"><%= locale_ja ? "例: https://www.amazon.co.jp/... または公式ストアURL" : "Example: https://www.amazon.com/... or official store URL" %></p>
           </div>
         </div>
       <% end %>
@@ -152,6 +161,7 @@
       <% end %>
     </datalist>
   <% end %>
+
   <% if tag_suggestions.any? %>
     <datalist id="post-tag-options">
       <% tag_suggestions.each do |tag| %>
@@ -161,7 +171,7 @@
   <% end %>
 
   <div class="flex flex-wrap gap-3">
-    <%= f.submit t("posts.form.publish"), class: "tap-target cta-primary" %>
+    <%= f.submit submit_label, class: "tap-target cta-primary" %>
     <%= f.submit t("posts.form.save_draft"), name: "save_as_draft", value: "1", class: "tap-target cta-secondary" %>
   </div>
 <% end %>

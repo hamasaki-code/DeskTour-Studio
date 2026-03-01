@@ -67,6 +67,12 @@
 - All interactive controls must expose visible focus style (`:focus-visible`).
 - Announce asynchronous status changes (copy success/failure, menu open/close) through the live region.
 - Menus and toggles must keep `aria-expanded` synchronized with UI state.
+- Modal/menu behavior must be consistent:
+  - Initial focus lands on the first actionable control.
+  - `Esc` closes the layer.
+  - Focus returns to the trigger after close.
+- Anchor targets under sticky headers must use `scroll-margin-top` (`ds-anchor-offset`).
+- Respect `prefers-reduced-motion`: disable non-essential animation and smooth scrolling.
 
 ## Typography And Rhythm
 - Japanese UI optimization:
@@ -78,6 +84,67 @@
 ## Ads Placement
 - Wrap ad slots in a low-noise container (`ad-slot-surface`) with clear spacing from content groups.
 - Add a compact disclosure label (`ad-slot-label`) to separate ads from primary content.
+- Add a context separator before ad groups (`ad-slot-divider`) when placed between reading/comment sections.
+
+## Responsive Density Rules
+- Define information density by breakpoint:
+  - Mobile: prioritize one-line metadata rows and collapsed secondary controls.
+  - Tablet: allow 2-column cards and compact chips.
+  - Desktop: expose utility menus and additional metadata only when they do not compete with the primary CTA.
+- Prevent overflow in mixed Japanese/English labels with `ds-break-words` and explicit line-clamp rules.
+
+## Component State Matrix
+- Every interactive component must define and visually test:
+  - `default`
+  - `hover`
+  - `focus-visible`
+  - `disabled`
+  - `loading`
+- Components covered:
+  - `cta-*`
+  - `ds-badge-*`
+  - form controls (`input/select/textarea`)
+  - menus/dialog triggers
+
+## Contrast Audit Flow
+- Use WCAG 2.2 contrast checks as a required pre-merge gate for:
+  - Body text
+  - Meta text
+  - CTA labels
+  - Badge text and borders
+- Keep contrast checks in PR artifacts:
+  - Screenshot set (default + focus-visible + disabled)
+  - Measured contrast values and pass/fail notes
+
+## Media Loading And CLS
+- Use explicit aspect-ratio wrappers for list/detail media (`ds-media-frame-*`).
+- Image containers should render skeleton placeholders (`ds-media-skeleton`) until `load/error`.
+- Keep width/height attributes on image tags to stabilize layout before decode.
+
+## Dark Mode Readiness
+- Maintain colors through `--ds-*` tokens only; avoid hard-coded semantic colors in component markup.
+- Before dark mode rollout, classify:
+  - Directly tokenized components (ready)
+  - Mixed token/hard-coded components (needs migration)
+  - Third-party embeds (non-themable constraints)
+- Define minimum contrast targets per theme variant before enabling user toggle.
+
+## Alt Text Guidelines
+- Post images: descriptive, content-bearing alt text (setup context + key visual trait).
+- Decorative icons: `aria-hidden="true"` and no redundant alt text.
+- Informational icons inside controls: text label must remain understandable without icon.
+
+## KPI-Driven Iteration Loop
+- Track UI changes against measurable outcomes:
+  - Search zero-result rate
+  - Card-to-detail click-through rate
+  - Comment completion rate
+  - Share/copy action rate
+  - Back-navigation recovery success (list position restore)
+- PRs that change conversion-critical UI must include:
+  - Hypothesis
+  - Affected KPI(s)
+  - Expected direction and guardrail metric
 
 ## Design Audit Workflow
 - Pull requests that modify UI must complete a design-system checklist in the PR template.
