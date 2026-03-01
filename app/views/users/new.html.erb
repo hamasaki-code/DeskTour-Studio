@@ -3,13 +3,13 @@
 
 <section class="mx-auto w-full max-w-3xl space-y-content">
   <div>
-    <h1 class="text-2xl font-bold text-slate-900"><%= t("users.new.heading") %></h1>
-    <p class="mt-2 text-sm text-slate-600">
+    <h1 class="ds-heading-xl"><%= t("users.new.heading") %></h1>
+    <p class="mt-2 ds-text-support">
       <%= t("users.new.lead") %>
     </p>
   </div>
 
-  <div class="rounded-xl border border-slate-200 bg-white p-6">
+  <div class="ds-card p-6">
     <%= render "form", user: @user, submit_label: t("users.form.submit_create") %>
   </div>
 </section>

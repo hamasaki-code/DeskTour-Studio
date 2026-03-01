@@ -1,77 +1,183 @@
 <% submit_label ||= t("posts.form.publish") %>
 <% owned_users ||= [] %>
+<% category_suggestions ||= [] %>
+<% tag_suggestions ||= [] %>
+<% locale_ja = I18n.locale.to_s == "ja" %>
+<% required_section_label = locale_ja ? "必須の基本情報" : "Required basics" %>
+<% required_section_lead = locale_ja ? "まずは投稿内容の核となる情報を入力します。" : "Start with the core information for your post." %>
+<% optional_section_label = locale_ja ? "任意の詳細情報" : "Optional details" %>
+<% optional_section_lead = locale_ja ? "カテゴリ・テーマ・タグで見つけやすくできます。" : "Add category, theme, and tags to improve discoverability." %>
+<% profile_example = locale_ja ? "例: メインの投稿プロフィールを選択" : "Example: select your default posting profile" %>
+<% title_example = locale_ja ? "例: 木目とブラックで統一した開発デスク" : "Example: Black and walnut developer desk setup" %>
+<% description_example = locale_ja ? "例: デバイス構成、レイアウトの工夫、1日の使い方を3〜5文で。" : "Example: describe your devices, layout choices, and daily workflow in 3-5 sentences." %>
+<% image_example = locale_ja ? "推奨: 横長で明るい写真（1200px以上）" : "Recommended: bright landscape photo (1200px or wider)" %>
+<% category_example = locale_ja ? "例: Engineering, Design, Writing" : "Example: Engineering, Design, Writing" %>
+<% theme_example = locale_ja ? "例: Dark, Minimal, Natural" : "Example: Dark, Minimal, Natural" %>
+<% tags_example = locale_ja ? "例: mechanical keyboard, standing desk（カンマ区切り）" : "Example: mechanical keyboard, standing desk (comma-separated)" %>
+<% item_name_example = locale_ja ? "例: HHKB Professional HYBRID Type-S" : "Example: HHKB Professional HYBRID Type-S" %>
+<% item_url_example = locale_ja ? "例: https://www.amazon.co.jp/... または公式ストアURL" : "Example: https://www.amazon.com/... or the official store URL" %>
+<% field_error = ->(attr) { post.errors.full_messages_for(attr).first } %>
+<% input_class = ->(error) { "w-full rounded-lg border px-3 py-2 text-sm #{error.present? ? 'border-red-400 bg-red-50' : 'border-slate-300'}" } %>
+<% title_error = field_error.call(:title) %>
+<% description_error = field_error.call(:description) %>
+<% category_error = field_error.call(:category) %>
+<% theme_error = field_error.call(:theme) %>
+<% tag_list_error = field_error.call(:tag_list) %>
+<% image_error = field_error.call(:desk_image) %>
+<% profile_error = field_error.call(:user) %>
 
-<%= form_with model: post, class: "space-y-form" do |f| %>
-<% if post.errors.any? %>
-<div class="rounded-lg border border-red-300 bg-red-50 p-4 text-sm text-red-700">
-    <p class="mb-2 font-semibold"><%= t("posts.form.error_summary") %></p>
-    <ul class="list-disc pl-5">
+<%= form_with model: post, class: "space-y-form", data: { form_autofocus_errors: true } do |f| %>
+  <% if post.errors.any? %>
+    <div class="rounded-lg border border-red-300 bg-red-50 p-4 text-sm text-red-700">
+      <p class="mb-2 font-semibold"><%= t("posts.form.error_summary") %></p>
+      <ul class="list-disc pl-5">
         <% post.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
+          <li><%= message %></li>
         <% end %>
-    </ul>
-</div>
-<% end %>
-
-<div class="grid gap-4 sm:grid-cols-2">
-    <% if owned_users.any? %>
-    <div class="sm:col-span-2">
-        <%= f.label :user_id, t("posts.form.profile_label"), class: "mb-1 block text-sm font-medium" %>
-        <%= f.collection_select :user_id, owned_users, :id, :name, {}, class: "w-full rounded-lg border border-slate-300 px-3 py-2" %>
+      </ul>
     </div>
-    <% end %>
+  <% end %>
 
-    <div class="sm:col-span-2">
-        <%= f.label :title, t("posts.form.title_label"), class: "mb-1 block text-sm font-medium" %>
-        <%= f.text_field :title, class: "w-full rounded-lg border border-slate-300 px-3 py-2", placeholder: t("posts.form.title_placeholder") %>
-    </div>
-
-    <div class="sm:col-span-2">
-        <%= f.label :description, t("posts.form.description_label"), class: "mb-1 block text-sm font-medium" %>
-        <%= f.text_area :description, rows: 7, class: "w-full rounded-lg border border-slate-300 px-3 py-2", placeholder: t("posts.form.description_placeholder") %>
-    </div>
-
+  <section class="space-y-4 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
     <div>
-        <%= f.label :category, t("posts.form.category_label"), class: "mb-1 block text-sm font-medium" %>
-        <%= f.text_field :category, class: "w-full rounded-lg border border-slate-300 px-3 py-2", placeholder: t("posts.form.category_placeholder") %>
+      <h2 class="ds-heading-md"><%= required_section_label %></h2>
+      <p class="mt-1 ds-text-support"><%= required_section_lead %></p>
     </div>
 
-    <div>
-        <%= f.label :theme, t("posts.form.theme_label"), class: "mb-1 block text-sm font-medium" %>
-        <%= f.text_field :theme, class: "w-full rounded-lg border border-slate-300 px-3 py-2", placeholder: t("posts.form.theme_placeholder") %>
-    </div>
-
-    <div class="sm:col-span-2">
-        <%= f.label :tag_list, t("posts.form.tags_label"), class: "mb-1 block text-sm font-medium" %>
-        <%= f.text_field :tag_list, class: "w-full rounded-lg border border-slate-300 px-3 py-2", placeholder: t("posts.form.tags_placeholder") %>
-    </div>
-
-    <div class="sm:col-span-2">
-        <%= f.label :desk_image, t("posts.form.image_label"), class: "mb-1 block text-sm font-medium" %>
-        <%= f.file_field :desk_image, class: "w-full rounded-lg border border-slate-300 px-3 py-2", accept: "image/*" %>
-    </div>
-</div>
-
-<div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-    <p class="mb-3 text-sm font-semibold text-slate-700"><%= t("posts.form.related_items") %></p>
-    <div class="space-y-4">
-        <%= f.fields_for :items do |item_fields| %>
-        <div class="grid gap-3 rounded-lg border border-slate-200 bg-white p-3 sm:grid-cols-2">
-            <div>
-                <%= item_fields.label :name, t("posts.form.item_name_label"), class: "mb-1 block text-xs font-medium text-slate-600" %>
-                <%= item_fields.text_field :name, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.form.item_name_placeholder") %>
-            </div>
-            <div>
-                <%= item_fields.label :affiliate_url, t("posts.form.affiliate_url_label"), class: "mb-1 block text-xs font-medium text-slate-600" %>
-                <%= item_fields.url_field :affiliate_url, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.form.affiliate_url_placeholder") %>
-            </div>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <% if owned_users.any? %>
+        <div class="sm:col-span-2">
+          <%= f.label :user_id, t("posts.form.profile_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
+          <%= f.collection_select :user_id, owned_users, :id, :name, {}, class: input_class.call(profile_error), aria: { invalid: profile_error.present? ? "true" : nil, describedby: "post_user_id_help post_user_id_error" } %>
+          <p id="post_user_id_help" class="mt-1 ds-text-muted"><%= profile_example %></p>
+          <% if profile_error.present? %>
+            <p id="post_user_id_error" class="mt-1 text-xs font-medium text-red-700"><%= profile_error %></p>
+          <% end %>
         </div>
-        <% end %>
-    </div>
-</div>
+      <% end %>
 
-<div class="flex flex-wrap gap-3">
-    <%= f.submit t("posts.form.publish"), class: "tap-target rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700" %>
-    <%= f.submit t("posts.form.save_draft"), name: "save_as_draft", value: "1", class: "tap-target rounded-lg border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100" %>
-</div>
+      <div class="sm:col-span-2">
+        <%= f.label :title, t("posts.form.title_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
+        <%= f.text_field :title, class: input_class.call(title_error), placeholder: t("posts.form.title_placeholder"), aria: { invalid: title_error.present? ? "true" : nil, describedby: "post_title_help post_title_error" } %>
+        <p id="post_title_help" class="mt-1 ds-text-muted"><%= title_example %></p>
+        <% if title_error.present? %>
+          <p id="post_title_error" class="mt-1 text-xs font-medium text-red-700"><%= title_error %></p>
+        <% end %>
+      </div>
+
+      <div class="sm:col-span-2">
+        <%= f.label :description, t("posts.form.description_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
+        <%= f.text_area :description, rows: 7, class: input_class.call(description_error), placeholder: t("posts.form.description_placeholder"), aria: { invalid: description_error.present? ? "true" : nil, describedby: "post_description_help post_description_error" } %>
+        <p id="post_description_help" class="mt-1 ds-text-muted"><%= description_example %></p>
+        <% if description_error.present? %>
+          <p id="post_description_error" class="mt-1 text-xs font-medium text-red-700"><%= description_error %></p>
+        <% end %>
+      </div>
+
+      <div class="sm:col-span-2">
+        <%= f.label :desk_image, t("posts.form.image_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
+        <%= f.file_field :desk_image, class: input_class.call(image_error), accept: "image/*", aria: { invalid: image_error.present? ? "true" : nil, describedby: "post_image_help post_image_error" } %>
+        <p id="post_image_help" class="mt-1 ds-text-muted"><%= image_example %></p>
+        <% if image_error.present? %>
+          <p id="post_image_error" class="mt-1 text-xs font-medium text-red-700"><%= image_error %></p>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <section class="space-y-4 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
+    <div>
+      <h2 class="ds-heading-md"><%= optional_section_label %></h2>
+      <p class="mt-1 ds-text-support"><%= optional_section_lead %></p>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div>
+        <%= f.label :category, t("posts.form.category_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
+        <%= f.text_field :category, class: input_class.call(category_error), placeholder: t("posts.form.category_placeholder"), list: "post-category-options", aria: { invalid: category_error.present? ? "true" : nil, describedby: "post_category_help post_category_error" } %>
+        <p id="post_category_help" class="mt-1 ds-text-muted"><%= category_example %></p>
+        <% if category_error.present? %>
+          <p id="post_category_error" class="mt-1 text-xs font-medium text-red-700"><%= category_error %></p>
+        <% end %>
+      </div>
+
+      <div>
+        <%= f.label :theme, t("posts.form.theme_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
+        <%= f.text_field :theme, class: input_class.call(theme_error), placeholder: t("posts.form.theme_placeholder"), aria: { invalid: theme_error.present? ? "true" : nil, describedby: "post_theme_help post_theme_error" } %>
+        <p id="post_theme_help" class="mt-1 ds-text-muted"><%= theme_example %></p>
+        <% if theme_error.present? %>
+          <p id="post_theme_error" class="mt-1 text-xs font-medium text-red-700"><%= theme_error %></p>
+        <% end %>
+      </div>
+
+      <div class="sm:col-span-2">
+        <%= f.label :tag_list, t("posts.form.tags_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
+        <%= f.text_field :tag_list, class: input_class.call(tag_list_error), placeholder: t("posts.form.tags_placeholder"), list: "post-tag-options", aria: { invalid: tag_list_error.present? ? "true" : nil, describedby: "post_tag_list_help post_tag_list_error" } %>
+        <p id="post_tag_list_help" class="mt-1 ds-text-muted"><%= tags_example %></p>
+        <% if tag_list_error.present? %>
+          <p id="post_tag_list_error" class="mt-1 text-xs font-medium text-red-700"><%= tag_list_error %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <% if category_suggestions.any? %>
+      <datalist id="post-category-options">
+        <% category_suggestions.each do |category| %>
+          <option value="<%= category %>"></option>
+        <% end %>
+      </datalist>
+    <% end %>
+    <% if tag_suggestions.any? %>
+      <datalist id="post-tag-options">
+        <% tag_suggestions.each do |tag| %>
+          <option value="<%= tag %>"></option>
+        <% end %>
+      </datalist>
+    <% end %>
+  </section>
+
+  <section class="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+    <p class="text-sm font-semibold text-slate-700"><%= t("posts.form.related_items") %></p>
+    <div class="space-y-4">
+      <%= f.fields_for :items do |item_fields| %>
+        <div class="grid gap-3 rounded-lg border border-slate-200 bg-white p-3 sm:grid-cols-2">
+          <div>
+            <%= item_fields.label :name, t("posts.form.item_name_label"), class: "mb-1 block text-xs font-medium text-slate-700" %>
+            <%= item_fields.text_field :name, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.form.item_name_placeholder") %>
+            <p class="mt-1 ds-text-muted"><%= item_name_example %></p>
+          </div>
+          <div>
+            <%= item_fields.label :affiliate_url, t("posts.form.affiliate_url_label"), class: "mb-1 block text-xs font-medium text-slate-700" %>
+            <%= item_fields.url_field :affiliate_url, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.form.affiliate_url_placeholder") %>
+            <p class="mt-1 ds-text-muted"><%= item_url_example %></p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </section>
+
+  <div class="flex flex-wrap gap-3">
+    <%= f.submit t("posts.form.publish"), class: "tap-target cta-primary" %>
+    <%= f.submit t("posts.form.save_draft"), name: "save_as_draft", value: "1", class: "tap-target cta-secondary" %>
+  </div>
 <% end %>
+
+<script>
+  if (!window.__postFormErrorAutofocusInstalled) {
+    window.__postFormErrorAutofocusInstalled = true;
+
+    const focusFirstErrorField = () => {
+      const form = document.querySelector("[data-form-autofocus-errors]");
+      if (!form) return;
+      const firstInvalid = form.querySelector("[aria-invalid='true']");
+      if (!firstInvalid) return;
+      firstInvalid.focus();
+      if (typeof firstInvalid.scrollIntoView === "function") {
+        firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    };
+
+    document.addEventListener("turbo:load", focusFirstErrorField);
+    document.addEventListener("DOMContentLoaded", focusFirstErrorField);
+  }
+</script>

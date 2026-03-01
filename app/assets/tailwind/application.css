@@ -11,6 +11,11 @@
     --ds-space-form: 1.5rem;
     --ds-focus-ring-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
     --ds-focus-border-color: rgb(37, 99, 235);
+    --ds-text-main: rgb(15 23 42);
+    --ds-text-body: rgb(51 65 85);
+    --ds-text-support: rgb(71 85 105);
+    --ds-text-meta: rgb(71 85 105);
+    --ds-text-muted: rgb(100 116 139);
   }
 
   html[lang="ja"] {
@@ -42,6 +47,7 @@
   body {
     font-family: var(--ds-font-sans);
     letter-spacing: var(--ds-letter-spacing-body);
+    color: var(--ds-text-main);
   }
 
   a,
@@ -76,6 +82,42 @@
 }
 
 @layer utilities {
+  .ds-heading-xl {
+    @apply text-2xl font-bold sm:text-3xl;
+  }
+
+  .ds-heading-lg {
+    @apply text-xl font-bold;
+  }
+
+  .ds-heading-md {
+    @apply text-lg font-semibold;
+  }
+
+  .ds-text-body {
+    @apply text-base;
+    color: var(--ds-text-body);
+    line-height: var(--ds-line-height-reading);
+  }
+
+  .ds-text-support {
+    @apply text-sm;
+    color: var(--ds-text-support);
+    line-height: 1.55;
+  }
+
+  .ds-text-meta {
+    @apply text-xs;
+    color: var(--ds-text-meta);
+    line-height: 1.45;
+  }
+
+  .ds-text-muted {
+    @apply text-xs;
+    color: var(--ds-text-muted);
+    line-height: 1.4;
+  }
+
   .leading-reading {
     line-height: var(--ds-line-height-reading);
   }
@@ -105,6 +147,18 @@
     min-width: 44px;
   }
 
+  .ds-card {
+    @apply rounded-xl border border-slate-200 bg-white;
+  }
+
+  .ds-badge {
+    @apply inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-600;
+  }
+
+  .ds-shadow-soft {
+    box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
+  }
+
   .cta-primary {
     @apply inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700;
   }
@@ -113,11 +167,25 @@
     @apply inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100;
   }
 
+  .cta-tertiary {
+    @apply inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900;
+  }
+
+  .cta-compact {
+    @apply px-3 py-1.5 text-xs;
+  }
+
   .cta-primary:focus-visible,
-  .cta-secondary:focus-visible {
+  .cta-secondary:focus-visible,
+  .cta-tertiary:focus-visible {
     outline: 2px solid transparent;
     outline-offset: 2px;
     box-shadow: var(--ds-focus-ring-shadow);
+  }
+
+  .mobile-sticky-bar {
+    @apply fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 backdrop-blur;
+    box-shadow: 0 -10px 24px rgba(15, 23, 42, 0.08);
   }
 
   @media (max-width: 640px) {

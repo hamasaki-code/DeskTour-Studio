@@ -3,10 +3,13 @@
 <% content_for :og_image_url, og_image_url(@post) %>
 <% body_section_label = I18n.locale.to_s == "ja" ? "本文" : "Overview" %>
 <% comments_lead_label = I18n.locale.to_s == "ja" ? "本文と関連アイテムを読んだあとに、感想や質問を投稿できます。" : "After reading the post and related items, join the conversation below." %>
+<% comment_empty_cta = I18n.locale.to_s == "ja" ? "最初のコメントを書く" : "Write the first comment" %>
+<% mobile_menu_open_label = I18n.locale.to_s == "ja" ? "操作メニューを開きました" : "Action menu opened" %>
+<% mobile_menu_close_label = I18n.locale.to_s == "ja" ? "操作メニューを閉じました" : "Action menu closed" %>
 
 <article class="space-y-content">
   <header class="space-y-3">
-    <div class="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+    <div class="flex flex-wrap items-center gap-2 text-xs text-slate-600">
       <span><%= l(@post.created_at.to_date) %></span>
       <% if @post.category.present? %>
         <span class="rounded-full bg-slate-100 px-2 py-1 text-slate-700"><%= @post.category %></span>
@@ -43,7 +46,7 @@
   <section class="rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
     <div class="flex flex-wrap items-center justify-between gap-3">
       <h2 class="text-xl font-bold text-slate-900"><%= t("posts.show.related_items") %></h2>
-      <span class="inline-flex items-center gap-1 text-sm text-slate-500">
+      <span class="inline-flex items-center gap-1 text-sm text-slate-600">
         <%= ui_icon(:heart, class_name: "h-4 w-4") %>
         <span><%= t("metrics.likes") %>: <%= localized_number(@post.likes_count) %></span>
       </span>
@@ -61,7 +64,7 @@
         <% end %>
       </div>
     <% else %>
-      <p class="mt-3 text-sm text-slate-500"><%= t("posts.show.no_related_items") %></p>
+      <p class="mt-3 text-sm text-slate-600"><%= t("posts.show.no_related_items") %></p>
     <% end %>
   </section>
 
@@ -71,7 +74,7 @@
         <%= ui_icon(:chat, class_name: "h-5 w-5") %>
         <span><%= t("posts.show.comments.title") %></span>
       </h2>
-      <p class="text-sm text-slate-500"><%= comments_lead_label %></p>
+      <p class="text-sm text-slate-600"><%= comments_lead_label %></p>
     </div>
 
     <% if @root_comments.any? %>
@@ -85,7 +88,7 @@
                 <span><%= t("posts.show.comments.reply") %></span>
               <% end %>
             </div>
-            <p class="mt-0.5 text-xs text-slate-500"><%= l(comment.created_at, format: :short) %></p>
+            <p class="mt-0.5 text-xs text-slate-600"><%= l(comment.created_at, format: :short) %></p>
             <p class="mt-2 whitespace-pre-wrap text-sm leading-reading text-slate-700"><%= comment.body %></p>
 
             <% if comment.replies.any? %>
@@ -93,7 +96,7 @@
                 <% comment.replies.each do |reply| %>
                   <div id="comment-<%= reply.id %>" class="rounded-lg border border-slate-300 bg-white p-3">
                     <p class="text-xs font-medium text-slate-700"><%= t("posts.show.comments.replied_by", name: reply.author_name) %></p>
-                    <p class="mt-0.5 text-xs text-slate-500"><%= l(reply.created_at, format: :short) %></p>
+                    <p class="mt-0.5 text-xs text-slate-600"><%= l(reply.created_at, format: :short) %></p>
                     <p class="mt-1 whitespace-pre-wrap text-sm leading-reading text-slate-700"><%= reply.body %></p>
                   </div>
                 <% end %>
@@ -103,10 +106,13 @@
         <% end %>
       </div>
     <% else %>
-      <p class="text-sm text-slate-500"><%= t("posts.show.comments.empty_state") %></p>
+      <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center">
+        <p class="ds-text-support"><%= t("posts.show.comments.empty_state") %></p>
+        <a href="#comment-form" class="mt-3 inline-flex tap-target cta-secondary cta-compact"><%= comment_empty_cta %></a>
+      </div>
     <% end %>
 
-    <div class="border-t border-slate-200 pt-4">
+    <div class="border-t border-slate-200 pt-4" id="comment-form">
       <% if @reply_to_comment.present? %>
         <div class="mb-3 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">
           <%= t("posts.show.comments.replying_to", name: @reply_to_comment.author_name) %>
@@ -145,7 +151,7 @@
         <% if recaptcha_enabled? %>
           <div class="g-recaptcha" data-sitekey="<%= recaptcha_site_key %>"></div>
         <% end %>
-        <%= f.button type: :submit, class: "tap-target cta-primary" do %>
+        <%= f.button type: :submit, class: "tap-target cta-secondary" do %>
           <span class="inline-flex items-center gap-1.5">
             <%= ui_icon(:chat, class_name: "h-4 w-4") %>
             <span><%= @reply_to_comment.present? ? t("posts.show.comments.reply") : t("posts.show.comments.post_comment") %></span>
@@ -172,7 +178,7 @@
     <% end %>
     <button type="button" data-copy-url="<%= post_share_url(@post) %>" data-ga-event="post_action_copy_url_click" data-ga-category="post_actions" data-ga-label="desktop_copy_url" class="tap-target cta-secondary">
       <%= ui_icon(:share, class_name: "h-4 w-4") %>
-      <span><%= t("posts.show.actions.copy_url") %></span>
+      <span data-copy-label><%= t("posts.show.actions.copy_url") %></span>
     </button>
     <% unless post_owner?(@post) %>
       <button type="button" data-open-report-modal="report-modal-<%= @post.id %>" data-ga-event="post_action_report_click" data-ga-category="post_actions" data-ga-label="desktop_report" class="tap-target cta-secondary border-amber-300 text-amber-800 hover:bg-amber-50">
@@ -182,7 +188,7 @@
     <% end %>
   </div>
 
-  <div class="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 backdrop-blur sm:hidden" data-mobile-actions-root>
+  <div class="mobile-sticky-bar transition-all duration-200 sm:hidden" data-mobile-actions-root>
     <div class="mx-auto w-full max-w-6xl px-4 pt-3" style="padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);">
       <div class="relative pb-1">
         <div class="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-1.5">
@@ -216,7 +222,7 @@
             <% end %>
             <button type="button" data-mobile-menu-action data-copy-url="<%= post_share_url(@post) %>" data-ga-event="post_action_copy_url_click" data-ga-category="post_actions" data-ga-label="mobile_copy_url_menu" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100">
               <%= ui_icon(:share, class_name: "h-4 w-4") %>
-              <span><%= t("posts.show.actions.copy_url") %></span>
+              <span data-copy-label><%= t("posts.show.actions.copy_url") %></span>
             </button>
             <% unless post_owner?(@post) %>
               <button type="button" data-mobile-menu-action data-open-report-modal="report-modal-<%= @post.id %>" data-ga-event="post_action_report_click" data-ga-category="post_actions" data-ga-label="mobile_report_menu" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-amber-800 hover:bg-amber-50">
@@ -232,7 +238,7 @@
 
   <% if post_owner?(@post) %>
     <div class="flex flex-wrap items-center gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4">
-      <%= link_to edit_post_path(@post), class: "tap-target cta-primary" do %>
+      <%= link_to edit_post_path(@post), class: "tap-target cta-secondary" do %>
         <%= ui_icon(:pencil_square, class_name: "h-4 w-4") %>
         <span><%= t("posts.show.actions.edit") %></span>
       <% end %>
@@ -251,7 +257,7 @@
     <dialog id="report-modal-<%= @post.id %>" class="w-full max-w-md rounded-xl border border-slate-200 p-0 shadow-lg backdrop:bg-slate-900/30">
       <div class="border-b border-slate-200 px-4 py-3">
         <h2 class="text-base font-semibold text-slate-900"><%= t("posts.show.report.title") %></h2>
-        <p class="mt-1 text-xs text-slate-500"><%= t("posts.show.report.description") %></p>
+        <p class="mt-1 text-xs text-slate-600"><%= t("posts.show.report.description") %></p>
       </div>
       <%= form_with model: [@post, @report], class: "space-y-form px-4 py-4" do |f| %>
         <% if owned_users.any? %>
@@ -295,6 +301,7 @@
 
       menu.classList.add("hidden");
       if (toggle) toggle.setAttribute("aria-expanded", "false");
+      if (typeof window.dsAnnounce === "function") window.dsAnnounce("<%= j(mobile_menu_close_label) %>");
       if (typeof window.gtag === "function") {
         window.gtag("event", "post_action_more_menu_close", {
           event_category: "post_actions",
@@ -328,6 +335,8 @@
         const expanded = mobileActionsToggle.getAttribute("aria-expanded") == "true";
         menu.classList.toggle("hidden", expanded);
         mobileActionsToggle.setAttribute("aria-expanded", String(!expanded));
+        if (!expanded && typeof window.dsAnnounce === "function") window.dsAnnounce("<%= j(mobile_menu_open_label) %>");
+        if (expanded && typeof window.dsAnnounce === "function") window.dsAnnounce("<%= j(mobile_menu_close_label) %>");
         return;
       }
 
@@ -364,5 +373,18 @@
       if (event.key !== "Escape") return;
       closeMobileActionsMenu("escape");
     });
+
+    const mobileActionsRoot = document.querySelector("[data-mobile-actions-root]");
+    const commentForm = document.querySelector("#comment-form form");
+    if (mobileActionsRoot && commentForm) {
+      commentForm.addEventListener("focusin", () => {
+        mobileActionsRoot.classList.add("translate-y-full", "opacity-0", "pointer-events-none");
+      });
+      commentForm.addEventListener("focusout", (event) => {
+        const next = event.relatedTarget;
+        if (next && commentForm.contains(next)) return;
+        mobileActionsRoot.classList.remove("translate-y-full", "opacity-0", "pointer-events-none");
+      });
+    }
   }
 </script>

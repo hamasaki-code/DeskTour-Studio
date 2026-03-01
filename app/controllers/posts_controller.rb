@@ -3,6 +3,7 @@ class PostsController < ApplicationController
   before_action :set_post, only: %i[edit update destroy notifications]
   before_action :require_owned_user!, only: %i[new create]
   before_action :prepare_owned_users, only: %i[new create edit update]
+  before_action :prepare_form_suggestions, only: %i[new create edit update]
   before_action :require_post_owner!, only: %i[edit update destroy notifications]
 
   def index
@@ -157,6 +158,13 @@ class PostsController < ApplicationController
 
   def prepare_owned_users
     @owned_users = owned_users.to_a
+  end
+
+  def prepare_form_suggestions
+    @category_suggestions = Post.visible.where.not(category: [ nil, "" ]).distinct.order(:category).limit(24).pluck(:category)
+    @tag_suggestions = Post.visible.where.not(tag_list: [ nil, "" ]).pluck(:tag_list).flat_map { |list|
+      list.to_s.split(",").map(&:strip)
+    }.reject(&:blank?).uniq.first(40)
   end
 
   def selected_owned_user
