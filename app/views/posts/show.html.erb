@@ -1,16 +1,16 @@
 <% content_for :title, @post.title %>
 <% content_for :description, truncate(@post.description, length: 120) %>
 <% content_for :og_image_url, og_image_url(@post) %>
-<% body_section_label = I18n.locale.to_s == "ja" ? "本文" : "Overview" %>
-<% comments_lead_label = I18n.locale.to_s == "ja" ? "本文と関連アイテムを読んだあとに、感想や質問を投稿できます。" : "After reading the post and related items, join the conversation below." %>
-<% comment_empty_cta = I18n.locale.to_s == "ja" ? "最初のコメントを書く" : "Write the first comment" %>
-<% mobile_menu_open_label = I18n.locale.to_s == "ja" ? "操作メニューを開きました" : "Action menu opened" %>
-<% mobile_menu_close_label = I18n.locale.to_s == "ja" ? "操作メニューを閉じました" : "Action menu closed" %>
-<% item_preview_label = I18n.locale.to_s == "ja" ? "商品プレビュー" : "Item preview" %>
-<% item_price_unknown_label = I18n.locale.to_s == "ja" ? "価格: 情報なし" : "Price: unavailable" %>
-<% item_link_missing_label = I18n.locale.to_s == "ja" ? "リンク未設定" : "Link not available" %>
-<% related_items_owner_hint = I18n.locale.to_s == "ja" ? "関連アイテムを追加すると、読者が構成を比較しやすくなります。" : "Add related items to help readers compare your setup." %>
-<% mobile_more_label = I18n.locale.to_s == "ja" ? "その他の操作" : "More actions" %>
+<% body_section_label = t("posts.show.overview_heading", default: "Overview") %>
+<% comments_lead_label = t("posts.show.comments_lead", default: "After reading the post and related items, join the conversation below.") %>
+<% comment_empty_cta = t("posts.show.comment_empty_cta", default: "Write the first comment") %>
+<% mobile_menu_open_label = t("navigation.menu_opened", default: "Action menu opened") %>
+<% mobile_menu_close_label = t("navigation.menu_closed", default: "Action menu closed") %>
+<% item_preview_label = t("posts.show.item_preview", default: "Item preview") %>
+<% item_price_unknown_label = t("posts.show.item_price_unknown", default: "Price: unavailable") %>
+<% item_link_missing_label = t("posts.show.item_link_missing", default: "Link not available") %>
+<% related_items_owner_hint = t("posts.show.related_items_owner_hint", default: "Add related items to help readers compare your setup.") %>
+<% mobile_more_label = t("posts.show.mobile_more_label", default: "More actions") %>
 
 <article class="space-y-content">
   <header class="space-y-3">
@@ -42,7 +42,7 @@
     <% if @post.tags.any? %>
       <div class="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
         <% @post.tags.each do |tag| %>
-          <%= link_to "##{tag}", posts_path(tag: tag), class: "rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-200 hover:text-slate-800" %>
+          <%= link_to "##{tag}", posts_path(tag: tag), class: "ds-badge-info hover:bg-slate-100" %>
         <% end %>
       </div>
     <% end %>
@@ -73,7 +73,14 @@
               <div class="space-y-2">
                 <p class="text-sm font-semibold text-slate-900"><%= item.name %></p>
                 <div class="flex flex-wrap items-center gap-2">
-                  <span class="ds-text-meta"><%= item_price_unknown_label %></span>
+                  <% item_facts = related_item_facts(item) %>
+                  <% if item_facts.any? %>
+                    <% item_facts.each do |fact| %>
+                      <span class="ds-badge-info"><%= "#{fact[:label]}: #{fact[:value]}" %></span>
+                    <% end %>
+                  <% else %>
+                    <span class="ds-text-meta"><%= item_price_unknown_label %></span>
+                  <% end %>
                   <% if item.affiliate_url.present? %>
                     <%= link_to t("posts.show.open_product_page"), item.affiliate_url, class: "tap-target cta-secondary cta-compact", target: "_blank", rel: "nofollow sponsored noopener" %>
                   <% else %>
@@ -213,7 +220,7 @@
       <span data-copy-label><%= t("posts.show.actions.copy_url") %></span>
     </button>
     <% unless post_owner?(@post) %>
-      <button type="button" data-open-report-modal="report-modal-<%= @post.id %>" data-ga-event="post_action_report_click" data-ga-category="post_actions" data-ga-label="desktop_report" class="tap-target cta-secondary border-amber-300 text-amber-800 hover:bg-amber-50">
+      <button type="button" data-open-report-modal="report-modal-<%= @post.id %>" data-ga-event="post_action_report_click" data-ga-category="post_actions" data-ga-label="desktop_report" class="tap-target cta-warning cta-compact">
         <%= ui_icon(:flag, class_name: "h-4 w-4") %>
         <span><%= t("posts.show.actions.report") %></span>
       </button>
@@ -255,7 +262,7 @@
               <span data-copy-label><%= t("posts.show.actions.copy_url") %></span>
             </button>
             <% unless post_owner?(@post) %>
-              <button type="button" data-mobile-menu-action data-open-report-modal="report-modal-<%= @post.id %>" data-ga-event="post_action_report_click" data-ga-category="post_actions" data-ga-label="mobile_report_menu" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-amber-800 hover:bg-amber-50">
+              <button type="button" data-mobile-menu-action data-open-report-modal="report-modal-<%= @post.id %>" data-ga-event="post_action_report_click" data-ga-category="post_actions" data-ga-label="mobile_report_menu" class="tap-target cta-warning cta-compact justify-start">
                 <%= ui_icon(:flag, class_name: "h-4 w-4") %>
                 <span><%= t("posts.show.actions.report") %></span>
               </button>
@@ -276,7 +283,7 @@
         <%= ui_icon(:bell, class_name: "h-4 w-4") %>
         <span><%= t("posts.show.actions.notifications", count: localized_number(@unread_notifications_count)) %></span>
       <% end %>
-      <%= button_to post_path(@post), method: :delete, form: { class: "inline-block" }, data: { turbo_confirm: t("posts.show.actions.delete_confirm") }, class: "tap-target inline-flex items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm text-red-700 hover:bg-red-100" do %>
+      <%= button_to post_path(@post), method: :delete, form: { class: "inline-block" }, data: { turbo_confirm: t("posts.show.actions.delete_confirm") }, class: "tap-target cta-danger" do %>
         <%= ui_icon(:trash, class_name: "h-4 w-4") %>
         <span><%= t("posts.show.actions.delete") %></span>
       <% end %>
@@ -308,8 +315,8 @@
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" data-close-report-modal="report-modal-<%= @post.id %>" class="tap-target cta-secondary"><%= t("posts.show.report.cancel") %></button>
-          <%= f.submit t("posts.show.report.submit"), class: "tap-target cta-secondary border-amber-300 text-amber-800 hover:bg-amber-50" %>
+          <button type="button" data-close-report-modal="report-modal-<%= @post.id %>" class="tap-target cta-tertiary"><%= t("posts.show.report.cancel") %></button>
+          <%= f.submit t("posts.show.report.submit"), class: "tap-target cta-warning" %>
         </div>
       <% end %>
     </dialog>
@@ -331,7 +338,7 @@
 
       menu.classList.add("hidden");
       if (toggle) toggle.setAttribute("aria-expanded", "false");
-      if (typeof window.dsAnnounce === "function") window.dsAnnounce("<%= j(mobile_menu_close_label) %>");
+      if (typeof window.dsNotify === "function") window.dsNotify("<%= j(mobile_menu_close_label) %>", "info");
       if (typeof window.gtag === "function") {
         window.gtag("event", "post_action_more_menu_close", {
           event_category: "post_actions",
@@ -365,8 +372,8 @@
         const expanded = mobileActionsToggle.getAttribute("aria-expanded") == "true";
         menu.classList.toggle("hidden", expanded);
         mobileActionsToggle.setAttribute("aria-expanded", String(!expanded));
-        if (!expanded && typeof window.dsAnnounce === "function") window.dsAnnounce("<%= j(mobile_menu_open_label) %>");
-        if (expanded && typeof window.dsAnnounce === "function") window.dsAnnounce("<%= j(mobile_menu_close_label) %>");
+        if (!expanded && typeof window.dsNotify === "function") window.dsNotify("<%= j(mobile_menu_open_label) %>", "info");
+        if (expanded && typeof window.dsNotify === "function") window.dsNotify("<%= j(mobile_menu_close_label) %>", "info");
         return;
       }
 

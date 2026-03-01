@@ -21,6 +21,12 @@
 - [ ] Section/block/component spacing rhythm is preserved
 - [ ] Ads use `ad-slot-surface` and `ad-slot-label` rules
 
+## Required Audit Record
+- CTA count / hierarchy result:
+- Empty / zero state result:
+- Focus-visible result:
+- Mobile interference result:
+
 ## Accessibility Notes
 - Keyboard flow checked:
 - Screen reader announcement impact:

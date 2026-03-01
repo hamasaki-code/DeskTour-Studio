@@ -16,9 +16,9 @@
     --ds-focus-border-color: rgb(37, 99, 235);
     --ds-text-main: rgb(15 23 42);
     --ds-text-body: rgb(51 65 85);
-    --ds-text-support: rgb(71 85 105);
+    --ds-text-support: rgb(51 65 85);
     --ds-text-meta: rgb(71 85 105);
-    --ds-text-muted: rgb(100 116 139);
+    --ds-text-muted: rgb(71 85 105);
   }
 
   html[lang="ja"] {
@@ -174,15 +174,15 @@
   }
 
   .ds-badge-active {
-    @apply inline-flex items-center gap-1 rounded-full border border-blue-300 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-800;
+    @apply inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-blue-300 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-800;
   }
 
   .ds-badge-inactive {
-    @apply inline-flex items-center rounded-full border border-slate-300 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100;
+    @apply inline-flex items-center whitespace-nowrap rounded-full border border-slate-300 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100;
   }
 
   .ds-badge-info {
-    @apply inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-500;
+    @apply inline-flex items-center whitespace-nowrap rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-600;
   }
 
   .ds-shadow-soft {
@@ -205,9 +205,19 @@
     @apply px-3 py-1.5 text-xs;
   }
 
+  .cta-warning {
+    @apply inline-flex items-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-800 hover:bg-amber-100;
+  }
+
+  .cta-danger {
+    @apply inline-flex items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100;
+  }
+
   .cta-primary:focus-visible,
   .cta-secondary:focus-visible,
-  .cta-tertiary:focus-visible {
+  .cta-tertiary:focus-visible,
+  .cta-warning:focus-visible,
+  .cta-danger:focus-visible {
     outline: 2px solid transparent;
     outline-offset: 2px;
     box-shadow: var(--ds-focus-ring-shadow);
@@ -219,7 +229,7 @@
   }
 
   .ad-slot-surface {
-    @apply rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-4;
+    @apply rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-4 sm:px-5 sm:py-5;
   }
 
   .ad-slot-label {
@@ -239,10 +249,59 @@
     margin-top: 0.75rem;
   }
 
+  .ds-locale-pill {
+    @apply inline-flex items-center justify-center whitespace-nowrap px-2.5 py-1;
+    min-width: 5.25rem;
+    max-width: 7.5rem;
+  }
+
+  .ds-toast-region {
+    @apply fixed left-1/2 top-4 z-[70] flex -translate-x-1/2 flex-col gap-2 px-4;
+    width: min(30rem, calc(100vw - 1.5rem));
+    pointer-events: none;
+  }
+
+  .ds-toast {
+    @apply rounded-lg border px-3 py-2 text-sm font-medium shadow-lg;
+    animation: ds-toast-in 160ms ease-out;
+  }
+
+  .ds-toast-success {
+    @apply border-emerald-300 bg-emerald-50 text-emerald-800;
+  }
+
+  .ds-toast-error {
+    @apply border-red-300 bg-red-50 text-red-800;
+  }
+
+  .ds-toast-info {
+    @apply border-slate-300 bg-white text-slate-800;
+  }
+
+  @keyframes ds-toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   @media (max-width: 640px) {
     .tap-target {
       padding-top: 0.625rem;
       padding-bottom: 0.625rem;
+    }
+
+    .ds-locale-pill {
+      min-width: 4.75rem;
+      max-width: 6.5rem;
+    }
+
+    .ad-slot-surface {
+      @apply py-5;
     }
   }
 }

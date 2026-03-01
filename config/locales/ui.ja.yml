@@ -5,6 +5,8 @@ ja:
     my_profile: "マイプロフィール"
     create_profile: "プロフィール作成"
     create_post: "投稿する"
+    menu_opened: "メニューを開きました"
+    menu_closed: "メニューを閉じました"
   footer:
     terms: "利用規約"
     privacy_policy: "プライバシーポリシー"

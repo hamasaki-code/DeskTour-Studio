@@ -5,6 +5,8 @@ en:
     my_profile: "My Profile"
     create_profile: "Create Profile"
     create_post: "Create Post"
+    menu_opened: "Menu opened"
+    menu_closed: "Menu closed"
   footer:
     terms: "Terms"
     privacy_policy: "Privacy Policy"

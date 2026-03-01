@@ -65,13 +65,13 @@
 
         <div class="ml-auto hidden flex-col items-end gap-1 sm:flex">
           <div class="inline-flex items-center gap-1 rounded-full border border-slate-300 bg-slate-50 p-1 text-xs font-semibold text-slate-700" role="group" aria-label="<%= t('language.switch_aria') %>">
-            <%= link_to locale_switch_path(:ja), class: "rounded-full px-2.5 py-1 #{locale_selected?(:ja) ? 'bg-slate-900 text-white shadow-sm ring-1 ring-slate-900' : 'text-slate-700 hover:bg-white'}", aria: { current: (locale_selected?(:ja) ? "true" : nil) }, data: { ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "desktop_locale_ja" } do %>
+            <%= link_to locale_switch_path(:ja), class: "ds-locale-pill rounded-full #{locale_selected?(:ja) ? 'bg-slate-900 text-white shadow-sm ring-1 ring-slate-900' : 'text-slate-700 hover:bg-white'}", aria: { current: (locale_selected?(:ja) ? "true" : nil) }, data: { ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "desktop_locale_ja" } do %>
               <span><%= t("language.option_ja") %></span>
               <% if locale_selected?(:ja) %>
                 <%= ui_icon(:check, class_name: "h-3 w-3") %>
               <% end %>
             <% end %>
-            <%= link_to locale_switch_path(:en), class: "rounded-full px-2.5 py-1 #{locale_selected?(:en) ? 'bg-slate-900 text-white shadow-sm ring-1 ring-slate-900' : 'text-slate-700 hover:bg-white'}", aria: { current: (locale_selected?(:en) ? "true" : nil) }, data: { ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "desktop_locale_en" } do %>
+            <%= link_to locale_switch_path(:en), class: "ds-locale-pill rounded-full #{locale_selected?(:en) ? 'bg-slate-900 text-white shadow-sm ring-1 ring-slate-900' : 'text-slate-700 hover:bg-white'}", aria: { current: (locale_selected?(:en) ? "true" : nil) }, data: { ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "desktop_locale_en" } do %>
               <span><%= t("language.option_en") %></span>
               <% if locale_selected?(:en) %>
                 <%= ui_icon(:check, class_name: "h-3 w-3") %>
@@ -93,22 +93,16 @@
         <div class="mx-auto w-full max-w-6xl space-y-2 px-4 py-2.5">
           <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target cta-primary flex w-full items-center justify-center", data: { mobile_header_action: true, ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "mobile_header_create_post_menu" } %>
 
-          <% if owned_users.any? %>
-            <%= link_to t("navigation.my_profile"), user_path(owned_users.first), class: "tap-target cta-tertiary flex w-full items-center justify-center", data: { mobile_header_action: true, ga_event: "navigation_profile_click", ga_category: "navigation", ga_label: "mobile_header_my_profile" } %>
-          <% else %>
-            <%= link_to t("navigation.create_profile"), new_user_path, class: "tap-target cta-tertiary flex w-full items-center justify-center", data: { mobile_header_action: true, ga_event: "navigation_profile_create_click", ga_category: "navigation", ga_label: "mobile_header_create_profile" } %>
-          <% end %>
-
           <div class="rounded-xl border border-slate-300 bg-slate-50 p-2">
             <p class="mb-1 text-xs font-semibold text-slate-700"><%= t("language.switch_aria") %></p>
             <div class="inline-flex items-center gap-1 rounded-full border border-slate-400 bg-white p-1 text-xs font-semibold text-slate-700" role="group" aria-label="<%= t('language.switch_aria') %>">
-              <%= link_to locale_switch_path(:ja), class: "rounded-full px-2.5 py-1 #{locale_selected?(:ja) ? 'bg-slate-900 text-white shadow-sm ring-1 ring-slate-900' : 'text-slate-700 hover:bg-slate-100'}", aria: { current: (locale_selected?(:ja) ? "true" : nil) }, data: { mobile_header_action: true, ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "mobile_locale_ja" } do %>
+              <%= link_to locale_switch_path(:ja), class: "ds-locale-pill rounded-full #{locale_selected?(:ja) ? 'bg-slate-900 text-white shadow-sm ring-1 ring-slate-900' : 'text-slate-700 hover:bg-slate-100'}", aria: { current: (locale_selected?(:ja) ? "true" : nil) }, data: { mobile_header_action: true, ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "mobile_locale_ja" } do %>
                 <span><%= t("language.option_ja") %></span>
                 <% if locale_selected?(:ja) %>
                   <%= ui_icon(:check, class_name: "ml-1 h-3 w-3") %>
                 <% end %>
               <% end %>
-              <%= link_to locale_switch_path(:en), class: "rounded-full px-2.5 py-1 #{locale_selected?(:en) ? 'bg-slate-900 text-white shadow-sm ring-1 ring-slate-900' : 'text-slate-700 hover:bg-slate-100'}", aria: { current: (locale_selected?(:en) ? "true" : nil) }, data: { mobile_header_action: true, ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "mobile_locale_en" } do %>
+              <%= link_to locale_switch_path(:en), class: "ds-locale-pill rounded-full #{locale_selected?(:en) ? 'bg-slate-900 text-white shadow-sm ring-1 ring-slate-900' : 'text-slate-700 hover:bg-slate-100'}", aria: { current: (locale_selected?(:en) ? "true" : nil) }, data: { mobile_header_action: true, ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "mobile_locale_en" } do %>
                 <span><%= t("language.option_en") %></span>
                 <% if locale_selected?(:en) %>
                   <%= ui_icon(:check, class_name: "ml-1 h-3 w-3") %>
@@ -116,6 +110,12 @@
               <% end %>
             </div>
           </div>
+
+          <% if owned_users.any? %>
+            <%= link_to t("navigation.my_profile"), user_path(owned_users.first), class: "tap-target cta-tertiary flex w-full items-center justify-center", data: { mobile_header_action: true, ga_event: "navigation_profile_click", ga_category: "navigation", ga_label: "mobile_header_my_profile" } %>
+          <% else %>
+            <%= link_to t("navigation.create_profile"), new_user_path, class: "tap-target cta-tertiary flex w-full items-center justify-center", data: { mobile_header_action: true, ga_event: "navigation_profile_create_click", ga_category: "navigation", ga_label: "mobile_header_create_profile" } %>
+          <% end %>
         </div>
       </div>
     </header>
@@ -163,21 +163,35 @@
       </div>
     </footer>
     <p id="ui-live-region" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+    <div id="ui-toast-region" class="ds-toast-region" aria-live="polite" aria-atomic="true"></div>
 
     <script>
       if (!window.__mobileHeaderBindingInstalled) {
         window.__mobileHeaderBindingInstalled = true;
-        const menuOpenedMessage = "Menu opened";
-        const menuClosedMessage = "Menu closed";
-        window.dsAnnounce = (message) => {
+        const menuOpenedMessage = "<%= j(t('navigation.menu_opened', default: 'Menu opened')) %>";
+        const menuClosedMessage = "<%= j(t('navigation.menu_closed', default: 'Menu closed')) %>";
+        window.dsNotify = (message, level = "info") => {
           if (!message) return;
           const region = document.getElementById("ui-live-region");
-          if (!region) return;
-          region.textContent = "";
-          requestAnimationFrame(() => {
-            region.textContent = message;
-          });
+          if (region) {
+            region.textContent = "";
+            requestAnimationFrame(() => {
+              region.textContent = message;
+            });
+          }
+
+          const toastRegion = document.getElementById("ui-toast-region");
+          if (!toastRegion) return;
+          const toast = document.createElement("div");
+          const toneClass = level === "error" ? "ds-toast-error" : level === "success" ? "ds-toast-success" : "ds-toast-info";
+          toast.className = `ds-toast ${toneClass}`;
+          toast.textContent = message;
+          toastRegion.appendChild(toast);
+          window.setTimeout(() => {
+            toast.remove();
+          }, 1800);
         };
+        window.dsAnnounce = (message) => window.dsNotify(message, "info");
 
         const closeMobileHeaderMenu = (reason = "dismissed") => {
           const menu = document.querySelector("[data-mobile-header-menu]");
@@ -186,7 +200,7 @@
 
           menu.classList.add("hidden");
           if (toggle) toggle.setAttribute("aria-expanded", "false");
-          window.dsAnnounce(menuClosedMessage);
+          window.dsNotify(menuClosedMessage, "info");
           if (typeof window.gtag === "function") {
             window.gtag("event", "navigation_mobile_menu_close", {
               event_category: "navigation",
@@ -207,7 +221,7 @@
             } else {
               toggle.setAttribute("aria-expanded", "true");
               menu.classList.remove("hidden");
-              window.dsAnnounce(menuOpenedMessage);
+              window.dsNotify(menuOpenedMessage, "info");
             }
             return;
           }
@@ -242,11 +256,11 @@
           await navigator.clipboard.writeText(target);
           if (labelNode) labelNode.textContent = "<%= j(t('clipboard.copy_success')) %>";
           button.dataset.defaultLabel = defaultLabel;
-          if (typeof window.dsAnnounce === "function") window.dsAnnounce("<%= j(t('clipboard.copy_success')) %>");
+          if (typeof window.dsNotify === "function") window.dsNotify("<%= j(t('clipboard.copy_success')) %>", "success");
         } catch (_) {
           if (labelNode) labelNode.textContent = "<%= j(t('clipboard.copy_failed')) %>";
           button.dataset.defaultLabel = defaultLabel;
-          if (typeof window.dsAnnounce === "function") window.dsAnnounce("<%= j(t('clipboard.copy_failed')) %>");
+          if (typeof window.dsNotify === "function") window.dsNotify("<%= j(t('clipboard.copy_failed')) %>", "error");
         }
         if (labelNode && defaultLabel.length > 0) {
           window.setTimeout(() => {
