@@ -11,7 +11,6 @@
         <tr>
           <th class="px-4 py-3">Title</th>
           <th class="px-4 py-3">Status</th>
-          <th class="px-4 py-3">Comments</th>
           <th class="px-4 py-3">Actions</th>
         </tr>
       </thead>
@@ -26,7 +25,6 @@
               <% end %>
             </td>
             <td class="px-4 py-3"><%= post_status_badge(post.status) %></td>
-            <td class="px-4 py-3"><%= localized_number(post.comments.count) %></td>
             <td class="px-4 py-3">
               <div class="flex flex-wrap gap-2">
                 <% next_status = post.published? ? "draft" : "published" %>

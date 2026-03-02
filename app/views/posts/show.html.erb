@@ -1,8 +1,6 @@
 <% content_for :title, @post.title %>
 <% content_for :description, truncate(@post.description, length: 120) %>
 <% content_for :og_image_url, og_image_url(@post) %>
-<% comments_count = @root_comments.sum { |comment| 1 + comment.replies.size } %>
-<% comments_count_label = t("posts.show.comments_count_label", count: comments_count, localized_count: localized_number(comments_count), default: "#{localized_number(comments_count)} comments") %>
 <% share_url = post_share_url(@post) %>
 <% share_text = post_share_text(@post) %>
 <% reading_sections_data = reading_sections(@post.description) %>
@@ -15,7 +13,6 @@
         <%= timestamp_tag(@post.created_at, style: :date, include_relative: true) %>
         <% if @post.category.present? %><span class="ds-badge-inactive"><%= @post.category %></span><% end %>
         <% if @post.theme.present? %><span class="ds-badge-info"><%= @post.theme %></span><% end %>
-        <span class="inline-flex items-center gap-1"><%= ui_icon(:chat, class_name: "h-3.5 w-3.5") %><span><%= comments_count_label %></span></span>
       </div>
       <% if @back_to_index_path.present? %>
         <%= link_to @back_to_index_path, class: "tap-target cta-secondary cta-compact" do %>
@@ -42,7 +39,6 @@
       </button>
     </div>
     <p class="ds-text-body ds-break-words max-w-3xl"><%= truncate(@post.description.to_s.squish, length: 170) %></p>
-    <a href="#comments" class="tap-target cta-tertiary cta-compact"><%= t("posts.show.comments.title") %></a>
   </header>
 
   <div class="ds-media-frame ds-media-frame-main ds-media-skeleton" data-media-skeleton data-image-shell>
@@ -163,99 +159,6 @@
     <% end %>
   </section>
 
-  <section id="comments" class="ds-anchor-offset space-y-form rounded-xl border border-slate-200 bg-white p-4 sm:p-6">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <div class="space-y-1"><h2 class="inline-flex items-center gap-1.5 ds-heading-lg text-slate-900" id="comments-heading"><%= ui_icon(:chat, class_name: "h-5 w-5") %><span><%= t("posts.show.comments.title") %></span></h2><p class="ds-text-meta"><%= comments_count_label %></p></div>
-      <a href="#comment-form" class="tap-target cta-primary cta-compact"><%= @root_comments.any? ? t("posts.show.comments.post_comment") : t("posts.show.comment_empty_cta", default: "Write the first comment") %></a>
-    </div>
-    <p class="ds-trust-note"><%= t("comments.health_note", default: "Report and mute controls are available per thread. Reports are reviewed in order of urgency.") %></p>
-    <p class="ds-text-support"><%= t("posts.show.comments_lead", default: "After reading the post and related items, join the conversation below.") %></p>
-
-    <% if @root_comments.any? %>
-      <ol class="space-y-4" aria-live="polite" aria-labelledby="comments-heading">
-        <% @root_comments.each_with_index do |comment, index| %>
-          <li>
-            <article id="comment-<%= comment.id %>" class="ds-thread-root" aria-label="<%= t('posts.show.comments.thread_label', default: 'Comment thread %{position}', position: index + 1) %>" data-comment-id="<%= comment.id %>">
-              <div class="flex items-center justify-between gap-3"><p class="text-sm font-medium text-slate-800 ds-break-words"><%= comment.author_name %></p></div>
-              <p class="mt-0.5 ds-text-meta"><%= timestamp_tag(comment.created_at, style: :datetime) %></p>
-              <p class="mt-2 whitespace-pre-wrap text-sm leading-reading text-slate-700 ds-break-words"><%= comment.body %></p>
-              <% if comment.replies.any? %>
-                <div class="ds-thread-reply-wrap" aria-label="<%= t('posts.show.comments.replies', default: 'Replies') %>">
-                  <% comment.replies.each do |reply| %>
-                    <div id="comment-<%= reply.id %>" class="ds-thread-reply">
-                      <p class="text-xs font-medium text-slate-700 ds-break-words"><%= t("posts.show.comments.replied_by", name: reply.author_name) %></p>
-                      <p class="mt-0.5 ds-text-meta"><%= timestamp_tag(reply.created_at, style: :datetime) %></p>
-                      <p class="mt-1 whitespace-pre-wrap text-sm leading-reading text-slate-700 ds-break-words"><%= reply.body %></p>
-                    </div>
-                  <% end %>
-                </div>
-              <% end %>
-              <div class="mt-3 border-t border-slate-100 pt-3">
-                <div class="flex flex-wrap items-center gap-1.5">
-                  <%= link_to post_path(@post, anchor: "comments", reply_to: comment.id), class: "tap-target inline-flex items-center gap-1 rounded-md px-2 text-xs text-blue-600 hover:bg-blue-50 hover:text-blue-700" do %><%= ui_icon(:arrow_uturn_left, class_name: "h-3.5 w-3.5") %><span><%= t("posts.show.comments.reply") %></span><% end %>
-                  <button type="button" class="tap-target cta-tertiary cta-compact" data-mute-comment data-comment-id="<%= comment.id %>"><%= t("posts.show.comments.mute", default: "Mute thread") %></button>
-                  <% unless post_owner?(@post) %>
-                    <button type="button" class="tap-target cta-tertiary cta-compact" data-report-comment data-comment-id="<%= comment.id %>" data-comment-author="<%= comment.author_name %>" data-comment-body="<%= truncate(comment.body.to_s.squish, length: 120) %>"><%= t("posts.show.comments.report", default: "Report") %></button>
-                  <% end %>
-                </div>
-              </div>
-            </article>
-          </li>
-        <% end %>
-      </ol>
-    <% else %>
-      <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center"><p class="ds-text-support"><%= t("posts.show.comments.empty_state") %></p><a href="#comment-form" class="mt-3 inline-flex tap-target cta-primary cta-compact"><%= t("posts.show.comment_empty_cta", default: "Write the first comment") %></a></div>
-    <% end %>
-    <div class="ds-anchor-offset border-t border-slate-200 pt-4" id="comment-form" data-comment-form-root>
-      <% if @reply_to_comment.present? %>
-        <div class="mb-3 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800" data-reply-context>
-          <p><%= t("posts.show.comments.replying_to", name: @reply_to_comment.author_name) %> <%= link_to t("posts.show.comments.cancel"), post_path(@post, anchor: "comments"), class: "ml-2 text-blue-600 underline" %></p>
-          <p class="mt-1 text-xs text-blue-700 ds-break-words"><%= truncate(@reply_to_comment.body.to_s.squish, length: 100) %></p>
-        </div>
-      <% end %>
-
-      <%= form_with model: [@post, @comment], class: "space-y-form ds-loading-shell", data: { form_autofocus_errors: true, ui_form: true, form_analytics_context: "comment_form", offline_draft_key: "comment_form_post_#{@post.id}", draft_restored_message: t("ui.draft_restored", default: "Draft restored."), offline_submit_message: t("ui.offline_submit", default: "You appear to be offline. Your input was saved locally."), loading_label: t("ui.processing", default: "Processing..."), submitting_reason: t("ui.processing", default: "Processing..."), disabled_reason_prefix: t("ui.disabled_reason", default: "Complete required fields"), disabled_submit_notice: t("ui.complete_required", default: "Please complete required fields before submitting.") } do |f| %>
-        <% if @comment.errors.any? %>
-          <div class="space-y-2">
-            <%= render "shared/feedback_panel", level: :error, title: t("posts.form.error_summary", default: "Please fix the following errors."), body: t("comments.form.error_recovery", default: "Please update the fields and retry."), actions: [{ label: t("ui.retry", default: "Retry"), href: "#comment-form" }, { label: t("ui.back", default: "Back"), href: post_path(@post, anchor: "comments") }] %>
-            <div id="comment-error-summary" class="rounded-lg border border-red-200 bg-white p-3 text-sm text-red-800" role="alert" tabindex="-1"><ul class="list-disc pl-5"><% @comment.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></div>
-          </div>
-        <% end %>
-
-        <% if owned_users.any? %>
-          <div>
-            <%= f.label :user_id, class: "mb-1 inline-flex items-center gap-1.5 text-sm font-medium" do %><span><%= t("posts.show.comments.comment_as_profile") %></span><span class="ds-badge-info"><%= t("posts.show.comments.optional", default: "Optional") %></span><% end %>
-            <%= f.collection_select :user_id, owned_users, :id, :name, { include_blank: t("posts.show.comments.post_as_guest") }, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", data: { comment_input: "user_id" } %>
-            <p class="ds-field-guide"><%= t("posts.show.comments.profile_help", default: "Optional: choose a profile, or post as guest.") %></p>
-          </div>
-        <% end %>
-
-        <%= f.hidden_field :parent_comment_id, value: @reply_to_comment&.id %>
-
-        <div>
-          <%= f.label :author_name, class: "mb-1 inline-flex items-center gap-1.5 text-sm font-medium" do %><span><%= t("posts.show.comments.name") %></span><span class="ds-badge-active"><%= t("posts.show.comments.required", default: "Required") %></span><% end %>
-          <%= f.text_field :author_name, required: true, maxlength: 40, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.show.comments.name_example", default: "Example: Alex"), data: { comment_input: "author_name", char_count_max: 40, char_count_target: "comment_name_counter" }, aria: { describedby: "comment_name_guide comment_name_counter" } %>
-          <p id="comment_name_guide" class="ds-field-guide"><%= t("comments.form.name_guide", default: "Shown publicly with your comment.") %></p>
-          <p id="comment_name_counter" class="ds-char-counter" aria-live="polite"></p>
-        </div>
-
-        <div>
-          <%= f.label :body, class: "mb-1 inline-flex items-center gap-1.5 text-sm font-medium" do %><span><%= t("posts.show.comments.comment") %></span><span class="ds-badge-active"><%= t("posts.show.comments.required", default: "Required") %></span><% end %>
-          <%= f.text_area :body, rows: 4, required: true, maxlength: 500, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm ds-break-words", placeholder: t("posts.show.comments.body_example", default: "What part of this setup stood out to you?"), data: { comment_input: "body", char_count_max: 500, char_count_target: "comment_body_counter" }, aria: { describedby: "comment_body_help comment_body_counter" } %>
-          <p id="comment_body_help" class="ds-field-guide"><%= t("posts.show.comments.body_help", default: "Tip: include one concrete point to get a better reply.") %></p>
-          <p id="comment_body_counter" class="ds-char-counter" aria-live="polite"></p>
-        </div>
-
-        <% if recaptcha_enabled? %><div class="g-recaptcha" data-sitekey="<%= recaptcha_site_key %>" data-recaptcha-shell></div><% end %>
-
-        <%= f.button type: :submit, class: "tap-target cta-primary ds-cta-experiment", data: { variant: "compact" } do %><span class="inline-flex items-center gap-1.5"><%= ui_icon(:chat, class_name: "h-4 w-4") %><span data-submit-label><%= @reply_to_comment.present? ? t("posts.show.comments.reply") : t("posts.show.comments.post_comment") %></span></span><% end %>
-        <p class="ds-disabled-reason" data-disabled-reason aria-live="polite"></p>
-      <% end %>
-    </div>
-
-    <div class="ds-legal-links border-t border-slate-200 pt-3"><span class="text-slate-500"><%= t("legal.quick_links", default: "Policies") %>:</span><%= link_to t("footer.terms"), terms_path %><%= link_to t("footer.privacy_policy"), privacy_policy_path %><%= link_to t("footer.cookie_policy"), cookie_policy_path %></div>
-  </section>
-
   <% if post_owner?(@post) %>
     <section class="ds-card space-y-4 p-4">
       <h2 class="ds-heading-sm text-slate-900"><%= t("posts.show.owner_actions", default: "Owner actions") %></h2>
@@ -335,7 +238,6 @@
     const menuCloseMessage = "<%= j(t('navigation.menu_closed', default: 'Action menu closed')) %>";
     const FAVORITES_KEY = "post_favorites";
     const RECENTLY_VIEWED_KEY = "post_recently_viewed";
-    const MUTED_COMMENTS_KEY = "muted_comment_threads";
     let lastModalTrigger = null;
 
     const readJson = (key, fallback = []) => {
@@ -367,14 +269,6 @@
       });
     };
 
-    const highlightCommentFromHash = () => {
-      if (!window.location.hash.startsWith("#comment-")) return;
-      const target = document.querySelector(window.location.hash);
-      if (!target) return;
-      target.classList.add("ds-reply-target-highlight");
-      window.setTimeout(() => target.classList.remove("ds-reply-target-highlight"), 1600);
-    };
-
     const syncFavoriteButtons = () => {
       const favorites = Array.isArray(readJson(FAVORITES_KEY, [])) ? readJson(FAVORITES_KEY, []) : [];
       document.querySelectorAll("[data-favorite-toggle]").forEach((button) => {
@@ -395,31 +289,6 @@
       const current = readJson(RECENTLY_VIEWED_KEY, []);
       const next = [ { id, title, url, viewedAt: Date.now() }, ...current.filter((item) => String(item.id) !== id) ].slice(0, 12);
       writeJson(RECENTLY_VIEWED_KEY, next);
-    };
-
-    const applyMutedComments = () => {
-      const muted = Array.isArray(readJson(MUTED_COMMENTS_KEY, [])) ? readJson(MUTED_COMMENTS_KEY, []) : [];
-      document.querySelectorAll("[data-comment-id]").forEach((article) => {
-        const id = String(article.dataset.commentId || "");
-        const isMuted = muted.includes(id);
-        article.dataset.muted = isMuted ? "1" : "0";
-        article.classList.toggle("opacity-60", isMuted);
-        const muteButton = article.querySelector("[data-mute-comment]");
-        if (muteButton) {
-          muteButton.textContent = isMuted ? "<%= j(t('posts.show.comments.unmute', default: 'Unmute thread')) %>" : "<%= j(t('posts.show.comments.mute', default: 'Mute thread')) %>";
-        }
-
-        let mutedBadge = article.querySelector("[data-comment-muted-badge]");
-        if (isMuted && !mutedBadge) {
-          mutedBadge = document.createElement("p");
-          mutedBadge.dataset.commentMutedBadge = "true";
-          mutedBadge.className = "ds-comment-muted mt-2";
-          mutedBadge.textContent = "<%= j(t('posts.show.comments.muted_label', default: 'Muted thread. You can unmute anytime.')) %>";
-          const body = article.querySelector("p.mt-2");
-          if (body) body.after(mutedBadge);
-        }
-        if (!isMuted && mutedBadge) mutedBadge.remove();
-      });
     };
 
     const closeMenu = (menuSelector, toggleSelector, notify = false) => {
@@ -465,20 +334,8 @@
       const root = document.querySelector("[data-mobile-actions-root]");
       const menu = document.querySelector("[data-mobile-actions-menu]");
       const modal = document.querySelector("[data-report-modal][open]");
-      const commentFormRoot = document.querySelector("[data-comment-form-root]");
-      const commentForm = commentFormRoot ? commentFormRoot.querySelector("form") : null;
-      const recaptchaShell = commentFormRoot ? commentFormRoot.querySelector("[data-recaptcha-shell]") : null;
       if (!root) return;
-
-      const focusedOnComment = commentForm ? commentForm.contains(document.activeElement) : false;
-      const replyMode = Boolean(commentFormRoot && commentFormRoot.querySelector("[data-reply-context]"));
-      const recaptchaFocused = recaptchaShell ? recaptchaShell.contains(document.activeElement) : false;
-      const recaptchaVisible = recaptchaShell ? (() => {
-        const rect = recaptchaShell.getBoundingClientRect();
-        return rect.top < window.innerHeight && rect.bottom > 0;
-      })() : false;
-
-      const shouldHide = focusedOnComment || keyboardOpen() || Boolean(modal) || replyMode || recaptchaFocused || recaptchaVisible;
+      const shouldHide = keyboardOpen() || Boolean(modal);
       const menuOpen = menu && !menu.classList.contains("hidden");
       root.classList.toggle("translate-y-full", shouldHide);
       root.classList.toggle("opacity-0", shouldHide);
@@ -506,40 +363,6 @@
           writeJson(FAVORITES_KEY, next);
           syncFavoriteButtons();
         }
-        return;
-      }
-
-      const muteButton = event.target.closest("[data-mute-comment]");
-      if (muteButton) {
-        const commentId = String(muteButton.dataset.commentId || "");
-        if (!commentId) return;
-        const current = Array.isArray(readJson(MUTED_COMMENTS_KEY, [])) ? readJson(MUTED_COMMENTS_KEY, []) : [];
-        const next = current.includes(commentId) ? current.filter((id) => id !== commentId) : [ ...current, commentId ];
-        writeJson(MUTED_COMMENTS_KEY, next);
-        applyMutedComments();
-        if (typeof window.dsNotify === "function") {
-          window.dsNotify(current.includes(commentId) ? "<%= j(t('posts.show.comments.unmuted', default: 'Thread unmuted')) %>" : "<%= j(t('posts.show.comments.muted', default: 'Thread muted')) %>", "info");
-        }
-        return;
-      }
-
-      const reportCommentButton = event.target.closest("[data-report-comment]");
-      if (reportCommentButton) {
-        const modal = document.querySelector("[data-report-modal]");
-        if (!modal) return;
-        const modalId = modal.getAttribute("id");
-        const detailsField = modal.querySelector("[name='report[details]']");
-        const author = reportCommentButton.dataset.commentAuthor || "";
-        const commentBody = reportCommentButton.dataset.commentBody || "";
-        const commentId = reportCommentButton.dataset.commentId || "";
-        if (detailsField) {
-          detailsField.value = `<%= j(t('posts.show.comments.report_template', default: 'Comment report')) %> #${commentId} (${author}): ${commentBody}`;
-          detailsField.dispatchEvent(new Event("input", { bubbles: true }));
-        }
-        openModal(reportCommentButton, modalId);
-        closeMenu("[data-mobile-actions-menu]", "[data-mobile-actions-toggle]", true);
-        closeMenu("[data-desktop-post-actions-menu]", "[data-desktop-post-actions-toggle]");
-        syncMobileActionBar();
         return;
       }
 
@@ -624,8 +447,8 @@
       window.visualViewport.addEventListener("scroll", syncMobileActionBar);
     }
 
-    document.addEventListener("turbo:load", () => { markLoadedMedia(); syncMobileActionBar(); highlightCommentFromHash(); syncFavoriteButtons(); storeRecentlyViewed(); applyMutedComments(); });
-    document.addEventListener("DOMContentLoaded", () => { markLoadedMedia(); syncMobileActionBar(); highlightCommentFromHash(); syncFavoriteButtons(); storeRecentlyViewed(); applyMutedComments(); });
-    window.setTimeout(() => { markLoadedMedia(); syncMobileActionBar(); highlightCommentFromHash(); syncFavoriteButtons(); storeRecentlyViewed(); applyMutedComments(); }, 0);
+    document.addEventListener("turbo:load", () => { markLoadedMedia(); syncMobileActionBar(); syncFavoriteButtons(); storeRecentlyViewed(); });
+    document.addEventListener("DOMContentLoaded", () => { markLoadedMedia(); syncMobileActionBar(); syncFavoriteButtons(); storeRecentlyViewed(); });
+    window.setTimeout(() => { markLoadedMedia(); syncMobileActionBar(); syncFavoriteButtons(); storeRecentlyViewed(); }, 0);
   }
 </script>

@@ -4,7 +4,6 @@ class Post < ApplicationRecord
   has_one_attached :desk_image
   belongs_to :user
   has_many :items, dependent: :destroy
-  has_many :comments, dependent: :destroy
   has_many :notifications, dependent: :destroy
   has_many :reports, dependent: :destroy
 

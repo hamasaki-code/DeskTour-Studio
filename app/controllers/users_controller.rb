@@ -49,6 +49,6 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:name, :bio, :email, :email_notifications_enabled)
+    params.require(:user).permit(:name, :bio, :email)
   end
 end

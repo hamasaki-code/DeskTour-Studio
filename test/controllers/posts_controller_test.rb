@@ -111,7 +111,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   test "owner can edit update destroy and read notifications" do
     post_record = create_owned_post
-    post_record.notifications.create!(kind: :comment, message: "コメント通知")
+    post_record.notifications.create!(kind: :like, message: "Like notification")
 
     get edit_post_url(post_record)
     assert_response :success
