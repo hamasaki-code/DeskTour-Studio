@@ -1,7 +1,7 @@
 <% content_for :title, t("posts.edit.title") %>
 <% content_for :description, t("posts.edit.description") %>
 
-<section class="mx-auto w-full max-w-3xl space-y-content">
+<section class="mx-auto w-full max-w-3xl space-y-content" data-page-content>
     <div>
         <h1 class="ds-heading-xl"><%= t("posts.edit.heading") %></h1>
         <div class="mt-2 flex items-center gap-2 ds-text-support">
@@ -13,4 +13,8 @@
     <div class="ds-card p-6">
         <%= render "form", post: @post, owned_users: @owned_users, category_suggestions: @category_suggestions, tag_suggestions: @tag_suggestions %>
     </div>
+</section>
+
+<section class="mx-auto hidden w-full max-w-3xl" data-page-skeleton aria-hidden="true">
+  <%= render "shared/screen_skeleton", variant: :detail %>
 </section>

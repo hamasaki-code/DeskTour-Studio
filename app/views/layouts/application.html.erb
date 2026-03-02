@@ -49,7 +49,7 @@
     <% end %>
   </head>
 
-  <body class="lang-<%= I18n.locale %> min-h-screen bg-slate-50 text-slate-800">
+  <body class="lang-<%= I18n.locale %> min-h-screen bg-slate-50 text-slate-800" data-screen="<%= "#{controller_name}-#{action_name}" %>">
     <% tracked_events = analytics_events %>
     <% mobile_sticky_active = controller_name == "posts" && action_name.in?(%w[index show]) %>
     <% main_padding_class = mobile_sticky_active ? "pb-40 sm:pb-8" : "pb-10 sm:pb-8" %>
@@ -80,6 +80,7 @@
                 <% else %>
                   <%= link_to t("navigation.create_profile"), new_user_path, class: "tap-target cta-tertiary w-full justify-start", data: { ga_event: "navigation_profile_create_click", ga_category: "navigation", ga_label: "desktop_header_create_profile" } %>
                 <% end %>
+                <%= link_to t("navigation.onboarding", default: "Getting started"), onboarding_path, class: "tap-target cta-tertiary w-full justify-start", data: { ga_event: "navigation_onboarding_click", ga_category: "navigation", ga_label: "desktop_header_onboarding" } %>
                 <div class="rounded-lg border border-slate-200 bg-slate-50 p-2">
                   <p class="mb-1 ds-text-meta font-semibold"><%= t("language.switch_aria") %></p>
                   <div class="inline-flex w-full items-center gap-1 rounded-full border border-slate-300 bg-white p-1 text-xs font-semibold text-slate-700" role="group" aria-label="<%= t('language.switch_aria') %>">
@@ -96,6 +97,11 @@
                       <% end %>
                     <% end %>
                   </div>
+                </div>
+                <div class="ds-legal-links border-t border-slate-200 pt-2">
+                  <%= link_to t("footer.terms"), terms_path %>
+                  <%= link_to t("footer.privacy_policy"), privacy_policy_path %>
+                  <%= link_to t("footer.cookie_policy"), cookie_policy_path %>
                 </div>
               </div>
             </div>
@@ -130,11 +136,28 @@
           <% else %>
             <%= link_to t("navigation.create_profile"), new_user_path, class: "tap-target cta-tertiary flex w-full items-center justify-center", data: { mobile_header_action: true, ga_event: "navigation_profile_create_click", ga_category: "navigation", ga_label: "mobile_header_create_profile" } %>
           <% end %>
+
+          <%= link_to t("navigation.onboarding", default: "Getting started"), onboarding_path, class: "tap-target cta-tertiary flex w-full items-center justify-center", data: { mobile_header_action: true, ga_event: "navigation_onboarding_click", ga_category: "navigation", ga_label: "mobile_header_onboarding" } %>
+
+          <div class="ds-legal-links border-t border-slate-200 pt-2">
+            <%= link_to t("footer.terms"), terms_path, data: { mobile_header_action: true } %>
+            <%= link_to t("footer.privacy_policy"), privacy_policy_path, data: { mobile_header_action: true } %>
+            <%= link_to t("footer.cookie_policy"), cookie_policy_path, data: { mobile_header_action: true } %>
+          </div>
         </div>
       </div>
     </header>
 
     <main class="mx-auto w-full max-w-6xl px-4 pt-8 <%= main_padding_class %> sm:px-6">
+      <% if controller_name == "posts" && action_name.in?(%w[index show new]) %>
+        <div class="mb-4 ds-legal-links">
+          <span class="text-slate-500"><%= t("legal.quick_links", default: "Policies") %>:</span>
+          <%= link_to t("footer.terms"), terms_path %>
+          <%= link_to t("footer.privacy_policy"), privacy_policy_path %>
+          <%= link_to t("footer.cookie_policy"), cookie_policy_path %>
+        </div>
+      <% end %>
+
       <% flash.each do |type, message| %>
         <% next if type.to_s == "analytics_events" %>
         <% visual = flash_visual(type) %>
@@ -146,9 +169,17 @@
         else
           "border-emerald-300 bg-emerald-50 text-emerald-700"
         end %>
+        <% toast_level = case visual[:level]
+        when :error
+          "error"
+        when :warning
+          "info"
+        else
+          "success"
+        end %>
         <% role = visual[:level] == :error ? "alert" : "status" %>
         <% live = visual[:level] == :error ? "assertive" : "polite" %>
-        <div class="mb-4 rounded-lg border px-4 py-3 text-sm <%= tone %>" role="<%= role %>" aria-live="<%= live %>">
+        <div class="mb-4 rounded-lg border px-4 py-3 text-sm <%= tone %>" role="<%= role %>" aria-live="<%= live %>" data-flash-message="<%= message %>" data-flash-level="<%= toast_level %>">
           <div class="flex items-start gap-2">
             <%= status_badge(level: visual[:level], icon: visual[:icon], label: t(visual[:label_key])) %>
             <p class="pt-0.5"><%= message %></p>

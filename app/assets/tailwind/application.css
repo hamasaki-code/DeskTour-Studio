@@ -66,16 +66,20 @@
     scroll-behavior: smooth;
   }
 
-  a,
-  button,
   input,
   select,
   textarea {
     transition: box-shadow var(--ds-motion-duration-fast) ease,
                 border-color var(--ds-motion-duration-fast) ease,
                 background-color var(--ds-motion-duration-fast) ease,
-                color var(--ds-motion-duration-fast) ease,
-                transform var(--ds-motion-duration-fast) ease;
+                color var(--ds-motion-duration-fast) ease;
+  }
+
+  a,
+  button {
+    transition: box-shadow var(--ds-motion-duration-fast) ease,
+                background-color var(--ds-motion-duration-fast) ease,
+                color var(--ds-motion-duration-fast) ease;
   }
 
   a:focus-visible,
@@ -214,6 +218,21 @@
     @apply rounded-xl border border-slate-200 bg-white;
   }
 
+  .ds-card-interactive {
+    cursor: pointer;
+    outline: none;
+  }
+
+  .ds-card-interactive:hover {
+    border-color: rgb(148 163 184);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.09);
+  }
+
+  .ds-card-interactive:focus-visible {
+    box-shadow: var(--ds-focus-ring-shadow), 0 8px 24px rgba(15, 23, 42, 0.09);
+    border-color: rgb(59 130 246);
+  }
+
   .ds-badge {
     @apply inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-600;
   }
@@ -324,6 +343,26 @@
     box-shadow: var(--ds-focus-ring-shadow);
   }
 
+  .cta-primary:disabled,
+  .cta-secondary:disabled,
+  .cta-tertiary:disabled,
+  .cta-warning:disabled,
+  .cta-danger:disabled,
+  .ds-button-disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+    transform: none !important;
+  }
+
+  .cta-primary:active,
+  .cta-secondary:active,
+  .cta-tertiary:active,
+  .cta-warning:active,
+  .cta-danger:active,
+  .ds-tap-active {
+    transform: scale(0.98);
+  }
+
   .mobile-sticky-bar {
     @apply fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 backdrop-blur;
     box-shadow: 0 -10px 24px rgba(15, 23, 42, 0.08);
@@ -331,15 +370,15 @@
   }
 
   .ad-slot-surface {
-    @apply rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-4 sm:px-5 sm:py-5;
+    @apply rounded-xl border border-slate-300 bg-slate-50/75 px-4 py-5 sm:px-5 sm:py-5;
   }
 
   .ad-slot-label {
-    @apply mb-2 text-center text-[11px] font-semibold uppercase tracking-wide text-slate-500;
+    @apply mb-2 inline-flex items-center rounded-full border border-slate-300 bg-white px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-600;
   }
 
   .ad-slot-divider {
-    @apply mb-2 text-center text-xs font-medium text-slate-500;
+    @apply mb-2 text-center text-xs font-semibold text-slate-600;
   }
 
   .lang-ja .ds-reading-column {
@@ -385,6 +424,146 @@
     @apply border-slate-300 bg-white text-slate-800;
   }
 
+  .ds-char-counter {
+    @apply mt-1 text-xs text-slate-500;
+  }
+
+  .ds-char-counter-warning {
+    @apply font-semibold text-amber-700;
+  }
+
+  .ds-char-counter-error {
+    @apply font-semibold text-red-700;
+  }
+
+  .ds-disabled-reason {
+    @apply min-h-5 text-xs font-medium text-slate-600;
+  }
+
+  .ds-field-guide {
+    @apply mt-1 text-xs leading-5 text-slate-500;
+  }
+
+  .ds-loading-shell {
+    position: relative;
+  }
+
+  .ds-form-submitting {
+    opacity: 0.92;
+  }
+
+  .ds-skeleton-line,
+  .ds-skeleton-block {
+    @apply rounded bg-slate-200;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ds-skeleton-line::after,
+  .ds-skeleton-block::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 20%, var(--ds-skeleton-shimmer) 45%, transparent 70%);
+    transform: translateX(-100%);
+    animation: ds-skeleton-shimmer 1.35s infinite linear;
+  }
+
+  .ds-skeleton-line {
+    height: 0.75rem;
+  }
+
+  .ds-skeleton-block {
+    height: 100%;
+    min-height: 7rem;
+  }
+
+  .ds-loading-inline {
+    @apply inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600;
+  }
+
+  .ds-loading-dot {
+    @apply h-1.5 w-1.5 rounded-full bg-slate-400;
+    animation: ds-loading-pulse 950ms infinite ease-in-out;
+  }
+
+  .ds-loading-dot:nth-child(2) {
+    animation-delay: 120ms;
+  }
+
+  .ds-loading-dot:nth-child(3) {
+    animation-delay: 220ms;
+  }
+
+  .ds-image-fallback {
+    @apply absolute inset-0 flex flex-col items-center justify-center gap-2 bg-slate-900/58 px-3 text-center text-xs font-medium text-white;
+  }
+
+  .ds-image-fallback button {
+    @apply rounded-md border border-white/80 bg-white/10 px-2.5 py-1 text-xs font-semibold text-white hover:bg-white/20;
+  }
+
+  .ds-thumbnail-crop {
+    object-position: 50% 36%;
+  }
+
+  .ds-legal-links {
+    @apply flex flex-wrap items-center gap-3 text-xs text-slate-600;
+  }
+
+  .ds-legal-links a {
+    @apply underline decoration-slate-300 underline-offset-2 hover:text-slate-900;
+  }
+
+  .ds-trust-note {
+    @apply rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-900;
+  }
+
+  .ds-thread-root {
+    @apply relative rounded-xl border border-slate-200 bg-white p-4 shadow-sm;
+  }
+
+  .ds-thread-reply-wrap {
+    @apply mt-4 space-y-2 border-l-2 border-slate-200 pl-3;
+  }
+
+  .ds-thread-reply {
+    @apply rounded-md border border-slate-200 bg-slate-50 px-3 py-2;
+  }
+
+  .ds-reply-target-highlight {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+    border-color: rgb(96 165 250);
+  }
+
+  .ds-cta-experiment[data-variant="control"] {
+    --ds-cta-accent: rgb(37 99 235);
+  }
+
+  .ds-cta-experiment[data-variant="high-contrast"] {
+    --ds-cta-accent: rgb(2 132 199);
+  }
+
+  .ds-cta-experiment[data-variant="compact"] {
+    --ds-cta-accent: rgb(29 78 216);
+  }
+
+  .ds-cta-experiment.cta-primary {
+    background-color: var(--ds-cta-accent);
+  }
+
+  [data-page-skeleton] {
+    display: none;
+  }
+
+  html.ds-page-loading [data-page-content] {
+    display: none !important;
+  }
+
+  html.ds-page-loading [data-page-skeleton] {
+    display: block;
+  }
+
   @keyframes ds-toast-in {
     from {
       opacity: 0;
@@ -399,6 +578,17 @@
   @keyframes ds-skeleton-shimmer {
     to {
       transform: translateX(100%);
+    }
+  }
+
+  @keyframes ds-loading-pulse {
+    0%, 80%, 100% {
+      opacity: 0.35;
+      transform: scale(0.8);
+    }
+    40% {
+      opacity: 1;
+      transform: scale(1);
     }
   }
 
@@ -420,7 +610,10 @@
 
   @media (prefers-reduced-motion: reduce) {
     .ds-toast,
-    .ds-media-skeleton::after {
+    .ds-media-skeleton::after,
+    .ds-skeleton-line::after,
+    .ds-skeleton-block::after,
+    .ds-loading-dot {
       animation: none !important;
     }
   }

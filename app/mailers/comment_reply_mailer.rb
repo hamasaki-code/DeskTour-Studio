@@ -9,7 +9,7 @@ class CommentReplyMailer < ApplicationMailer
 
     mail(
       to: @recipient.email,
-      subject: "【DeskTour Studio】あなたのコメントに返信がありました"
+      subject: I18n.t("mailers.comment_reply.subject", default: "DeskTour Studio: You received a reply")
     )
   end
 end

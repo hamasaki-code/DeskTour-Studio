@@ -5,7 +5,7 @@
 <% browse_gallery_label = locale_ja ? "投稿一覧を見る" : "Browse gallery" %>
 <% draft_hint = locale_ja ? "下書きは本人のみ表示されます。" : "Drafts are visible only to you." %>
 
-<section class="space-y-content">
+<section class="space-y-content" data-page-content>
   <header class="ds-card p-6">
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
@@ -51,7 +51,7 @@
               </div>
               <div class="mt-auto border-t border-slate-100 pt-3 ds-text-meta">
                 <div class="flex flex-wrap items-center gap-2">
-                  <span><%= l(post.created_at.to_date) %></span>
+                  <%= timestamp_tag(post.created_at, style: :date) %>
                   <span class="inline-flex items-center gap-1">
                     <%= ui_icon(:heart, class_name: "h-3.5 w-3.5") %>
                     <span><%= localized_number(post.likes_count) %></span>
@@ -89,7 +89,7 @@
               <h3 class="ds-line-clamp-2 text-base font-semibold text-slate-900"><%= post.title.presence || t("users.show.untitled_draft") %></h3>
               <p class="mt-2 ds-line-clamp-2 ds-text-support"><%= truncate(post.description.to_s, length: 120) %></p>
               <div class="mt-auto flex items-center justify-between border-t border-slate-200 pt-3">
-                <span class="ds-text-meta"><%= l(post.updated_at.to_date) %></span>
+                <%= timestamp_tag(post.updated_at, style: :date) %>
                 <%= link_to edit_post_path(post), class: "tap-target cta-secondary cta-compact" do %>
                   <%= ui_icon(:pencil_square, class_name: "h-3.5 w-3.5") %>
                   <span><%= t("users.show.continue_editing") %></span>
@@ -108,4 +108,8 @@
       <% end %>
     </section>
   <% end %>
+</section>
+
+<section class="hidden" data-page-skeleton aria-hidden="true">
+  <%= render "shared/screen_skeleton", variant: :list %>
 </section>

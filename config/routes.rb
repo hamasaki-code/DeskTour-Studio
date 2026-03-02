@@ -27,5 +27,6 @@ Rails.application.routes.draw do
   get "privacy-policy", to: "pages#privacy", as: :privacy_policy
   get "terms", to: "pages#terms", as: :terms
   get "cookie-policy", to: "pages#cookie", as: :cookie_policy
+  get "getting-started", to: "pages#onboarding", as: :onboarding
   get "sitemap.xml", to: "sitemaps#show", defaults: { format: :xml }
 end

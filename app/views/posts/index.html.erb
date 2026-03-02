@@ -8,19 +8,19 @@
 <% detailed_filters_open = params[:details] == "1" || active_filters.any? %>
 <% applied_filter_count = active_filters.size %>
 <% filtered_results = params[:q].present? || applied_filter_count.positive? %>
-<% no_filters_label = I18n.locale.to_s == "ja" ? "\u306A\u3057" : "None" %>
-<% quick_search_label = I18n.locale.to_s == "ja" ? "\u30AD\u30FC\u30EF\u30FC\u30C9\u691C\u7D22" : "Quick search" %>
-<% filters_open_label = I18n.locale.to_s == "ja" ? "\u7D5E\u308A\u8FBC\u307F\u3092\u958B\u304F" : "Open filters" %>
-<% filters_close_label = I18n.locale.to_s == "ja" ? "\u7D5E\u308A\u8FBC\u307F\u3092\u9589\u3058\u308B" : "Hide filters" %>
-<% filters_title = I18n.locale.to_s == "ja" ? "\u7D5E\u308A\u8FBC\u307F" : "Refine results" %>
-<% filters_hint = I18n.locale.to_s == "ja" ? "\u5FC5\u8981\u306A\u3068\u304D\u3060\u3051\u30AB\u30C6\u30B4\u30EA\u30FC\u30FB\u30BF\u30B0\u3092\u8FFD\u52A0\u3057\u3066\u7D5E\u308A\u8FBC\u307F\u307E\u3059\u3002" : "Open only when you need category, theme, or tag filters." %>
-<% details_applied_summary = I18n.locale.to_s == "ja" ? "\u9069\u7528\u4E2D: %{count}\u4EF6" : "%{count} filters applied" %>
-<% details_none_summary = I18n.locale.to_s == "ja" ? "\u9069\u7528\u4E2D: \u306A\u3057" : "No filters applied" %>
-<% no_results_title = I18n.locale.to_s == "ja" ? "\u6761\u4EF6\u3092\u7DE9\u548C\u3057\u3066\u518D\u691C\u7D22\u3057\u307E\u3057\u3087\u3046" : "Try broader filters" %>
-<% no_results_hint = I18n.locale.to_s == "ja" ? "\u307E\u305A\u306F1\u3064\u3060\u3051\u6761\u4EF6\u3092\u5916\u3059\u3068\u3001\u65B0\u3057\u3044\u6295\u7A3F\u304C\u898B\u3064\u304B\u308A\u3084\u3059\u304F\u306A\u308A\u307E\u3059\u3002" : "Relax one condition first to discover more posts." %>
-<% clear_all_label = I18n.locale.to_s == "ja" ? "\u3059\u3079\u3066\u30AF\u30EA\u30A2" : "Clear all filters" %>
-<% remove_keyword_label = I18n.locale.to_s == "ja" ? "\u30AD\u30FC\u30EF\u30FC\u30C9\u3092\u5916\u3059" : "Remove keyword" %>
-<% remove_one_filter_label = I18n.locale.to_s == "ja" ? "\u7D5E\u308A\u8FBC\u307F\u30921\u3064\u5916\u3059" : "Remove one filter" %>
+<% no_filters_label = t("posts.index.no_filters", default: "None") %>
+<% quick_search_label = t("posts.index.quick_search", default: "Quick search") %>
+<% filters_open_label = t("posts.index.open_filters", default: "Open filters") %>
+<% filters_close_label = t("posts.index.close_filters", default: "Hide filters") %>
+<% filters_title = t("posts.index.filters_title", default: "Refine results") %>
+<% filters_hint = t("posts.index.filters_hint", default: "Open only when you need category, theme, or tag filters.") %>
+<% details_applied_summary = t("posts.index.filters_applied", default: "%{count} filters applied") %>
+<% details_none_summary = t("posts.index.filters_none", default: "No filters applied") %>
+<% no_results_title = t("posts.index.zero_title", default: "No matches found") %>
+<% no_results_hint = t("posts.index.zero_hint", default: "Try removing one condition first to discover more posts.") %>
+<% clear_all_label = t("posts.index.clear_all", default: "Clear all filters") %>
+<% remove_keyword_label = t("posts.index.remove_keyword", default: "Remove keyword") %>
+<% remove_one_filter_label = t("posts.index.remove_one_filter", default: "Remove one filter") %>
 <% max_card_tags = 2 %>
 <% filter_labels = {
   category: t("posts.index.category_placeholder"),
@@ -35,10 +35,11 @@
   tag: params[:tag].presence,
   details: params[:details].presence
 }.compact %>
-<% empty_primary_cta = I18n.locale.to_s == "ja" ? "\u6700\u521D\u306E\u6295\u7A3F\u3092\u4F5C\u6210" : "Create your first post" %>
+<% empty_primary_cta = t("posts.index.empty_primary", default: "Create your first post") %>
 <% timeline_hint = t("posts.index.timeline_hint", default: "Start your timeline with one post.") %>
+<% return_path = request.fullpath %>
 
-<section class="space-y-section">
+<section class="space-y-section" data-page-content>
   <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-blue-900 to-cyan-800 px-5 py-6 text-white sm:px-6 sm:py-8">
     <div class="absolute inset-0 bg-slate-950/20" aria-hidden="true"></div>
     <div class="relative max-w-3xl rounded-xl bg-slate-950/35 p-4 sm:p-5">
@@ -47,7 +48,8 @@
         <%= t("posts.index.hero_description") %>
       </p>
       <div class="mt-4 flex flex-wrap items-center gap-2">
-        <a href="#index-search" class="tap-target cta-primary"><%= t("posts.index.search_button") %></a>
+        <%= render "shared/experiment_cta", href: "#index-search", label: t("posts.index.search_button"), tone: "primary", variant: "control", html_options: { data: { ga_event: "post_index_search_jump_click", ga_category: "post_index", ga_label: "hero_search_jump" } } %>
+        <%= render "shared/experiment_cta", href: onboarding_path, label: t("navigation.onboarding", default: "Getting started"), tone: "secondary", variant: "compact", html_options: { data: { ga_event: "onboarding_open_click", ga_category: "onboarding", ga_label: "index_hero" } } %>
       </div>
       <p class="mt-2 ds-text-meta text-blue-100/90">
         <%= link_to t("navigation.create_post"), new_post_path, class: "underline decoration-white/40 underline-offset-2 hover:text-white" %>
@@ -56,13 +58,16 @@
   </div>
 
   <div id="index-search" class="ds-card p-4 sm:p-5" data-index-search-root>
-    <%= form_with url: posts_path, method: :get, local: true, class: "space-y-block", data: { search_form: true } do %>
+    <%= form_with url: posts_path, method: :get, local: true, class: "space-y-block", data: { search_form: true, ui_form: true, disabled_reason_prefix: t("ui.search_hint", default: "Add one search condition"), disabled_submit_notice: t("ui.search_hint", default: "Add one search condition") } do %>
       <%= hidden_field_tag :details, detailed_filters_open ? "1" : "0", data: { details_state_input: true } %>
 
       <div class="sticky top-20 z-10 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:static" data-quick-search-shell>
         <p class="ds-text-meta font-semibold uppercase tracking-wide"><%= quick_search_label %></p>
         <div class="mt-2.5 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
-          <%= text_field_tag :q, params[:q], class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.index.search_placeholder"), data: { search_keyword_input: true } %>
+          <div>
+            <%= text_field_tag :q, params[:q], class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.index.search_placeholder"), data: { search_keyword_input: true } %>
+            <p class="ds-field-guide"><%= t("posts.index.search_guide", default: "Search title, description, items, and tags.") %></p>
+          </div>
           <%= submit_tag t("posts.index.search_button"), class: "tap-target cta-primary w-full sm:w-auto", data: { ga_event: "post_search_submit_click", ga_category: "post_search", ga_label: "index_search_submit_button" } %>
         </div>
       </div>
@@ -117,16 +122,21 @@
         <% ranked_tags = prioritized_post_tags(post, query: params[:q], category: params[:category], selected_tag: params[:tag]) %>
         <% visible_tags = ranked_tags.first(max_card_tags) %>
         <% hidden_tag_count = [ranked_tags.size - visible_tags.size, 0].max %>
-        <article class="ds-card ds-shadow-soft flex h-full flex-col overflow-hidden">
-          <%= link_to post_path(post), class: "block", data: { post_card_link: true, post_id: post.id, ga_event: "post_card_open", ga_category: "post_index", ga_label: filtered_results ? "from_filtered_results" : "from_default_results" } do %>
-            <div class="ds-media-frame ds-media-frame-card ds-media-skeleton" data-media-skeleton>
-              <%= optimized_post_image_tag(post, variant: :thumbnail, class: "h-full w-full object-cover") %>
+        <% card_url = post_path(post, from: return_path) %>
+        <article class="ds-card ds-shadow-soft ds-card-interactive flex h-full flex-col overflow-hidden" data-card-href="<%= card_url %>">
+          <%= link_to card_url, class: "block", data: { post_card_link: true, post_id: post.id, ga_event: "post_card_open", ga_category: "post_index", ga_label: filtered_results ? "from_filtered_results" : "from_default_results", card_stop: true } do %>
+            <div class="ds-media-frame ds-media-frame-card ds-media-skeleton" data-media-skeleton data-image-shell>
+              <%= optimized_post_image_tag(post, variant: :thumbnail, class: "h-full w-full object-cover", data: { fallback_src: asset_path(ApplicationHelper::FALLBACK_POST_IMAGE) }) %>
+              <div class="ds-image-fallback hidden" data-image-fallback>
+                <p><%= t("images.fallback_text", default: "Image is unavailable") %></p>
+                <button type="button" data-image-retry><%= t("images.retry", default: "Retry") %></button>
+              </div>
             </div>
           <% end %>
 
           <div class="flex h-full flex-col p-4">
             <h2 class="ds-heading-sm ds-line-clamp-2 ds-break-words text-slate-900">
-              <%= link_to post.title, post_path(post), class: "block leading-6 hover:text-blue-600", data: { post_card_link: true, post_id: post.id, ga_event: "post_card_open", ga_category: "post_index", ga_label: "title_click" } %>
+              <%= link_to post.title, card_url, class: "block leading-6 hover:text-blue-600", data: { post_card_link: true, post_id: post.id, ga_event: "post_card_open", ga_category: "post_index", ga_label: "title_click", card_stop: true } %>
             </h2>
 
             <p class="mt-2 ds-line-clamp-2 ds-text-support ds-break-words"><%= truncate(post.description, length: 100) %></p>
@@ -136,7 +146,7 @@
                 <span class="ds-badge-inactive"><%= post.category %></span>
               <% end %>
               <% visible_tags.each do |tag| %>
-                <%= link_to "##{tag}", posts_path(tag: tag, details: params[:details]), class: "tap-target ds-badge-info", data: { ga_event: "post_tag_filter_click", ga_category: "post_index", ga_label: "tag_filter_from_card" } %>
+                <%= link_to "##{tag}", posts_path(tag: tag, details: params[:details]), class: "tap-target ds-badge-info", data: { ga_event: "post_tag_filter_click", ga_category: "post_index", ga_label: "tag_filter_from_card", card_stop: true } %>
               <% end %>
               <% if hidden_tag_count.positive? %>
                 <span class="ds-badge-info">+<%= hidden_tag_count %></span>
@@ -149,11 +159,11 @@
                   <%= ui_icon(:heart, class_name: "h-3.5 w-3.5") %>
                   <span><%= localized_number(post.likes_count) %></span>
                   <span aria-hidden="true">&bull;</span>
-                  <span><%= l(post.created_at.to_date) %></span>
+                  <%= timestamp_tag(post.created_at, style: :date) %>
                 </p>
                 <p class="ds-text-meta text-slate-600">
                   <%= t("posts.index.author_label") %>:
-                  <%= link_to post.user.name, user_path(post.user), class: "font-medium text-slate-700 underline-offset-2 hover:text-slate-900 hover:underline", data: { ga_event: "post_author_open", ga_category: "post_index", ga_label: "author_profile_click" } %>
+                  <%= link_to post.user.name, user_path(post.user), class: "font-medium text-slate-700 underline-offset-2 hover:text-slate-900 hover:underline", data: { ga_event: "post_author_open", ga_category: "post_index", ga_label: "author_profile_click", card_stop: true } %>
                 </p>
               </div>
             </div>
@@ -167,8 +177,9 @@
       <% if filtered_results %>
         <p class="mt-2 text-sm font-semibold text-slate-700"><%= no_results_title %></p>
         <p class="mt-1 ds-text-support"><%= no_results_hint %></p>
-        <div class="mt-4">
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
           <%= link_to clear_all_label, posts_path, class: "tap-target cta-primary", data: { ga_event: "post_search_reset_click", ga_category: "post_search", ga_label: "index_empty_clear_all" } %>
+          <%= link_to t("posts.index.zero_reset", default: "Reset conditions"), posts_path, class: "tap-target cta-secondary", data: { ga_event: "post_search_reset_click", ga_category: "post_search", ga_label: "index_empty_reset_conditions" } %>
         </div>
         <div class="mt-3 flex flex-wrap items-center justify-center gap-2">
           <% if params[:q].present? %>
@@ -178,6 +189,30 @@
             <%= link_to remove_one_filter_label, posts_path(persisted_query.except(first_active_filter_key)), class: "tap-target cta-tertiary cta-compact", data: { ga_event: "post_search_filter_clear_click", ga_category: "post_search", ga_label: "index_empty_remove_one_filter" } %>
           <% end %>
         </div>
+
+        <% if @popular_tags.any? %>
+          <div class="mx-auto mt-5 max-w-2xl">
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500"><%= t("posts.index.popular_tags", default: "Popular tags") %></p>
+            <div class="mt-2 flex flex-wrap items-center justify-center gap-2">
+              <% @popular_tags.each do |tag| %>
+                <%= link_to "##{tag}", posts_path(tag: tag, details: "1"), class: "tap-target ds-badge-inactive", data: { ga_event: "post_search_recovery_click", ga_category: "post_search", ga_label: "zero_state_popular_tag" } %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <% if @recent_posts.any? %>
+          <div class="mx-auto mt-5 max-w-2xl text-left">
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500"><%= t("posts.index.recent_posts", default: "Recent posts") %></p>
+            <ul class="mt-2 space-y-1.5">
+              <% @recent_posts.each do |recent_post| %>
+                <li>
+                  <%= link_to recent_post.title, post_path(recent_post, from: return_path), class: "text-sm text-blue-700 underline-offset-2 hover:underline", data: { ga_event: "post_search_recovery_click", ga_category: "post_search", ga_label: "zero_state_recent_post" } %>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
       <% else %>
         <div class="mt-4 space-y-2">
           <%= link_to empty_primary_cta, new_post_path, class: "tap-target cta-primary" %>
@@ -188,6 +223,10 @@
   <% end %>
 
   <%= render "shared/ad_slot", slot: ENV["ADSENSE_SLOT_INDEX_BOTTOM"] %>
+</section>
+
+<section class="hidden space-y-4" data-page-skeleton aria-hidden="true">
+  <%= render "shared/screen_skeleton", variant: :list %>
 </section>
 
 <script>

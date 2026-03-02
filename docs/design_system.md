@@ -120,6 +120,9 @@
 - Use explicit aspect-ratio wrappers for list/detail media (`ds-media-frame-*`).
 - Image containers should render skeleton placeholders (`ds-media-skeleton`) until `load/error`.
 - Keep width/height attributes on image tags to stabilize layout before decode.
+- Thumbnail crop strategy:
+  - Apply `ds-thumbnail-crop` with top bias (`object-position: 50% 36%`) to reduce face/subject clipping.
+  - Provide in-frame fallback message + retry control on image load failure.
 
 ## Dark Mode Readiness
 - Maintain colors through `--ds-*` tokens only; avoid hard-coded semantic colors in component markup.

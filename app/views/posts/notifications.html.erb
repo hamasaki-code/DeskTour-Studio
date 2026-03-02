@@ -1,7 +1,7 @@
 <% content_for :title, t("posts.notifications.title") %>
 <% content_for :description, t("posts.notifications.description") %>
 
-<section class="mx-auto w-full max-w-3xl space-y-content">
+<section class="mx-auto w-full max-w-3xl space-y-content" data-page-content>
   <header class="flex flex-wrap items-center justify-between gap-3">
     <div>
       <h1 class="ds-heading-xl"><%= t("posts.notifications.heading") %></h1>
@@ -23,7 +23,7 @@
           <div class="rounded-lg border border-slate-200 bg-slate-50 p-3">
             <p class="text-sm text-slate-800"><%= notification.message %></p>
             <p class="mt-1 ds-text-meta">
-              <%= l(notification.created_at, format: :short) %>
+              <%= timestamp_tag(notification.created_at, style: :datetime) %>
               <% if notification.read_at.present? %>
                 <span class="ml-2 inline-flex items-center gap-1 rounded border border-emerald-300 bg-emerald-50 px-2 py-0.5 text-emerald-700">
                   <%= ui_icon(:check_circle, class_name: "h-3.5 w-3.5") %>
@@ -46,4 +46,8 @@
       </div>
     <% end %>
   </div>
+</section>
+
+<section class="mx-auto hidden w-full max-w-3xl" data-page-skeleton aria-hidden="true">
+  <%= render "shared/screen_skeleton", variant: :comment %>
 </section>

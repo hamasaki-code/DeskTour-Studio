@@ -1,16 +1,15 @@
-<p><%= @recipient.name.presence || "ユーザー" %> さん</p>
+<p><%= @recipient.name.presence || t("mailers.comment_reply.recipient_default", default: "there") %>,</p>
 
-<p>あなたのコメントに返信がありました。</p>
+<p><%= t("mailers.comment_reply.intro", default: "You received a new reply on DeskTour Studio.") %></p>
 
 <ul>
-  <li>投稿: <strong><%= @post.title %></strong></li>
-  <li>あなたのコメント: <%= @parent_comment.body %></li>
-  <li>返信コメント: <%= @reply_comment.body %></li>
+  <li><strong><%= t("mailers.comment_reply.post", default: "Post") %>:</strong> <%= @post.title %></li>
+  <li><strong><%= t("mailers.comment_reply.parent_comment", default: "Your comment") %>:</strong> <%= @parent_comment.body %></li>
+  <li><strong><%= t("mailers.comment_reply.reply_comment", default: "Reply") %>:</strong> <%= @reply_comment.body %></li>
 </ul>
 
 <p>
-  <a href="<%= @comment_url %>">返信コメントを確認する</a>
+  <a href="<%= @comment_url %>"><%= t("mailers.comment_reply.cta", default: "View the reply") %></a>
 </p>
 
-<hr>
-<p>DeskTour Studio</p>
+<p><%= t("mailers.comment_reply.footer", default: "DeskTour Studio") %></p>

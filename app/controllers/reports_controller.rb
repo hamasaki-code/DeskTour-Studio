@@ -19,7 +19,7 @@ class ReportsController < ApplicationController
         redirect_to post_path(@post), notice: t("reports.flash.thanks")
       end
     else
-      redirect_to post_path(@post), alert: report.errors.full_messages.to_sentence
+      redirect_to post_path(@post), alert: t("reports.flash.submit_failed", default: "Report could not be submitted. Please retry.")
     end
   end
 

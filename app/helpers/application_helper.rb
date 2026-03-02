@@ -152,6 +152,10 @@ module ApplicationHelper
   end
 
   def optimized_post_image_tag(post, variant: :thumbnail, **options)
+    class_names = [ options[:class] ]
+    class_names << "ds-thumbnail-crop" if variant.to_sym == :thumbnail
+    options[:class] = class_names.compact.join(" ")
+
     image_tag(
       optimized_post_image_source(post, variant: variant),
       **default_image_tag_options(post, variant).merge(options)
@@ -176,6 +180,33 @@ module ApplicationHelper
 
   def localized_number(value)
     number_with_delimiter(value, locale: I18n.locale)
+  end
+
+  def formatted_date(value)
+    return "" if value.blank?
+
+    l(value.to_date, format: :default)
+  end
+
+  def formatted_datetime(value)
+    return "" if value.blank?
+
+    l(value, format: :short)
+  end
+
+  def timestamp_tag(value, style: :datetime, include_relative: false)
+    return "" if value.blank?
+
+    label = style == :date ? formatted_date(value) : formatted_datetime(value)
+    aria_label = if include_relative
+      distance = distance_of_time_in_words(value, Time.current)
+      relative = t("time.relative_ago", distance: distance, default: "#{distance} ago")
+      "#{label} (#{relative})"
+    else
+      label
+    end
+
+    content_tag(:time, label, datetime: value.to_time.iso8601, title: aria_label, "aria-label": aria_label)
   end
 
   def flash_visual(type)
@@ -425,11 +456,13 @@ module ApplicationHelper
 
   def default_image_tag_options(post, variant)
     width, height = POST_IMAGE_DIMENSIONS.fetch(variant, POST_IMAGE_DIMENSIONS[:main])
+    fallback_url = asset_path(FALLBACK_POST_IMAGE)
     base = {
       alt: post&.title.presence || t("images.desk_alt"),
       decoding: "async",
       width: width,
-      height: height
+      height: height,
+      data: { fallback_src: fallback_url }
     }
 
     if variant == :thumbnail

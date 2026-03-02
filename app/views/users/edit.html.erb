@@ -1,7 +1,7 @@
 <% content_for :title, t("users.edit.title") %>
 <% content_for :description, t("users.edit.description") %>
 
-<section class="mx-auto w-full max-w-3xl space-y-content">
+<section class="mx-auto w-full max-w-3xl space-y-content" data-page-content>
   <div>
     <h1 class="ds-heading-xl"><%= t("users.edit.heading") %></h1>
     <p class="mt-2 ds-text-support">
@@ -12,4 +12,8 @@
   <div class="ds-card p-6">
     <%= render "form", user: @user, submit_label: t("users.form.submit_update") %>
   </div>
+</section>
+
+<section class="mx-auto hidden w-full max-w-3xl" data-page-skeleton aria-hidden="true">
+  <%= render "shared/screen_skeleton", variant: :detail %>
 </section>

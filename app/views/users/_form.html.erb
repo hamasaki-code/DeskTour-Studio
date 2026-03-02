@@ -4,21 +4,42 @@
 <% bio_error = field_error.call(:bio) %>
 <% email_error = field_error.call(:email) %>
 
-<%= form_with model: user, class: "space-y-form", data: { form_autofocus_errors: true } do |f| %>
+<%= form_with model: user,
+              class: "space-y-form ds-loading-shell",
+              data: {
+                form_autofocus_errors: true,
+                ui_form: true,
+                loading_label: t("ui.processing", default: "Processing..."),
+                submitting_reason: t("ui.processing", default: "Processing..."),
+                disabled_reason_prefix: t("ui.disabled_reason", default: "Complete required fields"),
+                disabled_submit_notice: t("ui.complete_required", default: "Please complete required fields before submitting.")
+              } do |f| %>
   <% if user.errors.any? %>
-    <div class="rounded-lg border border-red-300 bg-red-50 p-4 text-sm text-red-700">
-      <p class="mb-2 font-semibold"><%= t("users.form.error_summary") %></p>
-      <ul class="list-disc pl-5">
-        <% user.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
+    <div class="space-y-2">
+      <%= render "shared/feedback_panel",
+                 level: :error,
+                 title: t("users.form.error_summary", default: "Please review the form fields."),
+                 body: t("ui.error_with_recovery", default: "Please review the fields below, then retry."),
+                 actions: [
+                   { label: t("ui.focus_first_error", default: "Go to first error"), href: "#user_name" },
+                   { label: t("ui.back", default: "Back"), href: (request.referer.presence || root_path) }
+                 ] %>
+
+      <div class="rounded-lg border border-red-200 bg-white p-3 text-sm text-red-800" role="alert" aria-live="assertive">
+        <ul class="list-disc pl-5">
+          <% user.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
     </div>
   <% end %>
 
   <div>
     <%= f.label :name, t("users.form.name_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
-    <%= f.text_field :name, class: input_class.call(name_error), placeholder: t("users.form.name_placeholder"), aria: { invalid: name_error.present? ? "true" : nil, describedby: "user_name_error" } %>
+    <%= f.text_field :name, required: true, maxlength: 40, class: input_class.call(name_error), placeholder: t("users.form.name_placeholder"), aria: { invalid: name_error.present? ? "true" : nil, describedby: "user_name_guide user_name_counter user_name_error" }, data: { char_count_max: 40, char_count_target: "user_name_counter" } %>
+    <p id="user_name_guide" class="ds-field-guide"><%= t("users.form.name_guide", default: "Name shown on posts and comments. Avoid personal contact details.") %></p>
+    <p id="user_name_counter" class="ds-char-counter" aria-live="polite"></p>
     <% if name_error.present? %>
       <p id="user_name_error" class="mt-1 text-xs font-medium text-red-700"><%= name_error %></p>
     <% end %>
@@ -26,7 +47,9 @@
 
   <div>
     <%= f.label :bio, t("users.form.bio_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
-    <%= f.text_area :bio, rows: 5, class: input_class.call(bio_error), placeholder: t("users.form.bio_placeholder"), aria: { invalid: bio_error.present? ? "true" : nil, describedby: "user_bio_error" } %>
+    <%= f.text_area :bio, rows: 5, maxlength: 300, class: input_class.call(bio_error), placeholder: t("users.form.bio_placeholder"), aria: { invalid: bio_error.present? ? "true" : nil, describedby: "user_bio_guide user_bio_counter user_bio_error" }, data: { char_count_max: 300, char_count_target: "user_bio_counter" } %>
+    <p id="user_bio_guide" class="ds-field-guide"><%= t("users.form.bio_guide", default: "Share your workspace style and tools in 1-3 short sentences.") %></p>
+    <p id="user_bio_counter" class="ds-char-counter" aria-live="polite"></p>
     <% if bio_error.present? %>
       <p id="user_bio_error" class="mt-1 text-xs font-medium text-red-700"><%= bio_error %></p>
     <% end %>
@@ -35,7 +58,7 @@
   <div>
     <%= f.label :email, t("users.form.email_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
     <%= f.email_field :email, class: input_class.call(email_error), placeholder: "you@example.com", aria: { invalid: email_error.present? ? "true" : nil, describedby: "user_email_hint user_email_error" } %>
-    <p id="user_email_hint" class="mt-1 ds-text-muted"><%= t("users.form.email_hint") %></p>
+    <p id="user_email_hint" class="ds-field-guide"><%= t("users.form.email_hint") %></p>
     <% if email_error.present? %>
       <p id="user_email_error" class="mt-1 text-xs font-medium text-red-700"><%= email_error %></p>
     <% end %>
@@ -46,7 +69,14 @@
     <%= f.label :email_notifications_enabled, t("users.form.email_notifications"), class: "text-sm text-slate-700" %>
   </div>
 
-  <%= f.submit submit_label, class: "tap-target cta-primary" %>
+  <%= f.button type: :submit, class: "tap-target cta-primary ds-cta-experiment", data: { variant: "compact", ga_event: "profile_form_submit_click", ga_category: "profile_form", ga_label: "submit_profile" } do %>
+    <span class="inline-flex items-center gap-1.5">
+      <%= ui_icon(:check_circle, class_name: "h-4 w-4") %>
+      <span data-submit-label><%= submit_label %></span>
+    </span>
+  <% end %>
+
+  <p class="ds-disabled-reason" data-disabled-reason aria-live="polite"></p>
 <% end %>
 
 <script>
