@@ -14,6 +14,7 @@ class Post < ApplicationRecord
 
   scope :visible, -> { published }
   scope :latest, -> { order(created_at: :desc) }
+  scope :recently_updated, -> { order(updated_at: :desc) }
 
   validates :title, presence: true, length: { maximum: 120 }, if: :published?
   validates :description, presence: true, length: { maximum: 2000 }, if: :published?
@@ -25,7 +26,7 @@ class Post < ApplicationRecord
   end
 
   def self.filtered(params)
-    posts = all.latest
+    posts = all
 
     if params[:q].present?
       query = "%#{sanitize_sql_like(params[:q].strip)}%"
@@ -43,7 +44,14 @@ class Post < ApplicationRecord
       posts = posts.where("posts.tag_list ILIKE ?", "%#{escaped_tag}%")
     end
 
-    posts
+    case params[:sort].to_s
+    when "popular"
+      posts.order(likes_count: :desc, created_at: :desc)
+    when "recently_updated"
+      posts.recently_updated
+    else
+      posts.latest
+    end
   end
 
   def tags

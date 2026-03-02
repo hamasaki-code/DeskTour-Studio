@@ -33,11 +33,13 @@
   category: params[:category].presence,
   theme: params[:theme].presence,
   tag: params[:tag].presence,
-  details: params[:details].presence
+  details: params[:details].presence,
+  sort: @sort_option.presence
 }.compact %>
 <% empty_primary_cta = t("posts.index.empty_primary", default: "Create your first post") %>
 <% timeline_hint = t("posts.index.timeline_hint", default: "Start your timeline with one post.") %>
 <% return_path = request.fullpath %>
+<% sort_option = @sort_option.presence || "newest" %>
 
 <section class="space-y-section" data-page-content>
   <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-blue-900 to-cyan-800 px-5 py-6 text-white sm:px-6 sm:py-8">
@@ -57,6 +59,27 @@
     </div>
   </div>
 
+  <section class="ds-card p-4 sm:p-5" data-revisit-root>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <h2 class="ds-heading-sm text-slate-900"><%= t("posts.index.revisit_heading", default: "Continue from your last visit") %></h2>
+      <button type="button" class="tap-target cta-tertiary cta-compact" data-restore-filters><%= t("posts.index.restore_last_filters", default: "Restore last filters") %></button>
+    </div>
+    <div class="mt-2 grid gap-3 sm:grid-cols-2">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500"><%= t("posts.index.recently_viewed", default: "Recently viewed") %></p>
+        <ul class="mt-2 space-y-1.5 text-sm" data-recently-viewed-list>
+          <li class="text-slate-500"><%= t("posts.index.recently_viewed_empty", default: "No recently viewed posts yet.") %></li>
+        </ul>
+      </div>
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500"><%= t("posts.index.saved_posts", default: "Saved posts") %></p>
+        <ul class="mt-2 space-y-1.5 text-sm" data-saved-post-list>
+          <li class="text-slate-500"><%= t("posts.index.saved_posts_empty", default: "No saved posts yet.") %></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
   <div id="index-search" class="ds-card p-4 sm:p-5" data-index-search-root>
     <%= form_with url: posts_path, method: :get, local: true, class: "space-y-block", data: { search_form: true, ui_form: true, disabled_reason_prefix: t("ui.search_hint", default: "Add one search condition"), disabled_submit_notice: t("ui.search_hint", default: "Add one search condition") } do %>
       <%= hidden_field_tag :details, detailed_filters_open ? "1" : "0", data: { details_state_input: true } %>
@@ -65,10 +88,19 @@
         <p class="ds-text-meta font-semibold uppercase tracking-wide"><%= quick_search_label %></p>
         <div class="mt-2.5 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
           <div>
-            <%= text_field_tag :q, params[:q], class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.index.search_placeholder"), data: { search_keyword_input: true } %>
+            <%= text_field_tag :q, params[:q], class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.index.search_placeholder"), list: "post-search-suggestions", data: { search_keyword_input: true } %>
             <p class="ds-field-guide"><%= t("posts.index.search_guide", default: "Search title, description, items, and tags.") %></p>
           </div>
           <%= submit_tag t("posts.index.search_button"), class: "tap-target cta-primary w-full sm:w-auto", data: { ga_event: "post_search_submit_click", ga_category: "post_search", ga_label: "index_search_submit_button" } %>
+        </div>
+        <div class="mt-3 grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center">
+          <div>
+            <%= label_tag :sort, t("posts.index.sort_label", default: "Sort"), class: "sr-only" %>
+            <%= select_tag :sort, options_for_select([[sort_option_label("newest"), "newest"], [sort_option_label("popular"), "popular"], [sort_option_label("recently_updated"), "recently_updated"]], sort_option), class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", data: { search_sort_input: true } %>
+            <p class="ds-field-guide"><%= sort_option_hint(sort_option) %></p>
+          </div>
+          <button type="button" class="tap-target cta-tertiary cta-compact" data-clear-filters><%= t("posts.index.reset_button") %></button>
+          <button type="button" class="tap-target cta-tertiary cta-compact" data-restore-filters><%= t("posts.index.restore_last_filters", default: "Restore last filters") %></button>
         </div>
       </div>
 
@@ -114,6 +146,13 @@
         </div>
       </div>
     <% end %>
+    <% if @search_suggestions.any? %>
+      <datalist id="post-search-suggestions">
+        <% @search_suggestions.each do |suggestion| %>
+          <option value="<%= suggestion %>"></option>
+        <% end %>
+      </datalist>
+    <% end %>
   </div>
 
   <% if @posts.any? %>
@@ -123,7 +162,7 @@
         <% visible_tags = ranked_tags.first(max_card_tags) %>
         <% hidden_tag_count = [ranked_tags.size - visible_tags.size, 0].max %>
         <% card_url = post_path(post, from: return_path) %>
-        <article class="ds-card ds-shadow-soft ds-card-interactive flex h-full flex-col overflow-hidden" data-card-href="<%= card_url %>">
+        <article class="ds-card ds-shadow-soft ds-card-interactive flex h-full flex-col overflow-hidden" data-card-href="<%= card_url %>" data-post-id="<%= post.id %>" data-post-title="<%= post.title %>" data-post-url="<%= card_url %>">
           <%= link_to card_url, class: "block", data: { post_card_link: true, post_id: post.id, ga_event: "post_card_open", ga_category: "post_index", ga_label: filtered_results ? "from_filtered_results" : "from_default_results", card_stop: true } do %>
             <div class="ds-media-frame ds-media-frame-card ds-media-skeleton" data-media-skeleton data-image-shell>
               <%= optimized_post_image_tag(post, variant: :thumbnail, class: "h-full w-full object-cover", data: { fallback_src: asset_path(ApplicationHelper::FALLBACK_POST_IMAGE) }) %>
@@ -135,6 +174,11 @@
           <% end %>
 
           <div class="flex h-full flex-col p-4">
+            <div class="mb-2 flex items-center justify-end">
+              <button type="button" class="tap-target cta-tertiary cta-compact" data-card-stop data-favorite-toggle data-post-id="<%= post.id %>" data-post-title="<%= post.title %>" data-post-url="<%= card_url %>" aria-pressed="false">
+                <span data-favorite-label><%= t("posts.index.save_post", default: "Save") %></span>
+              </button>
+            </div>
             <h2 class="ds-heading-sm ds-line-clamp-2 ds-break-words text-slate-900">
               <%= link_to post.title, card_url, class: "block leading-6 hover:text-blue-600", data: { post_card_link: true, post_id: post.id, ga_event: "post_card_open", ga_category: "post_index", ga_label: "title_click", card_stop: true } %>
             </h2>
@@ -146,7 +190,7 @@
                 <span class="ds-badge-inactive"><%= post.category %></span>
               <% end %>
               <% visible_tags.each do |tag| %>
-                <%= link_to "##{tag}", posts_path(tag: tag, details: params[:details]), class: "tap-target ds-badge-info", data: { ga_event: "post_tag_filter_click", ga_category: "post_index", ga_label: "tag_filter_from_card", card_stop: true } %>
+                <%= link_to "##{tag}", posts_path(tag: tag, details: params[:details], sort: sort_option), class: "tap-target ds-badge-info", data: { ga_event: "post_tag_filter_click", ga_category: "post_index", ga_label: "tag_filter_from_card", card_stop: true } %>
               <% end %>
               <% if hidden_tag_count.positive? %>
                 <span class="ds-badge-info">+<%= hidden_tag_count %></span>
@@ -195,7 +239,7 @@
             <p class="text-xs font-semibold uppercase tracking-wide text-slate-500"><%= t("posts.index.popular_tags", default: "Popular tags") %></p>
             <div class="mt-2 flex flex-wrap items-center justify-center gap-2">
               <% @popular_tags.each do |tag| %>
-                <%= link_to "##{tag}", posts_path(tag: tag, details: "1"), class: "tap-target ds-badge-inactive", data: { ga_event: "post_search_recovery_click", ga_category: "post_search", ga_label: "zero_state_popular_tag" } %>
+                <%= link_to "##{tag}", posts_path(tag: tag, details: "1", sort: sort_option), class: "tap-target ds-badge-inactive", data: { ga_event: "post_search_recovery_click", ga_category: "post_search", ga_label: "zero_state_popular_tag" } %>
               <% end %>
             </div>
           </div>
@@ -234,6 +278,80 @@
     window.__postIndexSearchBindingInstalled = true;
     const LIST_SCROLL_KEY = "post_index_scroll_y";
     const LIST_RESTORE_KEY = "post_index_restore";
+    const FILTER_STATE_KEY = "post_index_last_filters";
+    const RECENTLY_VIEWED_KEY = "post_recently_viewed";
+    const FAVORITES_KEY = "post_favorites";
+    const suggestionSet = new Set(Array.from(document.querySelectorAll("#post-search-suggestions option")).map((node) => node.value.trim()).filter((value) => value.length > 0));
+
+    const readJson = (key, fallback = []) => {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return fallback;
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) || typeof parsed === "object" ? parsed : fallback;
+      } catch (_) {
+        return fallback;
+      }
+    };
+
+    const writeJson = (key, value) => {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (_) {}
+    };
+
+    const favoritePosts = () => Array.isArray(readJson(FAVORITES_KEY, [])) ? readJson(FAVORITES_KEY, []) : [];
+
+    const renderSimpleList = (selector, items, emptyLabel) => {
+      const list = document.querySelector(selector);
+      if (!list) return;
+      if (!Array.isArray(items) || items.length === 0) {
+        list.innerHTML = `<li class="text-slate-500">${emptyLabel}</li>`;
+        return;
+      }
+
+      list.innerHTML = "";
+      items.forEach((item) => {
+        const li = document.createElement("li");
+        li.innerHTML = `<a href="${item.url}" class="text-blue-700 underline-offset-2 hover:underline">${item.title}</a>`;
+        list.appendChild(li);
+      });
+    };
+
+    const renderRevisitShortcuts = () => {
+      const recent = readJson(RECENTLY_VIEWED_KEY, []).slice(0, 6);
+      const favorites = favoritePosts().slice(0, 6);
+
+      renderSimpleList(
+        "[data-recently-viewed-list]",
+        recent,
+        "<%= j(t('posts.index.recently_viewed_empty', default: 'No recently viewed posts yet.')) %>"
+      );
+      renderSimpleList(
+        "[data-saved-post-list]",
+        favorites,
+        "<%= j(t('posts.index.saved_posts_empty', default: 'No saved posts yet.')) %>"
+      );
+    };
+
+    const setFavoriteButtonState = (button) => {
+      const id = String(button.dataset.postId || "");
+      if (!id) return;
+
+      const saved = favoritePosts().some((item) => String(item.id) === id);
+      button.setAttribute("aria-pressed", String(saved));
+      const label = button.querySelector("[data-favorite-label]");
+      if (label) {
+        label.textContent = saved ? "<%= j(t('posts.index.saved_post', default: 'Saved')) %>" : "<%= j(t('posts.index.save_post', default: 'Save')) %>";
+      }
+      button.classList.toggle("font-semibold", saved);
+      button.classList.toggle("text-blue-700", saved);
+    };
+
+    const syncFavoriteButtons = () => {
+      document.querySelectorAll("[data-favorite-toggle]").forEach((button) => setFavoriteButtonState(button));
+      renderRevisitShortcuts();
+    };
 
     const markLoadedMedia = (scope = document) => {
       scope.querySelectorAll("[data-media-skeleton]").forEach((frame) => {
@@ -285,6 +403,88 @@
 
       sessionStorage.setItem(LIST_SCROLL_KEY, String(window.scrollY || window.pageYOffset || 0));
       sessionStorage.setItem(LIST_RESTORE_KEY, "1");
+
+      const card = link.closest("[data-post-id]");
+      if (card) {
+        const id = String(card.dataset.postId || "");
+        const title = card.dataset.postTitle || "";
+        const url = card.dataset.postUrl || link.getAttribute("href") || "";
+        if (id && title && url) {
+          const current = readJson(RECENTLY_VIEWED_KEY, []);
+          const next = [ { id, title, url, viewedAt: Date.now() }, ...current.filter((item) => String(item.id) !== id) ].slice(0, 12);
+          writeJson(RECENTLY_VIEWED_KEY, next);
+        }
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      const favoriteButton = event.target.closest("[data-favorite-toggle]");
+      if (!favoriteButton) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const id = String(favoriteButton.dataset.postId || "");
+      const title = favoriteButton.dataset.postTitle || "";
+      const url = favoriteButton.dataset.postUrl || "";
+      if (!id || !title || !url) return;
+
+      const current = favoritePosts();
+      const exists = current.some((item) => String(item.id) === id);
+      const next = exists ? current.filter((item) => String(item.id) !== id) : [ { id, title, url, savedAt: Date.now() }, ...current ].slice(0, 50);
+      writeJson(FAVORITES_KEY, next);
+      syncFavoriteButtons();
+
+      if (typeof window.gtag === "function") {
+        window.gtag("event", "post_favorite_toggle", {
+          event_category: "post_index",
+          event_label: exists ? "unsave" : "save",
+          post_id: id
+        });
+      }
+    });
+
+    const restoreFiltersFromStorage = () => {
+      const form = document.querySelector("[data-search-form]");
+      if (!form) return;
+
+      const stored = readJson(FILTER_STATE_KEY, {});
+      if (!stored || typeof stored !== "object") return;
+      [ "q", "category", "theme", "tag", "sort" ].forEach((name) => {
+        const field = form.querySelector(`[name='${name}']`);
+        if (!field) return;
+        field.value = String(stored[name] || "");
+      });
+
+      const detailsInput = form.querySelector("[data-details-state-input]");
+      const detailsToggle = form.querySelector("[data-details-toggle]");
+      const detailsPanel = form.querySelector("[data-details-panel]");
+      const detailsShell = form.querySelector("[data-details-shell]");
+      const icon = detailsToggle ? detailsToggle.querySelector(".js-details-toggle-icon") : null;
+      const nextExpanded = stored.details === "1";
+      if (detailsInput) detailsInput.value = nextExpanded ? "1" : "0";
+      if (detailsToggle) detailsToggle.setAttribute("aria-expanded", String(nextExpanded));
+      if (detailsPanel) detailsPanel.classList.toggle("hidden", !nextExpanded);
+      if (detailsShell) detailsShell.classList.toggle("ds-filter-shell-collapsed", !nextExpanded);
+      if (icon) icon.classList.toggle("rotate-180", nextExpanded);
+    };
+
+    document.addEventListener("click", (event) => {
+      const restoreButton = event.target.closest("[data-restore-filters]");
+      if (restoreButton) {
+        restoreFiltersFromStorage();
+        return;
+      }
+
+      const clearButton = event.target.closest("[data-clear-filters]");
+      if (!clearButton) return;
+      const form = clearButton.closest("form");
+      if (!form) return;
+      [ "q", "category", "theme", "tag", "sort" ].forEach((name) => {
+        const field = form.querySelector(`[name='${name}']`);
+        if (field) field.value = name == "sort" ? "newest" : "";
+      });
+    });
     });
 
     let lastScrollY = window.scrollY || window.pageYOffset || 0;
@@ -303,7 +503,8 @@
       const category = (form.querySelector("[name='category']")?.value || "").trim();
       const theme = (form.querySelector("[name='theme']")?.value || "").trim();
       const tag = (form.querySelector("[name='tag']")?.value || "").trim();
-      const hasSearchState = [keyword, category, theme, tag].some((value) => value.length > 0);
+      const sort = (form.querySelector("[name='sort']")?.value || "").trim();
+      const hasSearchState = [keyword, category, theme, tag].some((value) => value.length > 0) || sort === "popular" || sort === "recently_updated";
       const focusedInSearch = searchRoot.contains(document.activeElement);
       const detailsOpen = form.querySelector("[data-details-state-input]")?.value === "1";
 
@@ -344,6 +545,16 @@
     document.addEventListener("change", (event) => {
       if (!event.target.closest("[data-search-form]")) return;
       syncMobileIndexCta();
+
+      if (event.target.matches("[data-search-keyword-input]") && typeof window.gtag === "function") {
+        const value = String(event.target.value || "").trim();
+        if (!value) return;
+        window.gtag("event", "post_search_suggestion_eval", {
+          event_category: "post_search",
+          event_label: suggestionSet.has(value) ? "suggestion_match" : "free_text",
+          query_length: value.length
+        });
+      }
     });
 
     document.addEventListener("focusin", (event) => {
@@ -364,7 +575,17 @@
       const categorySet = (form.querySelector("[name='category']")?.value || "").trim().length > 0;
       const themeSet = (form.querySelector("[name='theme']")?.value || "").trim().length > 0;
       const tagSet = (form.querySelector("[name='tag']")?.value || "").trim().length > 0;
+      const sort = (form.querySelector("[name='sort']")?.value || "").trim();
       const appliedFilterCount = [categorySet, themeSet, tagSet].filter(Boolean).length;
+
+      writeJson(FILTER_STATE_KEY, {
+        q: (form.querySelector("[name='q']")?.value || "").trim(),
+        category: (form.querySelector("[name='category']")?.value || "").trim(),
+        theme: (form.querySelector("[name='theme']")?.value || "").trim(),
+        tag: (form.querySelector("[name='tag']")?.value || "").trim(),
+        sort: sort,
+        details: detailsOpen ? "1" : "0"
+      });
 
       window.gtag("event", "post_search_submit", {
         event_category: "post_search",
@@ -373,7 +594,23 @@
         category_set: categorySet,
         theme_set: themeSet,
         tag_set: tagSet,
+        sort_option: sort,
         applied_filter_count: appliedFilterCount
+      });
+    });
+
+    document.addEventListener("submit", (event) => {
+      const form = event.target.closest("[data-search-form]");
+      if (!form) return;
+
+      const detailsOpen = form.querySelector("[data-details-state-input]")?.value === "1";
+      writeJson(FILTER_STATE_KEY, {
+        q: (form.querySelector("[name='q']")?.value || "").trim(),
+        category: (form.querySelector("[name='category']")?.value || "").trim(),
+        theme: (form.querySelector("[name='theme']")?.value || "").trim(),
+        tag: (form.querySelector("[name='tag']")?.value || "").trim(),
+        sort: (form.querySelector("[name='sort']")?.value || "").trim(),
+        details: detailsOpen ? "1" : "0"
       });
     });
 
@@ -392,17 +629,23 @@
       markLoadedMedia();
       syncMobileIndexCta();
       restoreListPosition();
+      restoreFiltersFromStorage();
+      syncFavoriteButtons();
     });
     document.addEventListener("DOMContentLoaded", () => {
       markLoadedMedia();
       syncMobileIndexCta();
       restoreListPosition();
+      restoreFiltersFromStorage();
+      syncFavoriteButtons();
     });
 
     window.setTimeout(() => {
       markLoadedMedia();
       syncMobileIndexCta();
       restoreListPosition();
+      restoreFiltersFromStorage();
+      syncFavoriteButtons();
     }, 0);
   }
 </script>

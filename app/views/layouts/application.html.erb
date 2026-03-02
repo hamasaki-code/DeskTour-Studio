@@ -9,14 +9,17 @@
     <link rel="canonical" href="<%= canonical_url %>">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="DeskTour Studio">
-    <meta property="og:title" content="<%= page_title(content_for(:title)) %>">
-    <meta property="og:description" content="<%= meta_description(content_for(:description)) %>">
+    <meta property="og:title" content="<%= share_card_title(page_title(content_for(:title))) %>">
+    <meta property="og:description" content="<%= share_card_description(meta_description(content_for(:description))) %>">
     <meta property="og:url" content="<%= canonical_url %>">
     <meta property="og:image" content="<%= content_for(:og_image_url) || og_image_url %>">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<%= page_title(content_for(:title)) %>">
-    <meta name="twitter:description" content="<%= meta_description(content_for(:description)) %>">
+    <meta name="twitter:title" content="<%= share_card_title(page_title(content_for(:title))) %>">
+    <meta name="twitter:description" content="<%= share_card_description(meta_description(content_for(:description))) %>">
     <meta name="twitter:image" content="<%= content_for(:og_image_url) || og_image_url %>">
+    <meta name="twitter:image:alt" content="<%= t('images.desk_alt', default: 'Desk image') %>">
     <% if search_console_verification_token.present? %>
       <meta name="google-site-verification" content="<%= search_console_verification_token %>">
     <% end %>
@@ -149,6 +152,29 @@
     </header>
 
     <main class="mx-auto w-full max-w-6xl px-4 pt-8 <%= main_padding_class %> sm:px-6">
+      <% breadcrumbs = context_breadcrumbs %>
+      <% if breadcrumbs.size > 1 %>
+        <nav aria-label="<%= t('navigation.breadcrumb', default: 'Breadcrumb') %>" class="mb-4">
+          <ol class="flex flex-wrap items-center gap-1.5 text-xs text-slate-600">
+            <% breadcrumbs.each_with_index do |crumb, idx| %>
+              <li class="inline-flex items-center gap-1.5">
+                <% if idx < breadcrumbs.size - 1 %>
+                  <%= link_to crumb[:label], crumb[:href], class: "underline decoration-slate-300 underline-offset-2 hover:text-slate-900" %>
+                <% else %>
+                  <span aria-current="page" class="font-semibold text-slate-700"><%= crumb[:label] %></span>
+                <% end %>
+                <% if idx < breadcrumbs.size - 1 %>
+                  <span aria-hidden="true">/</span>
+                <% end %>
+              </li>
+            <% end %>
+          </ol>
+        </nav>
+      <% end %>
+
+      <p class="mb-4 ds-offline-banner"><%= t("ui.offline_banner", default: "Offline mode: your input is saved locally. It will be sent when connection returns.") %></p>
+      <p class="mb-4 ds-low-bandwidth-banner"><%= t("ui.low_bandwidth_banner", default: "Low-bandwidth mode: heavy media is reduced to keep key information visible.") %></p>
+
       <% if controller_name == "posts" && action_name.in?(%w[index show new]) %>
         <div class="mb-4 ds-legal-links">
           <span class="text-slate-500"><%= t("legal.quick_links", default: "Policies") %>:</span>

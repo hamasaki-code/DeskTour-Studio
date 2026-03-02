@@ -93,6 +93,14 @@
   - Desktop: expose utility menus and additional metadata only when they do not compete with the primary CTA.
 - Prevent overflow in mixed Japanese/English labels with `ds-break-words` and explicit line-clamp rules.
 
+## First View Density Limits
+- Per first viewport block:
+  - Primary CTA count: max 1
+  - Secondary CTA count: max 2
+  - Body text lines: max 8 before collapse/summary
+  - Decorative accents: max 2 visual motifs
+- Exceeding limits requires explicit rationale in PR.
+
 ## Component State Matrix
 - Every interactive component must define and visually test:
   - `default`
