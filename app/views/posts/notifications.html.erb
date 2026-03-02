@@ -16,51 +16,22 @@
     <% end %>
   </header>
 
-  <div class="ds-card p-6 space-y-5">
-    <% important_notifications = @notifications.select(&:comment_kind?) %>
-    <% secondary_notifications = @notifications.reject(&:comment_kind?) %>
+  <div class="ds-card p-6 space-y-3">
     <% if @notifications.any? %>
-      <section class="space-y-3">
-        <div class="flex items-center justify-between">
-          <h2 class="ds-heading-sm text-slate-900"><%= t("posts.notifications.important", default: "Important notifications") %></h2>
-          <span class="ds-badge-active"><%= localized_number(important_notifications.size) %></span>
+      <% @notifications.each do |notification| %>
+        <div class="rounded-lg border border-slate-200 bg-slate-50 p-3">
+          <p class="text-sm text-slate-800"><%= notification.message %></p>
+          <p class="mt-1 ds-text-meta">
+            <%= timestamp_tag(notification.created_at, style: :datetime) %>
+            <% if notification.read_at.present? %>
+              <span class="ml-2 inline-flex items-center gap-1 rounded border border-emerald-300 bg-emerald-50 px-2 py-0.5 text-emerald-700">
+                <%= ui_icon(:check_circle, class_name: "h-3.5 w-3.5") %>
+                <span><%= t("notification_labels.read") %></span>
+              </span>
+            <% end %>
+          </p>
         </div>
-        <% if important_notifications.any? %>
-          <% important_notifications.each do |notification| %>
-            <div class="rounded-lg border border-blue-300 bg-blue-50 p-3">
-              <p class="text-sm font-semibold text-blue-900"><%= notification.message %></p>
-              <p class="mt-1 ds-text-meta text-blue-800"><%= timestamp_tag(notification.created_at, style: :datetime) %></p>
-            </div>
-          <% end %>
-        <% else %>
-          <p class="ds-text-muted"><%= t("posts.notifications.important_empty", default: "No important notifications.") %></p>
-        <% end %>
-      </section>
-
-      <section class="space-y-3 border-t border-slate-200 pt-4">
-        <div class="flex items-center justify-between">
-          <h2 class="ds-heading-sm text-slate-900"><%= t("posts.notifications.secondary", default: "Other notifications") %></h2>
-          <span class="ds-badge-info"><%= localized_number(secondary_notifications.size) %></span>
-        </div>
-        <% if secondary_notifications.any? %>
-          <% secondary_notifications.each do |notification| %>
-            <div class="rounded-lg border border-slate-200 bg-slate-50 p-3">
-              <p class="text-sm text-slate-800"><%= notification.message %></p>
-              <p class="mt-1 ds-text-meta">
-                <%= timestamp_tag(notification.created_at, style: :datetime) %>
-                <% if notification.read_at.present? %>
-                  <span class="ml-2 inline-flex items-center gap-1 rounded border border-emerald-300 bg-emerald-50 px-2 py-0.5 text-emerald-700">
-                    <%= ui_icon(:check_circle, class_name: "h-3.5 w-3.5") %>
-                    <span><%= t("notification_labels.read") %></span>
-                  </span>
-                <% end %>
-              </p>
-            </div>
-          <% end %>
-        <% else %>
-          <p class="ds-text-muted"><%= t("posts.notifications.secondary_empty", default: "No secondary notifications.") %></p>
-        <% end %>
-      </section>
+      <% end %>
     <% else %>
       <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center">
         <p class="ds-text-support"><%= t("posts.notifications.empty_state") %></p>
@@ -76,5 +47,5 @@
 </section>
 
 <section class="mx-auto hidden w-full max-w-3xl" data-page-skeleton aria-hidden="true">
-  <%= render "shared/screen_skeleton", variant: :comment %>
+  <%= render "shared/screen_skeleton", variant: :detail %>
 </section>

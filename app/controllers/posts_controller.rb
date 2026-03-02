@@ -19,10 +19,6 @@ class PostsController < ApplicationController
   end
 
   def show
-    @root_comments = @post.comments.visible.roots.includes(:user, replies: :user).latest
-    @comments = @root_comments
-    @reply_to_comment = @post.comments.visible.find_by(id: params[:reply_to])
-    @comment = @post.comments.new(parent_comment: @reply_to_comment)
     @report = @post.reports.new
     @unread_notifications_count = post_owner?(@post) ? @post.notifications.unread.count : 0
     @back_to_index_path = sanitize_internal_back_path(params[:from])

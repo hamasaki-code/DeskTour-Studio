@@ -10,13 +10,11 @@ Rails.application.routes.draw do
   resources :posts, only: %i[index show new create edit update destroy] do
     post :like, on: :member
     get :notifications, on: :member
-    resources :comments, only: :create
     resources :reports, only: :create
   end
 
   namespace :admin do
     resources :posts, only: %i[index update destroy]
-    resources :comments, only: %i[index update destroy]
     resources :reports, only: :index do
       patch :restore_post, on: :member
       patch :dismiss, on: :member

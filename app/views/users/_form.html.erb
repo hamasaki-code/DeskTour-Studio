@@ -39,7 +39,7 @@
   <div>
     <%= f.label :name, t("users.form.name_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
     <%= f.text_field :name, required: true, maxlength: 40, class: input_class.call(name_error), placeholder: t("users.form.name_placeholder"), aria: { invalid: name_error.present? ? "true" : nil, describedby: "user_name_guide user_name_counter user_name_error" }, data: { char_count_max: 40, char_count_target: "user_name_counter" } %>
-    <p id="user_name_guide" class="ds-field-guide"><%= t("users.form.name_guide", default: "Name shown on posts and comments. Avoid personal contact details.") %></p>
+    <p id="user_name_guide" class="ds-field-guide"><%= t("users.form.name_guide_profile", default: "Name shown on posts. Avoid personal contact details.") %></p>
     <p id="user_name_counter" class="ds-char-counter" aria-live="polite"></p>
     <% if name_error.present? %>
       <p id="user_name_error" class="mt-1 text-xs font-medium text-red-700"><%= name_error %></p>
@@ -59,15 +59,10 @@
   <div>
     <%= f.label :email, t("users.form.email_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
     <%= f.email_field :email, class: input_class.call(email_error), placeholder: "you@example.com", aria: { invalid: email_error.present? ? "true" : nil, describedby: "user_email_hint user_email_error" } %>
-    <p id="user_email_hint" class="ds-field-guide"><%= t("users.form.email_hint") %></p>
+    <p id="user_email_hint" class="ds-field-guide"><%= t("users.form.email_hint_profile", default: "Optional contact email for account support.") %></p>
     <% if email_error.present? %>
       <p id="user_email_error" class="mt-1 text-xs font-medium text-red-700"><%= email_error %></p>
     <% end %>
-  </div>
-
-  <div class="flex items-center gap-2">
-    <%= f.check_box :email_notifications_enabled, class: "h-4 w-4 rounded border-slate-300" %>
-    <%= f.label :email_notifications_enabled, t("users.form.email_notifications"), class: "text-sm text-slate-700" %>
   </div>
 
   <%= f.button type: :submit, class: "tap-target cta-primary ds-cta-experiment", data: { variant: "compact", ga_event: "profile_form_submit_click", ga_category: "profile_form", ga_label: "submit_profile" } do %>

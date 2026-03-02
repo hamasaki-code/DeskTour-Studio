@@ -2,7 +2,7 @@ class Admin::PostsController < Admin::BaseController
   before_action :set_post, only: %i[update destroy]
 
   def index
-    @posts = Post.includes(:items, :comments).latest
+    @posts = Post.includes(:items).latest
   end
 
   def update

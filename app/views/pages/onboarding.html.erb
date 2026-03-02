@@ -1,10 +1,10 @@
 <% content_for :title, t("onboarding.title", default: "Getting Started") %>
-<% content_for :description, t("onboarding.description", default: "A short guide to browse, post, and join conversations on DeskTour Studio.") %>
+<% content_for :description, t("onboarding.description", default: "A short guide to browse, post, and revisit favorites on DeskTour Studio.") %>
 
 <section class="mx-auto w-full max-w-3xl space-y-content" data-page-content>
   <header class="rounded-2xl bg-gradient-to-br from-slate-900 via-sky-900 to-cyan-700 px-6 py-7 text-white">
     <h1 class="ds-heading-xl"><%= t("onboarding.heading", default: "Start in 3 steps") %></h1>
-    <p class="mt-2 ds-text-support max-w-2xl text-sky-100"><%= t("onboarding.lead", default: "If this is your first visit, follow this flow: browse setups, publish your own, and leave a comment.") %></p>
+    <p class="mt-2 ds-text-support max-w-2xl text-sky-100"><%= t("onboarding.lead", default: "If this is your first visit, follow this flow: browse setups, publish your own, and save favorites.") %></p>
   </header>
 
   <ol class="space-y-3">
@@ -29,10 +29,10 @@
 
     <li class="ds-card p-4 sm:p-5">
       <p class="text-xs font-semibold uppercase tracking-wide text-slate-500"><%= t("onboarding.step", default: "Step") %> 3</p>
-      <h2 class="mt-1 ds-heading-md text-slate-900"><%= t("onboarding.comment_title", default: "Join comments") %></h2>
-      <p class="mt-1 ds-text-support"><%= t("onboarding.comment_body", default: "Leave one concrete point when commenting to get better replies.") %></p>
+      <h2 class="mt-1 ds-heading-md text-slate-900"><%= t("onboarding.revisit_title", default: "Save and revisit") %></h2>
+      <p class="mt-1 ds-text-support"><%= t("onboarding.revisit_body", default: "Save posts you like, then come back later from your recently viewed list.") %></p>
       <div class="mt-3">
-        <a href="<%= root_path %>#index-search" class="tap-target cta-secondary"><%= t("onboarding.find_post", default: "Find a post to comment" ) %></a>
+        <a href="<%= root_path %>#index-search" class="tap-target cta-secondary"><%= t("onboarding.find_post", default: "Browse posts" ) %></a>
       </div>
     </li>
   </ol>
