@@ -1,0 +1,43 @@
+<% level = (local_assigns[:level] || :info).to_sym %>
+<% title = local_assigns[:title] %>
+<% body = local_assigns[:body] %>
+<% actions = Array(local_assigns[:actions]) %>
+<% tone = case level
+when :error
+  "border-red-300 bg-red-50 text-red-800"
+when :warning
+  "border-amber-300 bg-amber-50 text-amber-900"
+when :success
+  "border-emerald-300 bg-emerald-50 text-emerald-800"
+else
+  "border-blue-300 bg-blue-50 text-blue-900"
+end %>
+<% icon = case level
+when :error then :x_circle
+when :warning then :exclamation_triangle
+when :success then :check_circle
+else :information_circle
+end %>
+
+<div class="rounded-lg border px-4 py-3 text-sm <%= tone %>" role="<%= level == :error ? 'alert' : 'status' %>" aria-live="<%= level == :error ? 'assertive' : 'polite' %>">
+  <div class="flex items-start gap-2">
+    <%= status_badge(level: level, icon: icon, label: title.presence || t("status_levels.#{level}", default: level.to_s.humanize)) %>
+    <div class="space-y-2">
+      <% if body.present? %>
+        <p class="pt-0.5"><%= body %></p>
+      <% end %>
+      <% if actions.any? %>
+        <div class="flex flex-wrap gap-2">
+          <% actions.each do |action| %>
+            <% next unless action.respond_to?(:[]) && action[:label].present? %>
+            <% if action[:href].present? %>
+              <%= link_to action[:label], action[:href], class: "tap-target cta-tertiary cta-compact", data: action[:data] || {} %>
+            <% elsif action[:button].present? %>
+              <button type="button" class="tap-target cta-tertiary cta-compact" <%= tag.attributes(action[:button]) %>><%= action[:label] %></button>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

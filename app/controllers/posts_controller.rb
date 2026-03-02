@@ -9,6 +9,10 @@ class PostsController < ApplicationController
   def index
     @posts = Post.visible.includes(:user, :items, desk_image_attachment: :blob).filtered(params)
     @categories = Post.visible.where.not(category: [ nil, "" ]).distinct.order(:category).pluck(:category)
+    @popular_tags = Post.visible.where.not(tag_list: [ nil, "" ]).pluck(:tag_list).flat_map { |list|
+      list.to_s.split(",").map(&:strip)
+    }.reject(&:blank?).tally.sort_by { |(_, count)| -count }.map(&:first).first(8)
+    @recent_posts = Post.visible.latest.limit(4)
   end
 
   def show
@@ -18,6 +22,7 @@ class PostsController < ApplicationController
     @comment = @post.comments.new(parent_comment: @reply_to_comment)
     @report = @post.reports.new
     @unread_notifications_count = post_owner?(@post) ? @post.notifications.unread.count : 0
+    @back_to_index_path = sanitize_internal_back_path(params[:from])
   end
 
   def new
@@ -172,6 +177,20 @@ class PostsController < ApplicationController
     return @owned_users.first if selected_id.zero?
 
     @owned_users.find { |user| user.id == selected_id }
+  end
+
+  def sanitize_internal_back_path(raw_path)
+    value = raw_path.to_s
+    return if value.blank?
+    return unless value.start_with?("/")
+    return if value.start_with?("//")
+
+    uri = URI.parse(value)
+    return unless uri.host.nil? && uri.scheme.nil?
+
+    value
+  rescue URI::InvalidURIError
+    nil
   end
 
   def assign_owner_token(post)

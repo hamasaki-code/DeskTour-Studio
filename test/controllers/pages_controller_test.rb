@@ -15,4 +15,9 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     get cookie_policy_url
     assert_response :success
   end
+
+  test "should get onboarding" do
+    get onboarding_url
+    assert_response :success
+  end
 end

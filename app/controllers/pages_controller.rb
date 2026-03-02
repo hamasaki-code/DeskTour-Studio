@@ -7,4 +7,7 @@ class PagesController < ApplicationController
 
   def cookie
   end
+
+  def onboarding
+  end
 end

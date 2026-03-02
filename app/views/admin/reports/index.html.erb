@@ -35,7 +35,7 @@
               <td class="px-4 py-3"><%= Report.reason_label(report.reason) %></td>
               <td class="px-4 py-3"><%= report.reporter_user&.name.presence || "Anonymous" %></td>
               <td class="px-4 py-3"><%= truncate(report.details.to_s, length: 120) %></td>
-              <td class="px-4 py-3"><%= l(report.created_at, format: :short) %></td>
+              <td class="px-4 py-3"><%= timestamp_tag(report.created_at, style: :datetime) %></td>
               <td class="px-4 py-3">
                 <div class="flex flex-wrap gap-2">
                   <%= button_to "Restore", restore_post_admin_report_path(report), method: :patch, class: "tap-target cta-secondary cta-compact" %>
@@ -74,7 +74,7 @@
               <td class="px-4 py-3"><%= report.post&.title.presence || "(Deleted post)" %></td>
               <td class="px-4 py-3"><%= Report.reason_label(report.reason) %></td>
               <td class="px-4 py-3"><%= report_status_badge(report.status) %></td>
-              <td class="px-4 py-3"><%= report.reviewed_at.present? ? l(report.reviewed_at, format: :short) : "-" %></td>
+              <td class="px-4 py-3"><%= report.reviewed_at.present? ? timestamp_tag(report.reviewed_at, style: :datetime) : "-" %></td>
             </tr>
           <% end %>
         <% else %>
