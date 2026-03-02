@@ -18,5 +18,4 @@ class User < ApplicationRecord
 
     ActiveSupport::SecurityUtils.secure_compare(owner_token_digest, self.class.digest_owner_token(token))
   end
-
 end

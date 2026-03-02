@@ -169,4 +169,3 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     Post.order(:id).last
   end
 end
-
