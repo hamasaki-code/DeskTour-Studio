@@ -23,7 +23,7 @@
 
 <article class="space-y-content">
   <header class="space-y-4">
-    <div class="flex flex-wrap items-center gap-2 ds-text-meta text-slate-600">
+    <div class="flex flex-wrap items-center gap-2 ds-text-meta text-neutral-500">
       <span><%= l(@post.created_at.to_date) %></span>
       <% if @post.category.present? %>
         <span class="ds-badge-inactive"><%= @post.category %></span>
@@ -37,11 +37,11 @@
       </span>
     </div>
 
-    <h1 class="ds-heading-xl ds-break-words text-slate-900"><%= @post.title %></h1>
+    <h1 class="ds-heading-xl ds-break-words text-neutral-900"><%= @post.title %></h1>
 
     <p class="ds-text-support">
       <%= t("posts.show.posted_by") %>
-      <%= link_to @post.user.name, user_path(@post.user), class: "font-medium text-blue-600 hover:text-blue-700" %>
+      <%= link_to @post.user.name, user_path(@post.user), class: "font-medium text-neutral-900 underline decoration-neutral-300 underline-offset-2 hover:decoration-neutral-500" %>
     </p>
     <p class="ds-text-body ds-break-words max-w-3xl"><%= value_summary %></p>
     <a href="#comments" class="tap-target cta-tertiary cta-compact"><%= t("posts.show.comments.title") %></a>
@@ -52,15 +52,15 @@
   </div>
 
   <section class="ds-section-card space-y-4">
-    <h2 class="ds-heading-lg text-slate-900"><%= body_section_label %></h2>
+    <h2 class="ds-heading-lg text-neutral-900"><%= body_section_label %></h2>
     <div class="max-w-3xl">
       <p class="ds-text-body whitespace-pre-wrap ds-break-words"><%= @post.description %></p>
     </div>
 
     <% if @post.tags.any? %>
-      <div class="flex flex-wrap gap-2 border-t border-slate-100 pt-4">
+      <div class="flex flex-wrap gap-2 border-t border-neutral-100 pt-4">
         <% @post.tags.each do |tag| %>
-          <%= link_to "##{tag}", posts_path(tag: tag), class: "tap-target ds-badge-info hover:bg-slate-100" %>
+          <%= link_to "##{tag}", posts_path(tag: tag), class: "tap-target ds-badge-info hover:bg-neutral-100" %>
         <% end %>
       </div>
     <% end %>
@@ -68,7 +68,7 @@
 
   <section class="ds-section-card hidden space-y-3 sm:block">
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <h2 class="ds-heading-sm text-slate-900"><%= t("posts.show.actions.title", default: "Actions") %></h2>
+      <h2 class="ds-heading-sm text-neutral-900"><%= t("posts.show.actions.title", default: "Actions") %></h2>
       <p class="ds-text-meta"><%= t("posts.show.actions.lead", default: "Like is primary. Share, copy, and report are in More actions.") %></p>
     </div>
 
@@ -87,21 +87,21 @@
         </span>
       </button>
 
-      <div id="desktop-post-actions-menu" data-desktop-post-actions-menu class="absolute left-0 top-full z-20 mt-2 hidden min-w-64 rounded-xl border border-slate-300 bg-white p-2 shadow-2xl ring-1 ring-slate-900/5">
+      <div id="desktop-post-actions-menu" data-desktop-post-actions-menu class="absolute left-0 top-full z-20 mt-2 hidden min-w-64 rounded-xl border border-neutral-200/60 bg-white p-2 shadow-2xl ring-1 ring-neutral-900/5">
         <div class="grid gap-1">
-          <button type="button" data-desktop-actions-menu-item data-native-share-url="<%= post_share_url(@post) %>" data-native-share-text="<%= post_share_text(@post) %>" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100">
+          <button type="button" data-desktop-actions-menu-item data-native-share-url="<%= post_share_url(@post) %>" data-native-share-text="<%= post_share_text(@post) %>" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100">
             <%= ui_icon(:share, class_name: "h-4 w-4") %>
             <span><%= t("posts.show.actions.share") %></span>
           </button>
-          <%= link_to x_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100", data: { desktop_actions_menu_item: true, ga_event: "post_action_share_x_click", ga_category: "post_actions", ga_label: "desktop_share_x_menu" } do %>
+          <%= link_to x_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100", data: { desktop_actions_menu_item: true, ga_event: "post_action_share_x_click", ga_category: "post_actions", ga_label: "desktop_share_x_menu" } do %>
             <%= ui_icon(:share, class_name: "h-4 w-4") %>
             <span><%= t("posts.show.actions.share_x") %></span>
           <% end %>
-          <%= link_to threads_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100", data: { desktop_actions_menu_item: true, ga_event: "post_action_share_threads_click", ga_category: "post_actions", ga_label: "desktop_share_threads_menu" } do %>
+          <%= link_to threads_share_url(@post), target: "_blank", rel: "noopener", class: "tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100", data: { desktop_actions_menu_item: true, ga_event: "post_action_share_threads_click", ga_category: "post_actions", ga_label: "desktop_share_threads_menu" } do %>
             <%= ui_icon(:share, class_name: "h-4 w-4") %>
             <span><%= t("posts.show.actions.share_threads") %></span>
           <% end %>
-          <button type="button" data-desktop-actions-menu-item data-copy-url="<%= post_share_url(@post) %>" data-ga-event="post_action_copy_url_click" data-ga-category="post_actions" data-ga-label="desktop_copy_url_menu" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100">
+          <button type="button" data-desktop-actions-menu-item data-copy-url="<%= post_share_url(@post) %>" data-ga-event="post_action_copy_url_click" data-ga-category="post_actions" data-ga-label="desktop_copy_url_menu" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100">
             <%= ui_icon(:share, class_name: "h-4 w-4") %>
             <span data-copy-label><%= t("posts.show.actions.copy_url") %></span>
           </button>
@@ -118,8 +118,8 @@
 
   <section class="ds-section-card space-y-4">
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <h2 class="ds-heading-lg text-slate-900"><%= t("posts.show.related_items") %></h2>
-      <span class="inline-flex items-center gap-1 ds-text-meta text-slate-600">
+      <h2 class="ds-heading-lg text-neutral-900"><%= t("posts.show.related_items") %></h2>
+      <span class="inline-flex items-center gap-1 ds-text-meta text-neutral-500">
         <%= ui_icon(:heart, class_name: "h-4 w-4") %>
         <span><%= t("metrics.likes") %>: <%= localized_number(@post.likes_count) %></span>
       </span>
@@ -137,9 +137,9 @@
             source: t("posts.show.item_source", default: "Source")
           } %>
 
-          <article class="rounded-lg border border-slate-200 bg-slate-50 p-3 sm:p-4">
+          <article class="rounded-lg border border-neutral-200/60 bg-neutral-50 p-3 sm:p-4">
             <div class="grid gap-3 sm:grid-cols-[88px_minmax(0,1fr)] sm:items-start">
-              <div class="aspect-square rounded-md border border-slate-200 bg-white text-slate-400">
+              <div class="aspect-square rounded-md border border-neutral-200 bg-white text-neutral-400">
                 <div class="flex h-full items-center justify-center">
                   <div class="text-center">
                     <%= ui_icon(:information_circle, class_name: "mx-auto h-5 w-5") %>
@@ -149,14 +149,14 @@
               </div>
 
               <div class="space-y-3">
-                <h3 class="ds-heading-sm ds-break-words text-slate-900"><%= item.name %></h3>
+                <h3 class="ds-heading-sm ds-break-words text-neutral-900"><%= item.name %></h3>
 
                 <dl class="grid gap-2 sm:grid-cols-2">
                   <% [ :brand, :category, :price, :source ].each do |key| %>
                     <% fact = fact_map[key] %>
-                    <div class="rounded-md border border-slate-200 bg-white px-2.5 py-2">
-                      <dt class="ds-text-meta font-semibold text-slate-500"><%= labels[key] %></dt>
-                      <dd class="mt-0.5 text-sm text-slate-700 ds-break-words"><%= fact&.dig(:value).presence || (key == :price ? item_price_unknown_label : "-") %></dd>
+                    <div class="rounded-md border border-neutral-200/60 bg-white px-2.5 py-2">
+                      <dt class="ds-text-meta font-semibold text-neutral-400"><%= labels[key] %></dt>
+                      <dd class="mt-0.5 text-sm text-neutral-700 ds-break-words"><%= fact&.dig(:value).presence || (key == :price ? item_price_unknown_label : "-") %></dd>
                     </div>
                   <% end %>
                 </dl>
@@ -185,10 +185,10 @@
     <% end %>
   </section>
 
-  <section id="comments" class="ds-anchor-offset space-y-form rounded-xl border border-slate-200 bg-white p-4 sm:p-6">
+  <section id="comments" class="ds-anchor-offset space-y-form rounded-2xl border border-neutral-200/60 bg-white p-4 sm:p-6">
     <div class="flex flex-wrap items-center justify-between gap-3">
       <div class="space-y-1">
-        <h2 class="inline-flex items-center gap-1.5 ds-heading-lg text-slate-900">
+        <h2 class="inline-flex items-center gap-1.5 ds-heading-lg text-neutral-900">
           <%= ui_icon(:chat, class_name: "h-5 w-5") %>
           <span><%= t("posts.show.comments.title") %></span>
         </h2>
@@ -202,27 +202,27 @@
     <% if @root_comments.any? %>
       <div class="space-y-4" aria-live="polite">
         <% @root_comments.each do |comment| %>
-          <article id="comment-<%= comment.id %>" class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <article id="comment-<%= comment.id %>" class="rounded-xl border border-neutral-200/60 bg-white p-4 shadow-sm">
             <div class="flex items-center justify-between gap-3">
-              <p class="text-sm font-medium text-slate-800 ds-break-words"><%= comment.author_name %></p>
+              <p class="text-sm font-medium text-neutral-800 ds-break-words"><%= comment.author_name %></p>
             </div>
             <p class="mt-0.5 ds-text-meta"><%= l(comment.created_at, format: :short) %></p>
-            <p class="mt-2 whitespace-pre-wrap text-sm leading-reading text-slate-700 ds-break-words"><%= comment.body %></p>
+            <p class="mt-2 whitespace-pre-wrap text-sm leading-reading text-neutral-700 ds-break-words"><%= comment.body %></p>
 
             <% if comment.replies.any? %>
-              <div class="mt-4 space-y-2 rounded-lg bg-slate-50 px-3 py-3 sm:pl-4 sm:pr-3">
+              <div class="mt-4 space-y-2 rounded-lg bg-neutral-50 px-3 py-3 sm:pl-4 sm:pr-3">
                 <% comment.replies.each do |reply| %>
-                  <div id="comment-<%= reply.id %>" class="rounded-md border border-slate-100 bg-white/85 px-3 py-2">
-                    <p class="text-xs font-medium text-slate-700 ds-break-words"><%= t("posts.show.comments.replied_by", name: reply.author_name) %></p>
+                  <div id="comment-<%= reply.id %>" class="rounded-md border border-neutral-100 bg-white/85 px-3 py-2">
+                    <p class="text-xs font-medium text-neutral-700 ds-break-words"><%= t("posts.show.comments.replied_by", name: reply.author_name) %></p>
                     <p class="mt-0.5 ds-text-meta"><%= l(reply.created_at, format: :short) %></p>
-                    <p class="mt-1 whitespace-pre-wrap text-sm leading-reading text-slate-700 ds-break-words"><%= reply.body %></p>
+                    <p class="mt-1 whitespace-pre-wrap text-sm leading-reading text-neutral-700 ds-break-words"><%= reply.body %></p>
                   </div>
                 <% end %>
               </div>
             <% end %>
 
-            <div class="mt-3 border-t border-slate-100 pt-3">
-              <%= link_to post_path(@post, anchor: "comments", reply_to: comment.id), class: "tap-target inline-flex items-center gap-1 rounded-md px-2 text-xs text-blue-600 hover:bg-blue-50 hover:text-blue-700", data: { ga_event: "comment_reply_click", ga_category: "comments", ga_label: "reply_to_parent" } do %>
+            <div class="mt-3 border-t border-neutral-100 pt-3">
+              <%= link_to post_path(@post, anchor: "comments", reply_to: comment.id), class: "tap-target inline-flex items-center gap-1 rounded-md px-2 text-xs text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900", data: { ga_event: "comment_reply_click", ga_category: "comments", ga_label: "reply_to_parent" } do %>
                 <%= ui_icon(:arrow_uturn_left, class_name: "h-3.5 w-3.5") %>
                 <span><%= t("posts.show.comments.reply") %></span>
               <% end %>
@@ -231,13 +231,13 @@
         <% end %>
       </div>
     <% else %>
-      <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center">
+      <div class="rounded-lg border border-dashed border-neutral-300 bg-neutral-50 px-4 py-6 text-center">
         <p class="ds-text-support"><%= t("posts.show.comments.empty_state") %></p>
         <a href="#comment-form" class="mt-3 inline-flex tap-target cta-primary cta-compact"><%= comment_empty_cta %></a>
       </div>
     <% end %>
 
-    <div class="ds-anchor-offset border-t border-slate-200 pt-4" id="comment-form" data-comment-form-root>
+    <div class="ds-anchor-offset border-t border-neutral-200 pt-4" id="comment-form" data-comment-form-root>
       <% if @reply_to_comment.present? %>
         <div class="mb-3 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800" data-reply-context>
           <p>
@@ -266,7 +266,7 @@
               <span><%= t("posts.show.comments.comment_as_profile") %></span>
               <span class="ds-badge-info"><%= comment_optional_label %></span>
             <% end %>
-            <%= f.collection_select :user_id, owned_users, :id, :name, { include_blank: t("posts.show.comments.post_as_guest") }, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", data: { comment_input: "user_id" } %>
+            <%= f.collection_select :user_id, owned_users, :id, :name, { include_blank: t("posts.show.comments.post_as_guest") }, class: "w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm", data: { comment_input: "user_id" } %>
             <p class="mt-1 ds-text-muted"><%= t("posts.show.comments.profile_help", default: "Optional: choose a profile, or post as guest.") %></p>
           </div>
         <% end %>

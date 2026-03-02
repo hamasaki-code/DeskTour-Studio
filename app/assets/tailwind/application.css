@@ -5,26 +5,31 @@
     --ds-font-sans: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     --ds-line-height-reading: 1.58;
     --ds-letter-spacing-body: 0;
-    --ds-letter-spacing-heading: -0.012em;
+    --ds-letter-spacing-heading: -0.02em;
     --ds-letter-spacing-nav: 0.002em;
     --ds-space-content: 2rem;
     --ds-space-form: 1.5rem;
     --ds-space-section: 2.25rem;
     --ds-space-block: 1.5rem;
     --ds-space-component: 0.875rem;
-    --ds-focus-ring-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
-    --ds-focus-border-color: rgb(37, 99, 235);
-    --ds-text-main: rgb(15 23 42);
-    --ds-text-body: rgb(51 65 85);
-    --ds-text-support: rgb(30 41 59);
-    --ds-text-meta: rgb(51 65 85);
-    --ds-text-muted: rgb(51 65 85);
+    --ds-focus-ring-shadow: 0 0 0 3px rgba(23, 23, 23, 0.2);
+    --ds-focus-border-color: rgb(23, 23, 23);
+    --ds-text-main: rgb(23 23 23);
+    --ds-text-body: rgb(64 64 64);
+    --ds-text-support: rgb(82 82 82);
+    --ds-text-meta: rgb(115 115 115);
+    --ds-text-muted: rgb(115 115 115);
     --ds-safe-area-bottom: env(safe-area-inset-bottom, 0px);
     --ds-safe-area-top: env(safe-area-inset-top, 0px);
     --ds-motion-duration-fast: 160ms;
     --ds-motion-duration-normal: 220ms;
-    --ds-skeleton-base: rgb(226 232 240);
-    --ds-skeleton-shimmer: rgb(241 245 249);
+    --ds-skeleton-base: rgb(229 229 229);
+    --ds-skeleton-shimmer: rgb(245 245 245);
+    --ds-surface-primary: rgb(255 255 255);
+    --ds-surface-muted: rgb(250 250 250);
+    --ds-border-default: rgb(229 229 229);
+    --ds-accent: rgb(23 23 23);
+    --ds-accent-hover: rgb(38 38 38);
   }
 
   html[lang="ja"] {
@@ -44,7 +49,7 @@
     --ds-font-sans: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     --ds-line-height-reading: 1.58;
     --ds-letter-spacing-body: 0;
-    --ds-letter-spacing-heading: -0.012em;
+    --ds-letter-spacing-heading: -0.02em;
     --ds-letter-spacing-nav: 0.002em;
   }
 
@@ -211,27 +216,27 @@
   }
 
   .ds-card {
-    @apply rounded-xl border border-slate-200 bg-white;
+    @apply rounded-2xl border border-neutral-200/60 bg-white;
   }
 
   .ds-badge {
-    @apply inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-600;
+    @apply inline-flex items-center rounded-full border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-xs font-medium text-neutral-600;
   }
 
   .ds-badge-active {
-    @apply inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-blue-300 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-800;
+    @apply inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-neutral-900 bg-neutral-900 px-2.5 py-1 text-xs font-semibold text-white;
   }
 
   .ds-badge-inactive {
-    @apply inline-flex items-center whitespace-nowrap rounded-full border border-slate-300 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100;
+    @apply inline-flex items-center whitespace-nowrap rounded-full border border-neutral-300 bg-white px-2.5 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-100;
   }
 
   .ds-badge-info {
-    @apply inline-flex items-center whitespace-nowrap rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-600;
+    @apply inline-flex items-center whitespace-nowrap rounded-full border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-xs font-medium text-neutral-600;
   }
 
   .ds-shadow-soft {
-    box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03);
   }
 
   .ds-icon-button {
@@ -245,7 +250,7 @@
   }
 
   .ds-media-frame {
-    @apply relative overflow-hidden rounded-xl border border-slate-200 bg-slate-100;
+    @apply relative overflow-hidden rounded-xl border border-neutral-200/60 bg-neutral-100;
   }
 
   .ds-media-frame img {
@@ -279,27 +284,27 @@
   }
 
   .ds-section-card {
-    @apply rounded-xl border border-slate-200 bg-white p-5 sm:p-6;
+    @apply rounded-2xl border border-neutral-200/60 bg-white p-5 sm:p-6;
   }
 
   .ds-filter-shell {
-    @apply bg-slate-50/70;
+    @apply bg-neutral-50/70;
   }
 
   .ds-filter-shell-collapsed {
-    @apply border-slate-200/80 bg-slate-50/35;
+    @apply border-neutral-200/80 bg-neutral-50/35;
   }
 
   .cta-primary {
-    @apply inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700;
+    @apply inline-flex items-center gap-1.5 rounded-lg bg-neutral-900 px-4 py-2 text-sm font-semibold text-white hover:bg-neutral-800;
   }
 
   .cta-secondary {
-    @apply inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100;
+    @apply inline-flex items-center gap-1.5 rounded-lg border border-neutral-300 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 hover:bg-neutral-50;
   }
 
   .cta-tertiary {
-    @apply inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900;
+    @apply inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900;
   }
 
   .cta-compact {
@@ -325,21 +330,21 @@
   }
 
   .mobile-sticky-bar {
-    @apply fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 backdrop-blur;
-    box-shadow: 0 -10px 24px rgba(15, 23, 42, 0.08);
+    @apply fixed inset-x-0 bottom-0 z-50 border-t border-neutral-200 bg-white/95 backdrop-blur;
+    box-shadow: 0 -10px 24px rgba(0, 0, 0, 0.06);
     padding-bottom: max(var(--ds-safe-area-bottom), 0px);
   }
 
   .ad-slot-surface {
-    @apply rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-4 sm:px-5 sm:py-5;
+    @apply rounded-xl border border-neutral-200/60 bg-neutral-50/70 px-4 py-4 sm:px-5 sm:py-5;
   }
 
   .ad-slot-label {
-    @apply mb-2 text-center text-[11px] font-semibold uppercase tracking-wide text-slate-500;
+    @apply mb-2 text-center text-[11px] font-semibold uppercase tracking-wide text-neutral-400;
   }
 
   .ad-slot-divider {
-    @apply mb-2 text-center text-xs font-medium text-slate-500;
+    @apply mb-2 text-center text-xs font-medium text-neutral-400;
   }
 
   .lang-ja .ds-reading-column {
@@ -382,7 +387,7 @@
   }
 
   .ds-toast-info {
-    @apply border-slate-300 bg-white text-slate-800;
+    @apply border-neutral-300 bg-white text-neutral-800;
   }
 
   @keyframes ds-toast-in {

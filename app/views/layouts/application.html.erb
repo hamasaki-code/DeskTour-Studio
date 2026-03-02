@@ -49,16 +49,16 @@
     <% end %>
   </head>
 
-  <body class="lang-<%= I18n.locale %> min-h-screen bg-slate-50 text-slate-800">
+  <body class="lang-<%= I18n.locale %> min-h-screen bg-neutral-50 text-neutral-800">
     <% tracked_events = analytics_events %>
     <% mobile_sticky_active = controller_name == "posts" && action_name.in?(%w[index show]) %>
     <% main_padding_class = mobile_sticky_active ? "pb-40 sm:pb-8" : "pb-10 sm:pb-8" %>
 
-    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur" data-mobile-header-root>
+    <header class="sticky top-0 z-40 border-b border-neutral-200/60 bg-white/95 backdrop-blur" data-mobile-header-root>
       <div class="mx-auto flex w-full max-w-6xl items-center gap-2 px-4 py-2 sm:px-6 sm:py-3">
-        <%= link_to "DeskTour Studio", root_path, class: "min-w-0 flex-1 truncate text-base font-bold text-slate-900 sm:text-lg", data: { ga_event: "navigation_home_click", ga_category: "navigation", ga_label: "header_logo" } %>
+        <%= link_to "DeskTour Studio", root_path, class: "min-w-0 flex-1 truncate text-lg font-bold tracking-tight text-neutral-900 sm:text-xl", data: { ga_event: "navigation_home_click", ga_category: "navigation", ga_label: "header_logo" } %>
 
-        <button type="button" data-mobile-header-toggle aria-expanded="false" aria-controls="mobile-header-menu" class="tap-target inline-flex items-center justify-center rounded-lg border border-slate-300 px-2.5 py-2 text-slate-700 hover:bg-slate-100 sm:hidden" data-ga-event="navigation_mobile_menu_toggle_click" data-ga-category="navigation" data-ga-label="mobile_header_menu_toggle">
+        <button type="button" data-mobile-header-toggle aria-expanded="false" aria-controls="mobile-header-menu" class="tap-target inline-flex items-center justify-center rounded-lg border border-neutral-300 px-2.5 py-2 text-neutral-700 hover:bg-neutral-100 sm:hidden" data-ga-event="navigation_mobile_menu_toggle_click" data-ga-category="navigation" data-ga-label="mobile_header_menu_toggle">
           <%= ui_icon(:bars_3, class_name: "h-5 w-5") %>
           <span class="sr-only">Menu</span>
         </button>
@@ -69,27 +69,27 @@
             <button type="button" data-desktop-utility-toggle aria-expanded="false" aria-controls="desktop-utility-menu" class="tap-target cta-tertiary" data-ga-event="navigation_desktop_utility_toggle_click" data-ga-category="navigation" data-ga-label="desktop_utility_toggle">
               <span class="inline-flex items-center gap-1.5">
                 <span><%= t("navigation.utility_menu", default: "Utility") %></span>
-                <%= ui_icon(:chevron_down, class_name: "h-4 w-4 text-slate-600") %>
+                <%= ui_icon(:chevron_down, class_name: "h-4 w-4 text-neutral-500") %>
               </span>
             </button>
 
-            <div id="desktop-utility-menu" data-desktop-utility-menu class="absolute right-0 top-full z-30 mt-2 hidden w-64 rounded-xl border border-slate-300 bg-white p-3 shadow-2xl ring-1 ring-slate-900/5">
+            <div id="desktop-utility-menu" data-desktop-utility-menu class="absolute right-0 top-full z-30 mt-2 hidden w-64 rounded-2xl border border-neutral-200/60 bg-white p-3 shadow-2xl ring-1 ring-neutral-900/5">
               <div class="space-y-2">
                 <% if owned_users.any? %>
                   <%= link_to t("navigation.my_profile"), user_path(owned_users.first), class: "tap-target cta-tertiary w-full justify-start", data: { ga_event: "navigation_profile_click", ga_category: "navigation", ga_label: "desktop_header_my_profile" } %>
                 <% else %>
                   <%= link_to t("navigation.create_profile"), new_user_path, class: "tap-target cta-tertiary w-full justify-start", data: { ga_event: "navigation_profile_create_click", ga_category: "navigation", ga_label: "desktop_header_create_profile" } %>
                 <% end %>
-                <div class="rounded-lg border border-slate-200 bg-slate-50 p-2">
+                <div class="rounded-lg border border-neutral-200/60 bg-neutral-50 p-2">
                   <p class="mb-1 ds-text-meta font-semibold"><%= t("language.switch_aria") %></p>
-                  <div class="inline-flex w-full items-center gap-1 rounded-full border border-slate-300 bg-white p-1 text-xs font-semibold text-slate-700" role="group" aria-label="<%= t('language.switch_aria') %>">
-                    <%= link_to locale_switch_path(:ja), class: "ds-locale-pill rounded-full #{locale_selected?(:ja) ? 'bg-slate-900 text-white shadow-sm ring-1 ring-slate-900' : 'text-slate-700 hover:bg-slate-100'}", aria: { current: (locale_selected?(:ja) ? "true" : nil) }, data: { ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "desktop_locale_ja" } do %>
+                  <div class="inline-flex w-full items-center gap-1 rounded-full border border-neutral-300 bg-white p-1 text-xs font-semibold text-neutral-700" role="group" aria-label="<%= t('language.switch_aria') %>">
+                    <%= link_to locale_switch_path(:ja), class: "ds-locale-pill rounded-full #{locale_selected?(:ja) ? 'bg-neutral-900 text-white shadow-sm ring-1 ring-neutral-900' : 'text-neutral-700 hover:bg-neutral-100'}", aria: { current: (locale_selected?(:ja) ? "true" : nil) }, data: { ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "desktop_locale_ja" } do %>
                       <span><%= t("language.option_ja") %></span>
                       <% if locale_selected?(:ja) %>
                         <%= ui_icon(:check, class_name: "h-3 w-3") %>
                       <% end %>
                     <% end %>
-                    <%= link_to locale_switch_path(:en), class: "ds-locale-pill rounded-full #{locale_selected?(:en) ? 'bg-slate-900 text-white shadow-sm ring-1 ring-slate-900' : 'text-slate-700 hover:bg-slate-100'}", aria: { current: (locale_selected?(:en) ? "true" : nil) }, data: { ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "desktop_locale_en" } do %>
+                    <%= link_to locale_switch_path(:en), class: "ds-locale-pill rounded-full #{locale_selected?(:en) ? 'bg-neutral-900 text-white shadow-sm ring-1 ring-neutral-900' : 'text-neutral-700 hover:bg-neutral-100'}", aria: { current: (locale_selected?(:en) ? "true" : nil) }, data: { ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "desktop_locale_en" } do %>
                       <span><%= t("language.option_en") %></span>
                       <% if locale_selected?(:en) %>
                         <%= ui_icon(:check, class_name: "h-3 w-3") %>
@@ -103,20 +103,20 @@
         </div>
       </div>
 
-      <div id="mobile-header-menu" data-mobile-header-menu class="hidden border-t border-slate-200 bg-white sm:hidden">
+      <div id="mobile-header-menu" data-mobile-header-menu class="hidden border-t border-neutral-200/60 bg-white sm:hidden">
         <div class="mx-auto w-full max-w-6xl space-y-2 px-4 py-2.5">
           <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target cta-primary flex w-full items-center justify-center", data: { mobile_header_action: true, ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "mobile_header_create_post_menu" } %>
 
-          <div class="rounded-xl border border-slate-300 bg-slate-50 p-2">
-            <p class="mb-1 text-xs font-semibold text-slate-700"><%= t("language.switch_aria") %></p>
-            <div class="inline-flex items-center gap-1 rounded-full border border-slate-400 bg-white p-1 text-xs font-semibold text-slate-700" role="group" aria-label="<%= t('language.switch_aria') %>">
-              <%= link_to locale_switch_path(:ja), class: "ds-locale-pill rounded-full #{locale_selected?(:ja) ? 'bg-slate-900 text-white shadow-sm ring-1 ring-slate-900' : 'text-slate-700 hover:bg-slate-100'}", aria: { current: (locale_selected?(:ja) ? "true" : nil) }, data: { mobile_header_action: true, ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "mobile_locale_ja" } do %>
+          <div class="rounded-xl border border-neutral-300 bg-neutral-50 p-2">
+            <p class="mb-1 text-xs font-semibold text-neutral-700"><%= t("language.switch_aria") %></p>
+            <div class="inline-flex items-center gap-1 rounded-full border border-neutral-300 bg-white p-1 text-xs font-semibold text-neutral-700" role="group" aria-label="<%= t('language.switch_aria') %>">
+              <%= link_to locale_switch_path(:ja), class: "ds-locale-pill rounded-full #{locale_selected?(:ja) ? 'bg-neutral-900 text-white shadow-sm ring-1 ring-neutral-900' : 'text-neutral-700 hover:bg-neutral-100'}", aria: { current: (locale_selected?(:ja) ? "true" : nil) }, data: { mobile_header_action: true, ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "mobile_locale_ja" } do %>
                 <span><%= t("language.option_ja") %></span>
                 <% if locale_selected?(:ja) %>
                   <%= ui_icon(:check, class_name: "ml-1 h-3 w-3") %>
                 <% end %>
               <% end %>
-              <%= link_to locale_switch_path(:en), class: "ds-locale-pill rounded-full #{locale_selected?(:en) ? 'bg-slate-900 text-white shadow-sm ring-1 ring-slate-900' : 'text-slate-700 hover:bg-slate-100'}", aria: { current: (locale_selected?(:en) ? "true" : nil) }, data: { mobile_header_action: true, ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "mobile_locale_en" } do %>
+              <%= link_to locale_switch_path(:en), class: "ds-locale-pill rounded-full #{locale_selected?(:en) ? 'bg-neutral-900 text-white shadow-sm ring-1 ring-neutral-900' : 'text-neutral-700 hover:bg-neutral-100'}", aria: { current: (locale_selected?(:en) ? "true" : nil) }, data: { mobile_header_action: true, ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "mobile_locale_en" } do %>
                 <span><%= t("language.option_en") %></span>
                 <% if locale_selected?(:en) %>
                   <%= ui_icon(:check, class_name: "ml-1 h-3 w-3") %>
@@ -166,13 +166,13 @@
       </div>
     <% end %>
 
-    <footer class="mt-10 border-t border-slate-200 bg-white">
-      <div class="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-6 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+    <footer class="mt-10 border-t border-neutral-200/60 bg-white">
+      <div class="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-6 text-sm text-neutral-500 sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <p>&copy; <%= Date.current.year %> DeskTour Studio</p>
         <div class="flex flex-wrap gap-4">
-          <%= link_to t("footer.terms"), terms_path, class: "hover:text-slate-900" %>
-          <%= link_to t("footer.privacy_policy"), privacy_policy_path, class: "hover:text-slate-900" %>
-          <%= link_to t("footer.cookie_policy"), cookie_policy_path, class: "hover:text-slate-900" %>
+          <%= link_to t("footer.terms"), terms_path, class: "hover:text-neutral-900" %>
+          <%= link_to t("footer.privacy_policy"), privacy_policy_path, class: "hover:text-neutral-900" %>
+          <%= link_to t("footer.cookie_policy"), cookie_policy_path, class: "hover:text-neutral-900" %>
         </div>
       </div>
     </footer>
