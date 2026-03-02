@@ -1,4 +1,5 @@
 const UI_STATE_GUARD = "__deskTourUiStateInstalled";
+const FORM_DRAFT_PREFIX = "form_draft_";
 
 const INTERACTIVE_SELECTOR = [
   "a",
@@ -16,6 +17,23 @@ const INTERACTIVE_SELECTOR = [
 ].join(", ");
 
 const isBlank = (value) => value == null || String(value).trim().length === 0;
+
+const readJson = (key, fallback = {}) => {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    return typeof parsed === "object" && parsed != null ? parsed : fallback;
+  } catch (_) {
+    return fallback;
+  }
+};
+
+const writeJson = (key, value) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (_) {}
+};
 
 const controlLabel = (field, form) => {
   if (!field) return "";
@@ -145,11 +163,81 @@ const bindFormState = (scope = document) => {
     }
 
     form.dataset.uiFormBound = "1";
+    form.dataset.uiFormDirty = "false";
 
-    form.addEventListener("input", () => updateFormState(form));
-    form.addEventListener("change", () => updateFormState(form));
+    const draftKey = `${FORM_DRAFT_PREFIX}${form.dataset.offlineDraftKey || form.getAttribute("action") || form.id || "default"}`;
+    const serializableFields = () => Array.from(form.querySelectorAll("input[name], textarea[name], select[name]")).filter((field) => {
+      const type = (field.getAttribute("type") || "").toLowerCase();
+      return ![ "password", "file", "submit", "button", "image" ].includes(type);
+    });
+
+    const saveDraft = () => {
+      const payload = {};
+      serializableFields().forEach((field) => {
+        if (field.type === "checkbox") {
+          payload[field.name] = field.checked;
+        } else if (field.type === "radio") {
+          if (field.checked) payload[field.name] = field.value;
+        } else {
+          payload[field.name] = field.value;
+        }
+      });
+      writeJson(draftKey, payload);
+    };
+
+    const restoreDraft = () => {
+      const payload = readJson(draftKey, {});
+      if (!payload || Object.keys(payload).length === 0) return;
+      serializableFields().forEach((field) => {
+        if (!(field.name in payload)) return;
+        if (field.type === "checkbox") {
+          field.checked = Boolean(payload[field.name]);
+        } else if (field.type === "radio") {
+          field.checked = String(payload[field.name]) === String(field.value);
+        } else {
+          field.value = payload[field.name];
+        }
+      });
+      if (typeof window.dsNotify === "function" && form.dataset.offlineDraftKey) {
+        window.dsNotify(form.dataset.draftRestoredMessage || "Draft restored.", "info");
+      }
+    };
+
+    form.addEventListener("input", () => {
+      form.dataset.uiFormDirty = "true";
+      updateFormState(form);
+      if (form.dataset.offlineDraftKey) saveDraft();
+    });
+    form.addEventListener("change", () => {
+      form.dataset.uiFormDirty = "true";
+      updateFormState(form);
+      if (form.dataset.offlineDraftKey) saveDraft();
+    });
+
+    form.addEventListener("focusout", (event) => {
+      const field = event.target.closest("input[name], textarea[name], select[name]");
+      if (!field || typeof window.gtag !== "function") return;
+      const label = controlLabel(field, form);
+      const filled = !isBlank(field.value);
+      window.gtag("event", "form_field_blur", {
+        event_category: "form",
+        event_label: form.dataset.formAnalyticsContext || "generic_form",
+        field_name: field.name,
+        field_label: label,
+        field_filled: filled
+      });
+    }, true);
 
     form.addEventListener("submit", (event) => {
+      if (!navigator.onLine) {
+        event.preventDefault();
+        saveDraft();
+        if (typeof window.dsNotify === "function") {
+          window.dsNotify(form.dataset.offlineSubmitMessage || "You appear to be offline. Your input is saved locally.", "error");
+        }
+        return;
+      }
+
       updateFormState(form);
       const submitButtons = Array.from(form.querySelectorAll("button[type='submit'], input[type='submit']"));
       const blocked = submitButtons.some((button) => button.disabled);
@@ -183,10 +271,33 @@ const bindFormState = (scope = document) => {
         button.disabled = true;
       });
 
+      if (form.dataset.offlineDraftKey) {
+        localStorage.removeItem(draftKey);
+      }
+
       updateFormState(form);
     });
 
+    restoreDraft();
     updateFormState(form);
+  });
+};
+
+const bindFormAbandonmentObserver = () => {
+  if (window.__formAbandonmentBound) return;
+  window.__formAbandonmentBound = true;
+
+  window.addEventListener("beforeunload", () => {
+    if (typeof window.gtag !== "function") return;
+    const dirtyForm = document.querySelector("form[data-ui-form][data-ui-form-dirty='true']");
+    if (!dirtyForm) return;
+    const active = dirtyForm.querySelector(":focus");
+    const activeField = active ? active.getAttribute("name") : "";
+    window.gtag("event", "form_abandon", {
+      event_category: "form",
+      event_label: dirtyForm.dataset.formAnalyticsContext || "generic_form",
+      active_field: activeField
+    });
   });
 };
 
@@ -305,6 +416,7 @@ const initializeUiState = (scope = document) => {
   bindCardNavigation(scope);
   bindCharCounters(scope);
   bindFormState(scope);
+  bindFormAbandonmentObserver();
   bindImageFallback(scope);
   bindLoadingSkeleton(scope);
   showFlashToasts(scope);
@@ -312,6 +424,25 @@ const initializeUiState = (scope = document) => {
 
 if (!window[UI_STATE_GUARD]) {
   window[UI_STATE_GUARD] = true;
+
+  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  const lowBandwidth = Boolean(connection && (connection.saveData || /(^|[^0-9])2g/i.test(connection.effectiveType || "")));
+  if (lowBandwidth) {
+    document.documentElement.classList.add("ds-low-bandwidth");
+  }
+
+  const ua = navigator.userAgent || "";
+  if (/iPhone|iPad|iPod/i.test(ua)) document.documentElement.classList.add("platform-ios");
+  if (/Android/i.test(ua)) document.documentElement.classList.add("platform-android");
+
+  window.addEventListener("online", () => {
+    document.documentElement.classList.remove("ds-offline");
+    if (typeof window.dsNotify === "function") window.dsNotify("Back online.", "success");
+  });
+  window.addEventListener("offline", () => {
+    document.documentElement.classList.add("ds-offline");
+    if (typeof window.dsNotify === "function") window.dsNotify("You are offline. Inputs will be saved locally.", "error");
+  });
 
   bindTapFeedback();
 

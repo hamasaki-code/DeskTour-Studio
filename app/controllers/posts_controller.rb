@@ -7,12 +7,15 @@ class PostsController < ApplicationController
   before_action :require_post_owner!, only: %i[edit update destroy notifications]
 
   def index
-    @posts = Post.visible.includes(:user, :items, desk_image_attachment: :blob).filtered(params)
+    @sort_option = normalize_sort(params[:sort])
+    @posts = Post.visible.includes(:user, :items, desk_image_attachment: :blob).filtered(params.merge(sort: @sort_option))
     @categories = Post.visible.where.not(category: [ nil, "" ]).distinct.order(:category).pluck(:category)
+    @themes = Post.visible.where.not(theme: [ nil, "" ]).distinct.order(:theme).limit(24).pluck(:theme)
     @popular_tags = Post.visible.where.not(tag_list: [ nil, "" ]).pluck(:tag_list).flat_map { |list|
       list.to_s.split(",").map(&:strip)
     }.reject(&:blank?).tally.sort_by { |(_, count)| -count }.map(&:first).first(8)
     @recent_posts = Post.visible.latest.limit(4)
+    @search_suggestions = search_suggestions
   end
 
   def show
@@ -23,6 +26,7 @@ class PostsController < ApplicationController
     @report = @post.reports.new
     @unread_notifications_count = post_owner?(@post) ? @post.notifications.unread.count : 0
     @back_to_index_path = sanitize_internal_back_path(params[:from])
+    @author_trust = author_trust_snapshot(@post.user)
   end
 
   def new
@@ -191,6 +195,30 @@ class PostsController < ApplicationController
     value
   rescue URI::InvalidURIError
     nil
+  end
+
+  def search_suggestions
+    recent_titles = Post.visible.latest.limit(20).pluck(:title)
+    (recent_titles + @categories + @themes + @popular_tags).map { |value| value.to_s.strip }.reject(&:blank?).uniq.first(40)
+  end
+
+  def normalize_sort(raw_sort)
+    allowed = %w[newest popular recently_updated]
+    value = raw_sort.to_s
+    allowed.include?(value) ? value : "newest"
+  end
+
+  def author_trust_snapshot(user)
+    posts_scope = user.posts.visible
+    profile_fields = [ user.name, user.bio, user.email ]
+    completion = ((profile_fields.count(&:present?).to_f / profile_fields.size) * 100).round
+
+    {
+      completion: completion,
+      published_posts_count: posts_scope.count,
+      total_likes: posts_scope.sum(:likes_count),
+      last_updated_at: posts_scope.maximum(:updated_at)
+    }
   end
 
   def assign_owner_token(post)

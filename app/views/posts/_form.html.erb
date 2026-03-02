@@ -19,6 +19,10 @@
               data: {
                 form_autofocus_errors: true,
                 ui_form: true,
+                form_analytics_context: "post_form",
+                offline_draft_key: "post_form",
+                draft_restored_message: t("ui.draft_restored", default: "Draft restored."),
+                offline_submit_message: t("ui.offline_submit", default: "You appear to be offline. Your input was saved locally."),
                 loading_label: t("ui.processing", default: "Processing..."),
                 submitting_reason: t("ui.processing", default: "Processing..."),
                 disabled_reason_prefix: t("ui.disabled_reason", default: "Complete required fields"),

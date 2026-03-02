@@ -131,6 +131,14 @@ module ApplicationHelper
     custom_description.presence || t("meta.default_description")
   end
 
+  def share_card_title(raw_title)
+    truncate(raw_title.to_s.presence || "DeskTour Studio", length: 65)
+  end
+
+  def share_card_description(raw_description)
+    truncate(raw_description.to_s.presence || t("meta.default_description"), length: 150)
+  end
+
   def canonical_url
     request.base_url + request.path
   end
@@ -180,6 +188,88 @@ module ApplicationHelper
 
   def localized_number(value)
     number_with_delimiter(value, locale: I18n.locale)
+  end
+
+  def context_breadcrumbs
+    base = [ { label: "DeskTour Studio", href: root_path } ]
+    return base if controller_name == "posts" && action_name == "index"
+
+    case controller_name
+    when "posts"
+      base << { label: t("posts.index.title"), href: root_path }
+      if action_name == "show" && defined?(@post) && @post.present?
+        base << { label: truncate(@post.title, length: 40), href: post_path(@post) }
+      elsif action_name.in?(%w[new create])
+        base << { label: t("posts.new.heading"), href: new_post_path }
+      elsif action_name.in?(%w[edit update]) && defined?(@post) && @post.present?
+        base << { label: truncate(@post.title, length: 40), href: post_path(@post) }
+        base << { label: t("posts.edit.heading"), href: edit_post_path(@post) }
+      end
+    when "users"
+      if action_name.in?(%w[new create])
+        base << { label: t("users.new.heading"), href: new_user_path }
+      elsif defined?(@user) && @user.present?
+        base << { label: @user.name, href: user_path(@user) }
+        base << { label: t("users.edit.heading"), href: edit_user_path(@user) } if action_name.in?(%w[edit update])
+      end
+    when "pages"
+      page_map = {
+        "privacy" => { label: t("footer.privacy_policy"), href: privacy_policy_path },
+        "terms" => { label: t("footer.terms"), href: terms_path },
+        "cookie" => { label: t("footer.cookie_policy"), href: cookie_policy_path },
+        "onboarding" => { label: t("navigation.onboarding", default: "Getting started"), href: onboarding_path }
+      }
+      candidate = page_map[action_name]
+      base << candidate if candidate.present?
+    end
+
+    base
+  end
+
+  def reading_sections(text)
+    raw = text.to_s
+    return [] if raw.blank?
+
+    sections = []
+    current = { title: t("posts.show.section_overview", default: "Overview"), lines: [] }
+
+    raw.each_line do |line|
+      heading_match = line.match(/\A##\s+(.+)\z/)
+      if heading_match
+        sections << current if current[:lines].any?
+        current = { title: heading_match[1].strip, lines: [] }
+      else
+        current[:lines] << line
+      end
+    end
+
+    sections << current if current[:lines].any?
+
+    sections.each_with_index.map do |section, idx|
+      {
+        id: "section-#{idx + 1}",
+        title: section[:title].presence || "#{t('posts.show.section_label', default: 'Section')} #{idx + 1}",
+        body: section[:lines].join.strip
+      }
+    end.reject { |section| section[:body].blank? }
+  end
+
+  def sort_option_label(value)
+    labels = {
+      "newest" => t("posts.index.sort_newest", default: "Newest"),
+      "popular" => t("posts.index.sort_popular", default: "Most liked"),
+      "recently_updated" => t("posts.index.sort_recently_updated", default: "Recently updated")
+    }
+    labels.fetch(value.to_s, labels.fetch("newest"))
+  end
+
+  def sort_option_hint(value)
+    hints = {
+      "newest" => t("posts.index.sort_hint_newest", default: "Ordered by publish date. Updates every time a post is published."),
+      "popular" => t("posts.index.sort_hint_popular", default: "Ordered by likes. Updated when likes change."),
+      "recently_updated" => t("posts.index.sort_hint_recently_updated", default: "Ordered by latest edit timestamp. Updated when authors edit.")
+    }
+    hints.fetch(value.to_s, hints.fetch("newest"))
   end
 
   def formatted_date(value)
