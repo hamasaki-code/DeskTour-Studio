@@ -23,6 +23,9 @@ ja:
       detailed_filters_toggle: "詳細条件"
       author_label: "投稿者"
       empty_state: "条件に一致する投稿がありません。"
+      open_post: "投稿を見る"
+      result_count: "%{count}件の投稿"
+      search_status: "検索状態"
     new:
       title: "投稿を作成"
       description: "DeskTour Studioに新しい投稿を作成します。"
@@ -54,11 +57,10 @@ ja:
       affiliate_url_placeholder: "https://www.amazon.co.jp/..."
       publish: "公開する"
       save_draft: "下書き保存"
+      draft_restore_hint: "入力中の内容はローカルに下書き保存され、再訪時に自動で復元されます。"
     show:
       posted_by: "投稿者:"
       overview_heading: "概要"
-      comments_lead: "投稿と関連アイテムを読んだあと、下のコメントに参加しましょう。"
-      comment_empty_cta: "最初のコメントを書く"
       related_items: "関連アイテム"
       item_preview: "アイテム画像"
       item_brand: "ブランド"
@@ -83,6 +85,11 @@ ja:
         storage: "ストレージ"
       open_product_page: "商品ページを開く"
       no_related_items: "関連アイテムはまだありません。"
+      layer_read: "読む"
+      layer_react: "反応する"
+      layer_report: "通報する"
+      jump_to_content: "本文へ移動"
+      report_owner_hint: "自分の投稿には通報できません。"
       actions:
         like: "いいね"
         share: "共有"
@@ -104,18 +111,6 @@ ja:
         details_placeholder: "運営向けの補足情報があれば入力してください。"
         cancel: "キャンセル"
         submit: "通報を送信"
-      comments:
-        title: "コメント"
-        reply: "返信"
-        replied_by: "%{name} さんが返信"
-        empty_state: "コメントはまだありません。"
-        replying_to: "%{name} さんに返信中"
-        cancel: "キャンセル"
-        comment_as_profile: "プロフィールとしてコメント（任意）"
-        post_as_guest: "ゲストとして投稿"
-        name: "名前"
-        comment: "コメント"
-        post_comment: "コメントを投稿"
     notifications:
       title: "通知"
       description: "投稿に届いた通知一覧です。"
@@ -134,12 +129,6 @@ ja:
       published: "投稿を公開しました。"
       create_profile_before_posting: "投稿前にプロフィールを作成してください。"
       not_allowed: "この投稿を編集する権限がありません。"
-  comments:
-    flash:
-      recaptcha_failed: "reCAPTCHAの認証に失敗しました。"
-      posted: "コメントを投稿しました。"
-      invalid_parent: "が不正です"
-      notification: "%{author} さんがあなたの投稿にコメントしました。"
   reports:
     reasons:
       spam: "スパム / 誤解を招く内容"
@@ -170,6 +159,8 @@ ja:
     show:
       no_profile_description: "プロフィール文はまだありません。"
       edit_profile: "プロフィール編集"
+      browse_gallery: "投稿一覧を見る"
+      draft_visibility_hint: "下書きは本人のみ表示されます。"
       published_posts: "公開済み投稿"
       no_published_posts: "公開済み投稿はまだありません。"
       drafts: "下書き"
@@ -182,8 +173,10 @@ ja:
       name_placeholder: "例: Desk Lover"
       bio_label: "プロフィール文"
       bio_placeholder: "デスクへのこだわりや使い方を書いてください"
+      name_recommended: "推奨: 2〜20文字で読みやすく。"
+      bio_recommended: "推奨: 60〜180文字。"
       email_label: "メールアドレス"
-      email_hint: "コメント返信通知の送信にのみ利用します。"
+      email_hint: "アカウント関連通知の送信にのみ利用します。"
       email_notifications: "メール通知を受け取る"
       submit_create: "作成する"
       submit_update: "更新する"
@@ -191,3 +184,6 @@ ja:
       created: "プロフィールを作成しました。"
       updated: "プロフィールを更新しました。"
       owner_only: "このプロフィールは本人のみ編集できます。"
+  onboarding:
+    progress_title: "進捗"
+    progress_value: "3 / 3 ステップ"

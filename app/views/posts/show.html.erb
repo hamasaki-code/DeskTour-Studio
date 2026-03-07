@@ -9,25 +9,25 @@
 <article class="space-y-content" data-page-content>
   <header class="space-y-4">
     <div class="flex flex-wrap items-center justify-between gap-2">
-      <div class="flex flex-wrap items-center gap-2 ds-text-meta text-slate-600">
+      <div class="flex flex-wrap items-center gap-2 ds-text-meta ds-text-weak">
         <%= timestamp_tag(@post.created_at, style: :date, include_relative: true) %>
         <% if @post.category.present? %><span class="ds-badge-inactive"><%= @post.category %></span><% end %>
         <% if @post.theme.present? %><span class="ds-badge-info"><%= @post.theme %></span><% end %>
       </div>
       <% if @back_to_index_path.present? %>
-        <%= link_to @back_to_index_path, class: "tap-target cta-secondary cta-compact" do %>
+        <%= link_to @back_to_index_path, class: "tap-target cta-secondary cta-compact", data: { mobile_risk_target: "back", ga_event: "post_detail_back_click", ga_category: "post_detail", ga_label: "back_to_results" } do %>
           <%= ui_icon(:arrow_uturn_left, class_name: "h-4 w-4") %>
           <span><%= t("posts.show.back_to_results", default: "Back to results") %></span>
         <% end %>
       <% end %>
     </div>
 
-    <h1 class="ds-heading-xl ds-break-words text-slate-900"><%= @post.title %></h1>
+    <h1 class="ds-heading-xl ds-break-words ds-text-strong"><%= @post.title %></h1>
     <p class="ds-text-support">
       <%= t("posts.show.posted_by") %>
-      <%= link_to @post.user.name, user_path(@post.user), class: "font-medium text-blue-600 hover:text-blue-700" %>
+      <%= link_to @post.user.name, user_path(@post.user), class: "font-medium ds-link-primary" %>
     </p>
-    <div class="flex flex-wrap items-center gap-2 ds-text-meta text-slate-600">
+    <div class="flex flex-wrap items-center gap-2 ds-text-meta ds-text-weak">
       <span class="ds-badge-info"><%= t("posts.show.profile_completion", default: "Profile %{percent}% complete", percent: @author_trust[:completion]) %></span>
       <span class="ds-badge-info"><%= t("posts.show.author_posts", default: "%{count} published posts", count: localized_number(@author_trust[:published_posts_count])) %></span>
       <span class="ds-badge-info"><%= t("posts.show.author_likes", default: "%{count} total likes", count: localized_number(@author_trust[:total_likes])) %></span>
@@ -50,22 +50,22 @@
   </div>
 
   <section class="ds-section-card space-y-4">
-    <h2 class="ds-heading-lg text-slate-900"><%= t("posts.show.overview_heading", default: "Overview") %></h2>
+    <h2 class="ds-heading-lg ds-text-strong"><%= t("posts.show.overview_heading", default: "Overview") %></h2>
     <% if long_read %>
-      <div class="rounded-lg border border-slate-200 bg-slate-50 p-3">
-        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500"><%= t("posts.show.reading_toc", default: "Reading guide") %></p>
-        <ol class="mt-2 list-decimal space-y-1 pl-5 text-sm text-slate-700">
+      <div class="rounded-lg border ds-border-subtle ds-surface-muted p-3">
+        <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("posts.show.reading_toc", default: "Reading guide") %></p>
+        <ol class="mt-2 list-decimal space-y-1 pl-5 text-sm ds-text-weak">
           <% reading_sections_data.each do |section| %>
-            <li><a href="##{section[:id]}" class="underline decoration-slate-300 underline-offset-2 hover:text-slate-900"><%= section[:title] %></a></li>
+            <li><a href="##{section[:id]}" class="ds-link-underlined ds-hover-link"><%= section[:title] %></a></li>
           <% end %>
         </ol>
       </div>
-      <details class="rounded-lg border border-slate-200 bg-white p-3">
-        <summary class="cursor-pointer text-sm font-semibold text-slate-800"><%= t("posts.show.expand_full_text", default: "Expand full text") %></summary>
+      <details class="rounded-lg border ds-border-subtle ds-surface-base p-3">
+        <summary class="cursor-pointer text-sm font-semibold ds-text-strong"><%= t("posts.show.expand_full_text", default: "Expand full text") %></summary>
         <div class="mt-3 space-y-4">
           <% reading_sections_data.each do |section| %>
             <section id="<%= section[:id] %>" class="space-y-2">
-              <h3 class="ds-heading-sm text-slate-900"><%= section[:title] %></h3>
+              <h3 class="ds-heading-sm ds-text-strong"><%= section[:title] %></h3>
               <p class="ds-text-body whitespace-pre-wrap ds-break-words max-w-3xl"><%= section[:body] %></p>
             </section>
           <% end %>
@@ -75,9 +75,9 @@
       <p class="ds-text-body whitespace-pre-wrap ds-break-words max-w-3xl"><%= @post.description %></p>
     <% end %>
     <% if @post.tags.any? %>
-      <div class="flex flex-wrap gap-2 border-t border-slate-100 pt-4">
+      <div class="flex flex-wrap gap-2 border-t ds-border-muted pt-4">
         <% @post.tags.each do |tag| %>
-          <%= link_to "##{tag}", posts_path(tag: tag), class: "tap-target ds-badge-info hover:bg-slate-100" %>
+          <%= link_to "##{tag}", posts_path(tag: tag), class: "tap-target ds-badge-info ds-hover-muted" %>
         <% end %>
       </div>
     <% end %>
@@ -85,56 +85,82 @@
 
   <section class="ds-section-card hidden space-y-3 sm:block">
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <h2 class="ds-heading-sm text-slate-900"><%= t("posts.show.actions.title", default: "Actions") %></h2>
-      <p class="ds-text-meta"><%= t("posts.show.actions.lead", default: "Like is primary. Share and report are in More actions.") %></p>
+      <h2 class="ds-heading-sm ds-text-strong"><%= t("posts.show.actions.title", default: "Actions") %></h2>
+      <p class="ds-text-meta"><%= t("posts.show.actions.lead", default: "Read first, react second, and use report only when needed.") %></p>
     </div>
 
-    <div class="relative flex flex-wrap items-center gap-2" data-desktop-post-actions-root>
-      <%= button_to like_post_path(@post), method: :post, class: "tap-target cta-primary ds-cta-experiment", data: { variant: "control" } do %>
-        <span class="inline-flex items-center gap-1.5"><%= ui_icon(:heart, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.like") %></span></span>
-      <% end %>
-
-      <button type="button" data-desktop-post-actions-toggle aria-haspopup="menu" aria-expanded="false" aria-controls="desktop-post-actions-menu" class="tap-target cta-secondary">
-        <span class="inline-flex items-center gap-1.5"><%= ui_icon(:ellipsis_horizontal, class_name: "h-4 w-4") %><span><%= t("posts.show.more_actions", default: "More actions") %></span></span>
-      </button>
-
-      <div id="desktop-post-actions-menu" role="menu" data-desktop-post-actions-menu class="absolute left-0 top-full z-20 mt-2 hidden min-w-64 rounded-xl border border-slate-300 bg-white p-2 shadow-2xl ring-1 ring-slate-900/5">
-        <div class="grid gap-1">
-          <button type="button" role="menuitem" data-desktop-actions-menu-item data-copy-url="<%= share_url %>" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"><%= ui_icon(:share, class_name: "h-4 w-4") %><span data-copy-label><%= t("posts.show.actions.copy_url") %></span></button>
-          <button type="button" role="menuitem" data-desktop-actions-menu-item data-native-share-url="<%= share_url %>" data-native-share-text="<%= share_text %>" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"><%= ui_icon(:share, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.share") %></span></button>
-          <%= link_to x_share_url(@post), target: "_blank", rel: "noopener", role: "menuitem", class: "tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100", data: { desktop_actions_menu_item: true } do %><%= ui_icon(:share, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.share_x") %></span><% end %>
-          <%= link_to threads_share_url(@post), target: "_blank", rel: "noopener", role: "menuitem", class: "tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100", data: { desktop_actions_menu_item: true } do %><%= ui_icon(:share, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.share_threads") %></span><% end %>
-          <% unless post_owner?(@post) %>
-            <button type="button" role="menuitem" data-desktop-actions-menu-item data-open-report-modal="report-modal-<%= @post.id %>" class="tap-target cta-warning cta-compact justify-start"><%= ui_icon(:flag, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.report") %></span></button>
+    <div class="grid gap-3 md:grid-cols-3">
+      <section class="ds-action-layer">
+        <p class="ds-action-layer-title"><%= t("posts.show.layer_read", default: "Read") %></p>
+        <div class="flex flex-wrap items-center gap-2">
+          <% if @back_to_index_path.present? %>
+            <%= link_to @back_to_index_path, class: "tap-target cta-tertiary cta-compact" do %>
+              <%= ui_icon(:arrow_uturn_left, class_name: "h-4 w-4") %>
+              <span><%= t("posts.show.back_to_results", default: "Back to results") %></span>
+            <% end %>
           <% end %>
+          <a href="#post-overview" class="tap-target cta-tertiary cta-compact"><%= t("posts.show.jump_to_content", default: "Jump to content") %></a>
         </div>
-      </div>
-    </div>
+      </section>
 
-    <% unless post_owner?(@post) %><p class="ds-trust-note"><%= t("reports.trust_note", default: "Reports are reviewed by moderators. Typical response time: within 24 hours.") %></p><% end %>
+      <section class="ds-action-layer relative" data-desktop-post-actions-root>
+        <p class="ds-action-layer-title"><%= t("posts.show.layer_react", default: "React") %></p>
+        <div class="flex flex-wrap items-center gap-2">
+          <%= button_to like_post_path(@post), method: :post, class: "tap-target cta-primary ds-cta-experiment", data: { variant: "control", ga_event: "post_detail_primary_cta_click", ga_category: "post_detail", ga_label: "like" } do %>
+            <span class="inline-flex items-center gap-1.5"><%= ui_icon(:heart, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.like") %></span></span>
+          <% end %>
+
+          <button type="button" data-desktop-post-actions-toggle aria-haspopup="menu" aria-expanded="false" aria-controls="desktop-post-actions-menu" class="tap-target cta-secondary" data-ga-event="post_detail_secondary_cta_click" data-ga-category="post_detail" data-ga-label="share_menu_toggle">
+            <span class="inline-flex items-center gap-1.5"><%= ui_icon(:ellipsis_horizontal, class_name: "h-4 w-4") %><span><%= t("posts.show.more_actions", default: "Share options") %></span></span>
+          </button>
+        </div>
+
+        <div id="desktop-post-actions-menu" role="menu" data-desktop-post-actions-menu class="absolute left-0 top-full z-20 mt-2 hidden min-w-64 ds-popover-surface">
+          <div class="grid gap-1">
+            <button type="button" role="menuitem" data-desktop-actions-menu-item data-copy-url="<%= share_url %>" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ds-text-weak ds-hover-muted"><%= ui_icon(:share, class_name: "h-4 w-4") %><span data-copy-label><%= t("posts.show.actions.copy_url") %></span></button>
+            <button type="button" role="menuitem" data-desktop-actions-menu-item data-native-share-url="<%= share_url %>" data-native-share-text="<%= share_text %>" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ds-text-weak ds-hover-muted"><%= ui_icon(:share, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.share") %></span></button>
+            <%= link_to x_share_url(@post), target: "_blank", rel: "noopener", role: "menuitem", class: "tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ds-text-weak ds-hover-muted", data: { desktop_actions_menu_item: true } do %><%= ui_icon(:share, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.share_x") %></span><% end %>
+            <%= link_to threads_share_url(@post), target: "_blank", rel: "noopener", role: "menuitem", class: "tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ds-text-weak ds-hover-muted", data: { desktop_actions_menu_item: true } do %><%= ui_icon(:share, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.share_threads") %></span><% end %>
+          </div>
+        </div>
+      </section>
+
+      <section class="ds-action-layer">
+        <p class="ds-action-layer-title"><%= t("posts.show.layer_report", default: "Report") %></p>
+        <% unless post_owner?(@post) %>
+          <button type="button" data-open-report-modal="report-modal-<%= @post.id %>" data-mobile-risk-target="report" class="tap-target cta-warning cta-compact justify-start" data-ga-event="post_detail_report_cta_click" data-ga-category="post_detail" data-ga-label="desktop_report_layer">
+            <%= ui_icon(:flag, class_name: "h-4 w-4") %>
+            <span><%= t("posts.show.actions.report") %></span>
+          </button>
+          <p class="mt-2 ds-text-muted"><%= t("reports.trust_note", default: "Reports are reviewed by moderators. Typical response time: within 24 hours.") %></p>
+        <% else %>
+          <p class="ds-text-muted"><%= t("posts.show.report_owner_hint", default: "Reporting is disabled on your own post.") %></p>
+        <% end %>
+      </section>
+    </div>
   </section>
-  <section class="ds-section-card space-y-4">
+  <section id="post-overview" class="ds-section-card space-y-4 ds-anchor-offset">
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <h2 class="ds-heading-lg text-slate-900"><%= t("posts.show.related_items") %></h2>
-      <span class="inline-flex items-center gap-1 ds-text-meta text-slate-600"><%= ui_icon(:heart, class_name: "h-4 w-4") %><span><%= t("metrics.likes") %>: <%= localized_number(@post.likes_count) %></span></span>
+      <h2 class="ds-heading-lg ds-text-strong"><%= t("posts.show.related_items") %></h2>
+      <span class="inline-flex items-center gap-1 ds-text-meta ds-text-weak"><%= ui_icon(:heart, class_name: "h-4 w-4") %><span><%= t("metrics.likes") %>: <%= localized_number(@post.likes_count) %></span></span>
     </div>
 
     <% if @post.items.any? %>
       <div class="space-y-3">
         <% @post.items.each do |item| %>
           <% fact_map = related_item_facts(item).index_by { |fact| fact[:key] } %>
-          <article class="rounded-lg border border-slate-200 bg-slate-50 p-3 sm:p-4">
+          <article class="rounded-lg border ds-border-subtle ds-surface-muted p-3 sm:p-4">
             <div class="grid gap-3 sm:grid-cols-[88px_minmax(0,1fr)] sm:items-start">
-              <div class="aspect-square rounded-md border border-slate-200 bg-white text-slate-400">
+              <div class="aspect-square rounded-md border ds-border-subtle ds-surface-base ds-text-muted">
                 <div class="flex h-full items-center justify-center"><div class="text-center"><%= ui_icon(:information_circle, class_name: "mx-auto h-5 w-5") %><p class="mt-1 text-[10px] font-medium"><%= t("posts.show.item_preview", default: "Item preview") %></p></div></div>
               </div>
               <div class="space-y-3">
-                <h3 class="ds-heading-sm ds-break-words text-slate-900"><%= item.name %></h3>
+                <h3 class="ds-heading-sm ds-break-words ds-text-strong"><%= item.name %></h3>
                 <dl class="grid gap-2 sm:grid-cols-2">
                   <% [ :brand, :category, :price, :source ].each do |key| %>
-                    <div class="rounded-md border border-slate-200 bg-white px-2.5 py-2">
-                      <dt class="ds-text-meta font-semibold text-slate-500"><%= t("posts.show.item_#{key}", default: key.to_s.humanize) %></dt>
-                      <dd class="mt-0.5 text-sm text-slate-700 ds-break-words"><%= fact_map[key]&.dig(:value).presence || (key == :price ? t("posts.show.item_price_unknown", default: "Price: unavailable") : "-") %></dd>
+                    <div class="rounded-md border ds-border-subtle ds-surface-base px-2.5 py-2">
+                      <dt class="ds-text-meta font-semibold ds-text-weak"><%= t("posts.show.item_#{key}", default: key.to_s.humanize) %></dt>
+                      <dd class="mt-0.5 text-sm ds-text-support ds-break-words"><%= fact_map[key]&.dig(:value).presence || (key == :price ? t("posts.show.item_price_unknown", default: "Price: unavailable") : "-") %></dd>
                     </div>
                   <% end %>
                 </dl>
@@ -161,26 +187,26 @@
 
   <% if post_owner?(@post) %>
     <section class="ds-card space-y-4 p-4">
-      <h2 class="ds-heading-sm text-slate-900"><%= t("posts.show.owner_actions", default: "Owner actions") %></h2>
+      <h2 class="ds-heading-sm ds-text-strong"><%= t("posts.show.owner_actions", default: "Owner actions") %></h2>
       <div class="flex flex-wrap items-center gap-2">
         <%= link_to edit_post_path(@post), class: "tap-target cta-secondary" do %><%= ui_icon(:pencil_square, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.edit") %></span><% end %>
         <%= link_to notifications_post_path(@post), class: "tap-target cta-secondary" do %><%= ui_icon(:bell, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.notifications", count: localized_number(@unread_notifications_count)) %></span><% end %>
       </div>
-      <div class="border-t border-red-100 pt-3">
-        <p class="ds-text-meta font-semibold text-red-700"><%= t("posts.show.danger_zone", default: "Danger zone") %></p>
-        <p class="mt-1 ds-text-muted text-red-700"><%= t("posts.show.danger_zone_lead", default: "Post deletion cannot be undone.") %></p>
+      <div class="border-t ds-border-muted pt-3">
+        <p class="ds-text-meta ds-text-danger font-semibold"><%= t("posts.show.danger_zone", default: "Danger zone") %></p>
+        <p class="mt-1 ds-text-muted ds-text-danger"><%= t("posts.show.danger_zone_lead", default: "Post deletion cannot be undone.") %></p>
         <%= button_to post_path(@post), method: :delete, form: { class: "mt-2 inline-block" }, data: { turbo_confirm: t("posts.show.actions.delete_confirm") }, class: "tap-target cta-danger" do %><%= ui_icon(:trash, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.delete") %></span><% end %>
       </div>
     </section>
   <% end %>
 
   <% unless post_owner?(@post) %>
-    <dialog id="report-modal-<%= @post.id %>" data-report-modal class="w-full max-w-md rounded-xl border border-slate-200 p-0 shadow-lg backdrop:bg-slate-900/30">
-      <div class="border-b border-slate-200 px-4 py-3"><h2 class="text-base font-semibold text-slate-900"><%= t("posts.show.report.title") %></h2><p class="mt-1 text-xs text-slate-600"><%= t("posts.show.report.description") %></p></div>
+    <dialog id="report-modal-<%= @post.id %>" data-report-modal class="ds-dialog-surface w-full max-w-md rounded-xl border ds-border-subtle p-0 shadow-lg">
+      <div class="border-b ds-border-subtle px-4 py-3"><h2 class="text-base font-semibold ds-text-strong"><%= t("posts.show.report.title") %></h2><p class="mt-1 text-xs ds-text-weak"><%= t("posts.show.report.description") %></p></div>
       <%= form_with model: [@post, @report], class: "space-y-form px-4 py-4", data: { ui_form: true, form_analytics_context: "report_form", loading_label: t("ui.processing", default: "Processing..."), disabled_reason_prefix: t("ui.disabled_reason", default: "Complete required fields"), disabled_submit_notice: t("ui.complete_required", default: "Please complete required fields before submitting.") } do |f| %>
-        <% if owned_users.any? %><div><%= f.label :reporter_user_id, t("posts.show.report.report_as_profile"), class: "mb-1 block text-sm font-medium" %><%= f.collection_select :reporter_user_id, owned_users, :id, :name, { include_blank: t("posts.show.report.anonymous") }, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", data: { modal_initial_focus: true } %></div><% end %>
-        <div><%= f.label :reason, t("posts.show.report.reason"), class: "mb-1 block text-sm font-medium" %><%= f.select :reason, options_for_select(Report.reason_options), {}, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", data: { modal_initial_focus: owned_users.any? ? nil : true } %><p class="ds-field-guide"><%= t("reports.reason_guide", default: "Select the closest reason so moderators can triage faster.") %></p></div>
-        <div><%= f.label :details, t("posts.show.report.details"), class: "mb-1 block text-sm font-medium" %><%= f.text_area :details, rows: 4, maxlength: 1000, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.show.report.details_placeholder"), data: { char_count_max: 1000, char_count_target: "report_details_counter" }, aria: { describedby: "report_details_guide report_details_counter" } %><p id="report_details_guide" class="ds-field-guide"><%= t("reports.details_guide", default: "Optional: include concise evidence. Avoid personal information.") %></p><p id="report_details_counter" class="ds-char-counter" aria-live="polite"></p></div>
+        <% if owned_users.any? %><div><%= f.label :reporter_user_id, t("posts.show.report.report_as_profile"), class: "mb-1 block text-sm font-medium" %><%= f.collection_select :reporter_user_id, owned_users, :id, :name, { include_blank: t("posts.show.report.anonymous") }, class: "ds-form-control", data: { modal_initial_focus: true } %></div><% end %>
+        <div><%= f.label :reason, t("posts.show.report.reason"), class: "mb-1 block text-sm font-medium" %><%= f.select :reason, options_for_select(Report.reason_options), {}, class: "ds-form-control", data: { modal_initial_focus: owned_users.any? ? nil : true } %><p class="ds-field-guide"><%= t("reports.reason_guide", default: "Select the closest reason so moderators can triage faster.") %></p></div>
+        <div><%= f.label :details, t("posts.show.report.details"), class: "mb-1 block text-sm font-medium" %><%= f.text_area :details, rows: 4, maxlength: 1000, class: "ds-form-control", placeholder: t("posts.show.report.details_placeholder"), data: { char_count_max: 1000, char_count_target: "report_details_counter" }, aria: { describedby: "report_details_guide report_details_counter" } %><p id="report_details_guide" class="ds-field-guide"><%= t("reports.details_guide", default: "Optional: include concise evidence. Avoid personal information.") %></p><p id="report_details_counter" class="ds-char-counter" aria-live="polite"></p></div>
         <p class="ds-trust-note"><%= t("reports.trust_note", default: "Reports are reviewed by moderators. Typical response time: within 24 hours.") %></p>
         <div class="flex justify-end gap-2 pt-2"><button type="button" data-close-report-modal="report-modal-<%= @post.id %>" class="tap-target cta-tertiary"><%= t("posts.show.report.cancel") %></button><%= f.button type: :submit, class: "tap-target cta-warning" do %><span data-submit-label><%= t("posts.show.report.submit") %></span><% end %></div>
         <p class="ds-disabled-reason" data-disabled-reason aria-live="polite"></p>
@@ -198,26 +224,29 @@
               <span><%= t("posts.show.actions.like") %></span>
             </span>
           <% end %>
-          <button type="button" data-mobile-actions-toggle aria-haspopup="menu" aria-expanded="false" aria-controls="mobile-post-actions-menu" class="ds-icon-button text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+          <button type="button" data-mobile-actions-toggle data-mobile-risk-target="menu" aria-haspopup="menu" aria-expanded="false" aria-controls="mobile-post-actions-menu" class="ds-icon-button ds-text-weak ds-hover-muted ds-hover-link">
             <%= ui_icon(:ellipsis_horizontal, class_name: "h-5 w-5") %>
             <span class="sr-only"><%= t("posts.show.mobile_more_label", default: "More actions") %></span>
           </button>
         </div>
-        <div id="mobile-post-actions-menu" role="menu" data-mobile-actions-menu class="absolute inset-x-0 bottom-full z-20 mb-2 hidden rounded-xl border border-slate-300 bg-white/98 p-2 shadow-2xl ring-1 ring-slate-900/5">
+        <div id="mobile-post-actions-menu" role="menu" data-mobile-actions-menu class="absolute inset-x-0 bottom-full z-20 mb-2 hidden ds-popover-surface ds-surface-overlay">
           <div class="grid gap-1">
-            <button type="button" role="menuitem" data-mobile-menu-action data-copy-url="<%= share_url %>" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100">
+            <button type="button" role="menuitem" data-mobile-menu-action data-copy-url="<%= share_url %>" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ds-text-weak ds-hover-muted">
               <%= ui_icon(:share, class_name: "h-4 w-4") %>
               <span data-copy-label><%= t("posts.show.actions.copy_url") %></span>
             </button>
-            <button type="button" role="menuitem" data-mobile-menu-action data-native-share-url="<%= share_url %>" data-native-share-text="<%= share_text %>" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100">
+            <button type="button" role="menuitem" data-mobile-menu-action data-native-share-url="<%= share_url %>" data-native-share-text="<%= share_text %>" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ds-text-weak ds-hover-muted">
               <%= ui_icon(:share, class_name: "h-4 w-4") %>
               <span><%= t("posts.show.actions.share") %></span>
             </button>
             <% unless post_owner?(@post) %>
-              <button type="button" role="menuitem" data-mobile-menu-action data-open-report-modal="report-modal-<%= @post.id %>" class="tap-target cta-warning cta-compact justify-start">
-                <%= ui_icon(:flag, class_name: "h-4 w-4") %>
-                <span><%= t("posts.show.actions.report") %></span>
-              </button>
+              <div class="mt-1 border-t ds-border-subtle pt-2">
+                <p class="px-2 text-[11px] font-semibold uppercase tracking-wide ds-text-warning"><%= t("posts.show.layer_report", default: "Report") %></p>
+                <button type="button" role="menuitem" data-mobile-menu-action data-open-report-modal="report-modal-<%= @post.id %>" data-mobile-risk-target="report" class="tap-target cta-warning cta-compact justify-start" data-ga-event="post_detail_report_cta_click" data-ga-category="post_detail" data-ga-label="mobile_report_layer">
+                  <%= ui_icon(:flag, class_name: "h-4 w-4") %>
+                  <span><%= t("posts.show.actions.report") %></span>
+                </button>
+              </div>
             <% end %>
           </div>
         </div>
@@ -239,6 +268,11 @@
     const FAVORITES_KEY = "post_favorites";
     const RECENTLY_VIEWED_KEY = "post_recently_viewed";
     let lastModalTrigger = null;
+    let mobileMenuOpenedAt = 0;
+    let mobileMenuActionTaken = false;
+    let reportModalOpenedAt = 0;
+    let reportModalSubmitted = false;
+    let lastRiskTap = { target: null, at: 0 };
 
     const readJson = (key, fallback = []) => {
       try {
@@ -278,7 +312,7 @@
         const label = button.querySelector("[data-favorite-label]");
         if (label) label.textContent = saved ? "<%= j(t('posts.show.saved_post', default: 'Saved')) %>" : "<%= j(t('posts.show.save_post', default: 'Save')) %>";
         button.classList.toggle("font-semibold", saved);
-        button.classList.toggle("text-blue-700", saved);
+        button.classList.toggle("ds-text-link", saved);
       });
     };
 
@@ -300,11 +334,45 @@
       if (notify && typeof window.dsNotify === "function") window.dsNotify(menuCloseMessage, "info");
     };
 
+    const reportMobileMisTap = (reason) => {
+      if (typeof window.gtag !== "function") return;
+      const elapsed = Date.now() - mobileMenuOpenedAt;
+      if (mobileMenuOpenedAt <= 0 || elapsed > 650 || mobileMenuActionTaken) return;
+      window.gtag("event", "mobile_mistap_estimate", {
+        event_category: "post_detail",
+        event_label: `mobile_actions_menu_${reason}`,
+        elapsed_ms: elapsed
+      });
+    };
+
+    const isMobileViewport = () => window.matchMedia("(max-width: 640px)").matches;
+
+    const trackRiskTap = (target) => {
+      if (!target || !isMobileViewport() || typeof window.gtag !== "function") return;
+      window.gtag("event", "mobile_risk_tap", {
+        event_category: "post_detail",
+        event_label: `risk_target_${target}`
+      });
+
+      const elapsed = Date.now() - Number(lastRiskTap.at || 0);
+      if (lastRiskTap.target && lastRiskTap.target !== target && elapsed > 0 && elapsed <= 550) {
+        window.gtag("event", "mobile_mistap_estimate", {
+          event_category: "post_detail",
+          event_label: `near_target_switch_${lastRiskTap.target}_to_${target}`,
+          area: "menu_back_report_cluster",
+          elapsed_ms: elapsed
+        });
+      }
+      lastRiskTap = { target, at: Date.now() };
+    };
+
     const openModal = (trigger, modalId) => {
       const dialog = document.getElementById(modalId);
       if (!dialog || typeof dialog.showModal !== "function") return;
       lastModalTrigger = trigger;
       dialog.showModal();
+      reportModalOpenedAt = Date.now();
+      reportModalSubmitted = false;
       const focusTarget = dialog.querySelector("[data-modal-initial-focus]") || dialog.querySelector("input, select, textarea, button");
       if (focusTarget) window.setTimeout(() => focusTarget.focus(), 0);
     };
@@ -346,10 +414,36 @@
       dialog.addEventListener("click", (event) => {
         if (event.target === dialog) closeModal(dialog);
       });
-      dialog.addEventListener("close", syncMobileActionBar);
+      dialog.addEventListener("close", () => {
+        if (isMobileViewport() && !reportModalSubmitted && reportModalOpenedAt > 0 && typeof window.gtag === "function") {
+          const elapsed = Date.now() - reportModalOpenedAt;
+          if (elapsed <= 900) {
+            window.gtag("event", "mobile_mistap_estimate", {
+              event_category: "post_detail",
+              event_label: "report_quick_dismiss",
+              area: "menu_back_report_cluster",
+              elapsed_ms: elapsed
+            });
+          }
+        }
+        reportModalOpenedAt = 0;
+        reportModalSubmitted = false;
+        syncMobileActionBar();
+      });
+    });
+
+    document.addEventListener("submit", (event) => {
+      const reportForm = event.target.closest("[data-report-modal] form");
+      if (!reportForm) return;
+      reportModalSubmitted = true;
     });
 
     document.addEventListener("click", (event) => {
+      const riskTargetNode = event.target.closest("[data-mobile-risk-target]");
+      if (riskTargetNode) {
+        trackRiskTap(riskTargetNode.dataset.mobileRiskTarget);
+      }
+
       const favoriteButton = event.target.closest("[data-favorite-toggle]");
       if (favoriteButton) {
         event.preventDefault();
@@ -368,6 +462,7 @@
 
       const openButton = event.target.closest("[data-open-report-modal]");
       if (openButton) {
+        mobileMenuActionTaken = true;
         openModal(openButton, openButton.getAttribute("data-open-report-modal"));
         closeMenu("[data-mobile-actions-menu]", "[data-mobile-actions-toggle]", true);
         closeMenu("[data-desktop-post-actions-menu]", "[data-desktop-post-actions-toggle]");
@@ -403,6 +498,13 @@
         const menu = document.querySelector("[data-mobile-actions-menu]");
         if (!menu) return;
         const expanded = mobileToggle.getAttribute("aria-expanded") == "true";
+        if (!expanded) {
+          mobileMenuOpenedAt = Date.now();
+          mobileMenuActionTaken = false;
+        } else {
+          reportMobileMisTap("toggle_close");
+          mobileMenuOpenedAt = 0;
+        }
         menu.classList.toggle("hidden", expanded);
         mobileToggle.setAttribute("aria-expanded", String(!expanded));
         if (!expanded && typeof window.dsNotify === "function") window.dsNotify(menuOpenMessage, "info");
@@ -416,13 +518,17 @@
 
       const mobileMenuAction = event.target.closest("[data-mobile-menu-action]");
       if (mobileMenuAction) {
+        mobileMenuActionTaken = true;
         closeMenu("[data-mobile-actions-menu]", "[data-mobile-actions-toggle]", true);
+        mobileMenuOpenedAt = 0;
         return;
       }
 
       const mobileMenu = document.querySelector("[data-mobile-actions-menu]");
       if (mobileMenu && !mobileMenu.classList.contains("hidden") && !event.target.closest("[data-mobile-actions-menu]") && !event.target.closest("[data-mobile-actions-toggle]")) {
+        reportMobileMisTap("outside_tap");
         closeMenu("[data-mobile-actions-menu]", "[data-mobile-actions-toggle]", true);
+        mobileMenuOpenedAt = 0;
       }
 
       const desktopMenu = document.querySelector("[data-desktop-post-actions-menu]");

@@ -13,6 +13,6 @@
 
 ## Manual Verification Script
 1. Open post detail on iOS Safari and Android Chrome.
-2. Focus comment name/body fields and verify sticky bar hides.
-3. Open/close report modal and verify focus returns to trigger.
+2. Open/close report modal and verify focus returns to trigger.
+3. Focus report reason/details fields and verify sticky bar hides.
 4. Submit with missing required fields and verify reason text is visible.

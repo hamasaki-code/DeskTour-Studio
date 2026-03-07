@@ -3,7 +3,7 @@
 <% category_suggestions ||= [] %>
 <% tag_suggestions ||= [] %>
 <% field_error = ->(attr) { post.errors.full_messages_for(attr).first } %>
-<% input_class = ->(error) { "w-full rounded-lg border px-3 py-2 text-sm #{error.present? ? 'border-red-400 bg-red-50' : 'border-slate-300'}" } %>
+<% input_class = ->(error) { "ds-form-control #{error.present? ? 'ds-form-control-error' : ''}" } %>
 <% title_error = field_error.call(:title) %>
 <% description_error = field_error.call(:description) %>
 <% category_error = field_error.call(:category) %>
@@ -39,7 +39,7 @@
                    { label: t("ui.back", default: "Back"), href: (request.referer.presence || root_path) }
                  ] %>
 
-      <div class="rounded-lg border border-red-200 bg-white p-3 text-sm text-red-800" role="alert" aria-live="assertive">
+      <div class="rounded-lg border ds-tone-danger p-3 text-sm" role="alert" aria-live="assertive">
         <ul class="list-disc pl-5">
           <% if profile_error.present? %>
             <li><a href="#post_user_id" class="underline"><%= profile_error %></a></li>
@@ -67,7 +67,7 @@
     </div>
   <% end %>
 
-  <section id="post-form-fields" class="space-y-4 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+  <section id="post-form-fields" class="space-y-4 rounded-xl border ds-border-subtle ds-surface-base p-4 sm:p-5">
     <div>
       <h2 class="ds-heading-md"><%= t("posts.form.required_section", default: "Required basics") %></h2>
       <p class="mt-1 ds-text-support"><%= t("posts.form.required_section_lead", default: "Start with the core information for your post.") %></p>
@@ -76,17 +76,17 @@
     <div class="grid gap-4 sm:grid-cols-2">
       <% if owned_users.any? %>
         <div class="sm:col-span-2">
-          <%= f.label :user_id, t("posts.form.profile_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
+          <%= f.label :user_id, t("posts.form.profile_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
           <%= f.collection_select :user_id, owned_users, :id, :name, {}, class: input_class.call(profile_error), aria: { invalid: profile_error.present? ? "true" : nil, describedby: "post_user_id_help post_user_id_error" } %>
           <p id="post_user_id_help" class="ds-field-guide"><%= t("posts.form.profile_guide", default: "Choose which profile is shown as the author.") %></p>
           <% if profile_error.present? %>
-            <p id="post_user_id_error" class="mt-1 text-xs font-medium text-red-700"><%= profile_error %></p>
+            <p id="post_user_id_error" class="ds-field-error"><%= profile_error %></p>
           <% end %>
         </div>
       <% end %>
 
       <div class="sm:col-span-2">
-        <%= f.label :title, t("posts.form.title_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
+        <%= f.label :title, t("posts.form.title_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
         <%= f.text_field :title,
                          required: true,
                          maxlength: 120,
@@ -97,12 +97,12 @@
         <p id="post_title_help" class="ds-field-guide"><%= t("posts.form.title_guide", default: "Include setup style and one distinctive element. Max 120 characters.") %></p>
         <p id="post_title_counter" class="ds-char-counter" aria-live="polite"></p>
         <% if title_error.present? %>
-          <p id="post_title_error" class="mt-1 text-xs font-medium text-red-700"><%= title_error %></p>
+          <p id="post_title_error" class="ds-field-error"><%= title_error %></p>
         <% end %>
       </div>
 
       <div class="sm:col-span-2">
-        <%= f.label :description, t("posts.form.description_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
+        <%= f.label :description, t("posts.form.description_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
         <%= f.text_area :description,
                         rows: 7,
                         required: true,
@@ -114,22 +114,22 @@
         <p id="post_description_help" class="ds-field-guide"><%= t("posts.form.description_guide", default: "Write 3-5 sentences about layout, devices, and workflow. Do not include private information.") %></p>
         <p id="post_description_counter" class="ds-char-counter" aria-live="polite"></p>
         <% if description_error.present? %>
-          <p id="post_description_error" class="mt-1 text-xs font-medium text-red-700"><%= description_error %></p>
+          <p id="post_description_error" class="ds-field-error"><%= description_error %></p>
         <% end %>
       </div>
 
       <div class="sm:col-span-2">
-        <%= f.label :desk_image, t("posts.form.image_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
+        <%= f.label :desk_image, t("posts.form.image_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
         <%= f.file_field :desk_image, required: post.published?, class: input_class.call(image_error), accept: "image/*", aria: { invalid: image_error.present? ? "true" : nil, describedby: "post_image_help post_image_error" } %>
         <p id="post_image_help" class="ds-field-guide"><%= t("posts.form.image_guide", default: "Use a bright landscape image (1200px+ recommended).") %></p>
         <% if image_error.present? %>
-          <p id="post_image_error" class="mt-1 text-xs font-medium text-red-700"><%= image_error %></p>
+          <p id="post_image_error" class="ds-field-error"><%= image_error %></p>
         <% end %>
       </div>
     </div>
   </section>
 
-  <details class="rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-5" <%= "open" if optional_panel_open %>>
+  <details class="rounded-xl border ds-border-subtle ds-surface-muted p-4 sm:p-5" <%= "open" if optional_panel_open %>>
     <summary class="cursor-pointer list-none">
       <div>
         <h2 class="ds-heading-md"><%= t("posts.form.optional_section", default: "Optional details") %></h2>
@@ -139,25 +139,25 @@
 
     <div class="mt-4 grid gap-4 sm:grid-cols-2">
       <div>
-        <%= f.label :category, t("posts.form.category_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
+        <%= f.label :category, t("posts.form.category_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
         <%= f.text_field :category, class: input_class.call(category_error), placeholder: t("posts.form.category_placeholder"), list: "post-category-options", aria: { invalid: category_error.present? ? "true" : nil, describedby: "post_category_help post_category_error" } %>
         <p id="post_category_help" class="ds-field-guide"><%= t("posts.form.category_guide", default: "Examples: Engineering, Design, Writing.") %></p>
         <% if category_error.present? %>
-          <p id="post_category_error" class="mt-1 text-xs font-medium text-red-700"><%= category_error %></p>
+          <p id="post_category_error" class="ds-field-error"><%= category_error %></p>
         <% end %>
       </div>
 
       <div>
-        <%= f.label :theme, t("posts.form.theme_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
+        <%= f.label :theme, t("posts.form.theme_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
         <%= f.text_field :theme, class: input_class.call(theme_error), placeholder: t("posts.form.theme_placeholder"), aria: { invalid: theme_error.present? ? "true" : nil, describedby: "post_theme_help post_theme_error" } %>
         <p id="post_theme_help" class="ds-field-guide"><%= t("posts.form.theme_guide", default: "Examples: Dark, Minimal, Natural.") %></p>
         <% if theme_error.present? %>
-          <p id="post_theme_error" class="mt-1 text-xs font-medium text-red-700"><%= theme_error %></p>
+          <p id="post_theme_error" class="ds-field-error"><%= theme_error %></p>
         <% end %>
       </div>
 
       <div class="sm:col-span-2">
-        <%= f.label :tag_list, t("posts.form.tags_label"), class: "mb-1 block text-sm font-medium text-slate-800" %>
+        <%= f.label :tag_list, t("posts.form.tags_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
         <%= f.text_field :tag_list,
                          maxlength: 220,
                          class: input_class.call(tag_list_error),
@@ -168,25 +168,25 @@
         <p id="post_tag_list_help" class="ds-field-guide"><%= t("posts.form.tags_guide", default: "Use up to 8 tags separated by commas. Avoid duplicates.") %></p>
         <p id="post_tag_list_counter" class="ds-char-counter" aria-live="polite"></p>
         <% if tag_list_error.present? %>
-          <p id="post_tag_list_error" class="mt-1 text-xs font-medium text-red-700"><%= tag_list_error %></p>
+          <p id="post_tag_list_error" class="ds-field-error"><%= tag_list_error %></p>
         <% end %>
       </div>
     </div>
   </details>
 
-  <details class="rounded-xl border border-slate-200 bg-slate-50 p-4" <%= "open" if items_panel_open %>>
-    <summary class="cursor-pointer list-none text-sm font-semibold text-slate-700"><%= t("posts.form.related_items") %></summary>
+  <details class="rounded-xl border ds-border-subtle ds-surface-muted p-4" <%= "open" if items_panel_open %>>
+    <summary class="cursor-pointer list-none text-sm font-semibold ds-text-strong"><%= t("posts.form.related_items") %></summary>
     <div class="mt-3 space-y-4">
       <%= f.fields_for :items do |item_fields| %>
-        <div class="grid gap-3 rounded-lg border border-slate-200 bg-white p-3 sm:grid-cols-2">
+        <div class="grid gap-3 rounded-lg border ds-border-subtle ds-surface-base p-3 sm:grid-cols-2">
           <div>
-            <%= item_fields.label :name, t("posts.form.item_name_label"), class: "mb-1 block text-xs font-medium text-slate-700" %>
-            <%= item_fields.text_field :name, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.form.item_name_placeholder") %>
+            <%= item_fields.label :name, t("posts.form.item_name_label"), class: "mb-1 block text-xs font-medium ds-text-strong" %>
+            <%= item_fields.text_field :name, class: "ds-form-control", placeholder: t("posts.form.item_name_placeholder") %>
             <p class="ds-field-guide"><%= t("posts.form.item_name_guide", default: "Example: HHKB Professional HYBRID Type-S") %></p>
           </div>
           <div>
-            <%= item_fields.label :affiliate_url, t("posts.form.affiliate_url_label"), class: "mb-1 block text-xs font-medium text-slate-700" %>
-            <%= item_fields.url_field :affiliate_url, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm", placeholder: t("posts.form.affiliate_url_placeholder") %>
+            <%= item_fields.label :affiliate_url, t("posts.form.affiliate_url_label"), class: "mb-1 block text-xs font-medium ds-text-strong" %>
+            <%= item_fields.url_field :affiliate_url, class: "ds-form-control", placeholder: t("posts.form.affiliate_url_placeholder") %>
             <p class="ds-field-guide"><%= t("posts.form.affiliate_url_guide", default: "Use official product page or trusted store URL.") %></p>
           </div>
         </div>
@@ -223,10 +223,14 @@
     <% end %>
   </div>
 
+  <p class="ds-text-muted">
+    <%= t("posts.form.draft_restore_hint", default: "Draft is saved locally while you type. If you return later, it is restored automatically.") %>
+  </p>
+
   <p class="ds-disabled-reason" data-disabled-reason aria-live="polite"></p>
 
-  <div class="ds-legal-links border-t border-slate-200 pt-3">
-    <span class="text-slate-500"><%= t("legal.quick_links", default: "Policies") %>:</span>
+  <div class="ds-legal-links border-t ds-border-subtle pt-3">
+    <span class="ds-text-weak"><%= t("legal.quick_links", default: "Policies") %>:</span>
     <%= link_to t("footer.terms"), terms_path %>
     <%= link_to t("footer.privacy_policy"), privacy_policy_path %>
     <%= link_to t("footer.cookie_policy"), cookie_policy_path %>

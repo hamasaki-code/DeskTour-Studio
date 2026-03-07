@@ -7,6 +7,13 @@ en:
     create_post: "Create Post"
     menu_opened: "Menu opened"
     menu_closed: "Menu closed"
+    utility_menu: "Utility"
+    utility_create: "Create"
+    utility_browse: "Browse"
+    utility_settings: "Settings"
+    admin: "Admin"
+    admin_posts: "Post Management"
+    admin_reports: "Report Queue"
   footer:
     terms: "Terms"
     privacy_policy: "Privacy Policy"
@@ -16,3 +23,5 @@ en:
     copy_failed: "Failed to copy."
   meta:
     default_description: "Discover desk setup ideas and share your workspace on DeskTour Studio."
+  ui:
+    page_changed: "Screen updated"

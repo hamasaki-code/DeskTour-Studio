@@ -16,6 +16,13 @@ class PostsController < ApplicationController
     }.reject(&:blank?).tally.sort_by { |(_, count)| -count }.map(&:first).first(8)
     @recent_posts = Post.visible.latest.limit(4)
     @search_suggestions = search_suggestions
+    queue_analytics_event(
+      "post_search_results_loaded",
+      search_used: params.values_at(:q, :category, :theme, :tag).any?(&:present?),
+      sort: @sort_option,
+      result_count: @posts.size,
+      zero_results: @posts.empty?
+    )
   end
 
   def show
@@ -102,9 +109,17 @@ class PostsController < ApplicationController
   end
 
   def notifications
+    unread_before = @post.notifications.unread.count
     now = Time.current
     @post.notifications.unread.update_all(read_at: now, updated_at: now)
     @notifications = @post.notifications.latest
+    queue_analytics_event(
+      "notification_screen_view",
+      post_id: @post.id,
+      total_notifications: @notifications.size,
+      unread_before_visit: unread_before,
+      unread_after_visit: @post.notifications.unread.count
+    )
   end
 
   private

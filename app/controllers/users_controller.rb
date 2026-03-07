@@ -13,6 +13,7 @@ class UsersController < ApplicationController
 
     if @user.save
       store_user_owner_token(@user, raw_owner_token)
+      queue_analytics_event("profile_form_completed", user_id: @user.id, trigger_action: "create")
       redirect_to @user, notice: t("users.flash.created")
     else
       render :new, status: :unprocessable_entity
@@ -30,6 +31,7 @@ class UsersController < ApplicationController
 
   def update
     if @user.update(user_params)
+      queue_analytics_event("profile_form_completed", user_id: @user.id, trigger_action: "update")
       redirect_to @user, notice: t("users.flash.updated")
     else
       render :edit, status: :unprocessable_entity
