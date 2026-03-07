@@ -35,6 +35,14 @@ const writeJson = (key, value) => {
   } catch (_) {}
 };
 
+const confirmOptionsFromDataset = (dataset = {}) => ({
+  title: dataset.confirmTitle || dataset.criticalTitle || "",
+  message: dataset.confirmMessage || dataset.criticalMessage || "",
+  confirmLabel: dataset.confirmLabel || dataset.criticalConfirm || "",
+  cancelLabel: dataset.confirmCancel || "",
+  level: dataset.confirmLevel || dataset.criticalLevel || "primary"
+});
+
 const controlLabel = (field, form) => {
   if (!field) return "";
 
@@ -319,6 +327,37 @@ const bindFormState = (scope = document) => {
       updateFormState(form);
     });
 
+    form.addEventListener("submit", async (event) => {
+      if (form.dataset.criticalForm !== "true") return;
+      if (form.dataset.confirmBypassOnce === "true") {
+        form.dataset.confirmBypassOnce = "false";
+        return;
+      }
+
+      const submitter = event.submitter;
+      if (submitter?.name === "save_as_draft") return;
+
+      event.preventDefault();
+      const confirmSource = submitter || form;
+      if (typeof window.dsConfirmAction !== "function") {
+        form.dataset.confirmBypassOnce = "true";
+        if (submitter && typeof form.requestSubmit === "function") form.requestSubmit(submitter);
+        return;
+      }
+
+      const confirmed = await window.dsConfirmAction(confirmOptionsFromDataset(confirmSource.dataset || form.dataset || {}));
+      if (!confirmed) return;
+
+      form.dataset.confirmBypassOnce = "true";
+      if (submitter && typeof form.requestSubmit === "function") {
+        form.requestSubmit(submitter);
+      } else if (typeof form.requestSubmit === "function") {
+        form.requestSubmit();
+      } else {
+        form.submit();
+      }
+    });
+
     restoreDraft();
     updateFormState(form);
     trackErrorExposure();
@@ -329,18 +368,91 @@ const bindFormAbandonmentObserver = () => {
   if (window.__formAbandonmentBound) return;
   window.__formAbandonmentBound = true;
 
-  window.addEventListener("beforeunload", () => {
-    if (typeof window.gtag !== "function") return;
-    const dirtyForm = document.querySelector("form[data-ui-form][data-ui-form-dirty='true']");
+  window.addEventListener("beforeunload", (event) => {
+    const dirtyForm = document.querySelector("form[data-ui-form][data-ui-form-dirty='true']:not([data-ui-submitting='true'])");
     if (!dirtyForm) return;
     const active = dirtyForm.querySelector(":focus");
     const activeField = active ? active.getAttribute("name") : "";
-    window.gtag("event", "form_abandon", {
-      event_category: "form",
-      event_label: dirtyForm.dataset.formAnalyticsContext || "generic_form",
-      active_field: activeField
+    if (typeof window.gtag === "function") {
+      window.gtag("event", "form_abandon", {
+        event_category: "form",
+        event_label: dirtyForm.dataset.formAnalyticsContext || "generic_form",
+        active_field: activeField
+      });
+    }
+
+    const leaveMessage = dirtyForm.dataset.leaveGuardMessage;
+    if (leaveMessage && dirtyForm.dataset.uiSubmitting !== "true") {
+      event.preventDefault();
+      event.returnValue = leaveMessage;
+      return leaveMessage;
+    }
+
+    return undefined;
+  });
+};
+
+const bindDialogFocusTrap = (scope = document) => {
+  scope.querySelectorAll("dialog").forEach((dialog) => {
+    if (dialog.dataset.focusTrapBound === "1") return;
+    dialog.dataset.focusTrapBound = "1";
+
+    dialog.addEventListener("keydown", (event) => {
+      if (event.key !== "Tab" || !dialog.open) return;
+      const focusable = Array.from(dialog.querySelectorAll("a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex='0']")).filter((node) => !node.hasAttribute("disabled"));
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+      if (event.shiftKey && active === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      }
     });
   });
+};
+
+const bindConfirmActions = (scope = document) => {
+  if (window.__confirmBindingsInstalled) return;
+  window.__confirmBindingsInstalled = true;
+
+  document.addEventListener("click", async (event) => {
+    const trigger = event.target.closest("[data-confirm-action]");
+    if (!trigger) return;
+    if (trigger.dataset.confirmBypassOnce === "true") {
+      trigger.dataset.confirmBypassOnce = "false";
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (typeof window.dsConfirmAction !== "function") {
+      trigger.dataset.confirmBypassOnce = "true";
+      if (trigger.form && typeof trigger.form.requestSubmit === "function") {
+        trigger.form.requestSubmit(trigger);
+      }
+      return;
+    }
+
+    const confirmed = await window.dsConfirmAction(confirmOptionsFromDataset(trigger.dataset || {}));
+    if (!confirmed) return;
+
+    trigger.dataset.confirmBypassOnce = "true";
+    if (trigger.tagName === "A") {
+      const href = trigger.getAttribute("href");
+      if (href) window.location.assign(href);
+      return;
+    }
+    if (trigger.form && typeof trigger.form.requestSubmit === "function") {
+      trigger.form.requestSubmit(trigger);
+    } else if (typeof trigger.click === "function") {
+      trigger.click();
+    }
+  }, true);
 };
 
 const renderImageFallback = (image, reason = "error") => {
@@ -459,6 +571,8 @@ const initializeUiState = (scope = document) => {
   bindCharCounters(scope);
   bindFormState(scope);
   bindFormAbandonmentObserver();
+  bindDialogFocusTrap(scope);
+  bindConfirmActions(scope);
   bindImageFallback(scope);
   bindLoadingSkeleton(scope);
   showFlashToasts(scope);

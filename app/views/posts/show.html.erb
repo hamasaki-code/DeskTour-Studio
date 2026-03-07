@@ -185,6 +185,45 @@
     <% end %>
   </section>
 
+  <% if @related_posts.any? %>
+    <% related_reason_label = case @related_posts_reason
+    when "tag_overlap"
+      t("posts.show.related_reason_tags", default: "Recommended because of shared tags.")
+    when "category_theme"
+      t("posts.show.related_reason_category_theme", default: "Recommended because category/theme is similar.")
+    else
+      t("posts.show.related_reason_popular", default: "Recommended from popular recent posts.")
+    end %>
+    <section class="ds-section-card space-y-4">
+      <div class="flex flex-wrap items-start justify-between gap-2">
+        <h2 class="ds-heading-md ds-text-strong"><%= t("posts.show.related_posts", default: "Related posts") %></h2>
+        <p class="ds-text-muted"><%= related_reason_label %></p>
+      </div>
+      <div class="grid gap-3 sm:grid-cols-2">
+        <% @related_posts.each do |entry| %>
+          <% related_post = entry[:candidate] %>
+          <% matched_tags = Array(entry[:overlap]) %>
+          <% related_url = post_path(related_post, from: request.fullpath) %>
+          <article class="rounded-lg border ds-border-subtle ds-surface-muted p-3">
+            <h3 class="ds-heading-sm ds-line-clamp-2 ds-break-words">
+              <%= link_to related_post.title, related_url, class: "ds-link-underlined ds-hover-link", data: { ga_event: "related_post_click", ga_category: "post_detail", ga_label: @related_posts_reason } %>
+            </h3>
+            <p class="mt-1 ds-line-clamp-2 ds-text-support"><%= truncate(related_post.description, length: 85) %></p>
+            <div class="mt-2 flex flex-wrap items-center gap-1.5">
+              <% matched_tags.each do |tag| %>
+                <span class="ds-badge-info">#<%= tag %></span>
+              <% end %>
+              <% if matched_tags.empty? && related_post.category.present? %>
+                <span class="ds-badge-inactive"><%= related_post.category %></span>
+              <% end %>
+            </div>
+            <p class="mt-2 ds-text-meta"><%= timestamp_tag(related_post.created_at, style: :date) %></p>
+          </article>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
   <% if post_owner?(@post) %>
     <section class="ds-card space-y-4 p-4">
       <h2 class="ds-heading-sm ds-text-strong"><%= t("posts.show.owner_actions", default: "Owner actions") %></h2>
@@ -195,7 +234,7 @@
       <div class="border-t ds-border-muted pt-3">
         <p class="ds-text-meta ds-text-danger font-semibold"><%= t("posts.show.danger_zone", default: "Danger zone") %></p>
         <p class="mt-1 ds-text-muted ds-text-danger"><%= t("posts.show.danger_zone_lead", default: "Post deletion cannot be undone.") %></p>
-        <%= button_to post_path(@post), method: :delete, form: { class: "mt-2 inline-block" }, data: { turbo_confirm: t("posts.show.actions.delete_confirm") }, class: "tap-target cta-danger" do %><%= ui_icon(:trash, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.delete") %></span><% end %>
+        <%= button_to post_path(@post), method: :delete, form: { class: "mt-2 inline-block" }, data: { confirm_action: true, confirm_title: t("posts.show.actions.delete_confirm", default: "Delete this post?"), confirm_message: t("ui.critical_delete_message", default: "Cause: this permanently removes the post. Action: review once. Retry: you can cancel now."), confirm_label: t("posts.show.actions.delete", default: "Delete"), confirm_level: "danger" }, class: "tap-target cta-danger" do %><%= ui_icon(:trash, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.delete") %></span><% end %>
       </div>
     </section>
   <% end %>
@@ -203,7 +242,7 @@
   <% unless post_owner?(@post) %>
     <dialog id="report-modal-<%= @post.id %>" data-report-modal class="ds-dialog-surface w-full max-w-md rounded-xl border ds-border-subtle p-0 shadow-lg">
       <div class="border-b ds-border-subtle px-4 py-3"><h2 class="text-base font-semibold ds-text-strong"><%= t("posts.show.report.title") %></h2><p class="mt-1 text-xs ds-text-weak"><%= t("posts.show.report.description") %></p></div>
-      <%= form_with model: [@post, @report], class: "space-y-form px-4 py-4", data: { ui_form: true, form_analytics_context: "report_form", loading_label: t("ui.processing", default: "Processing..."), disabled_reason_prefix: t("ui.disabled_reason", default: "Complete required fields"), disabled_submit_notice: t("ui.complete_required", default: "Please complete required fields before submitting.") } do |f| %>
+      <%= form_with model: [@post, @report], class: "space-y-form px-4 py-4", data: { ui_form: true, form_analytics_context: "report_form", loading_label: t("ui.processing", default: "Processing..."), disabled_reason_prefix: t("ui.disabled_reason", default: "Complete required fields"), disabled_submit_notice: t("ui.complete_required", default: "Please complete required fields before submitting."), leave_guard_message: t("ui.leave_guard_report", default: "You have unsent report input. Leave without submitting?"), critical_form: true, critical_title: t("posts.show.report.title", default: "Report this post"), critical_message: t("ui.critical_report_message", default: "Cause: this sends a moderation report. Action: check reason and details. Retry: cancel if needed."), critical_confirm: t("posts.show.report.submit", default: "Submit report"), critical_level: "warning" } do |f| %>
         <% if owned_users.any? %><div><%= f.label :reporter_user_id, t("posts.show.report.report_as_profile"), class: "mb-1 block text-sm font-medium" %><%= f.collection_select :reporter_user_id, owned_users, :id, :name, { include_blank: t("posts.show.report.anonymous") }, class: "ds-form-control", data: { modal_initial_focus: true } %></div><% end %>
         <div><%= f.label :reason, t("posts.show.report.reason"), class: "mb-1 block text-sm font-medium" %><%= f.select :reason, options_for_select(Report.reason_options), {}, class: "ds-form-control", data: { modal_initial_focus: owned_users.any? ? nil : true } %><p class="ds-field-guide"><%= t("reports.reason_guide", default: "Select the closest reason so moderators can triage faster.") %></p></div>
         <div><%= f.label :details, t("posts.show.report.details"), class: "mb-1 block text-sm font-medium" %><%= f.text_area :details, rows: 4, maxlength: 1000, class: "ds-form-control", placeholder: t("posts.show.report.details_placeholder"), data: { char_count_max: 1000, char_count_target: "report_details_counter" }, aria: { describedby: "report_details_guide report_details_counter" } %><p id="report_details_guide" class="ds-field-guide"><%= t("reports.details_guide", default: "Optional: include concise evidence. Avoid personal information.") %></p><p id="report_details_counter" class="ds-char-counter" aria-live="polite"></p></div>

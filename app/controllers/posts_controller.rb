@@ -30,6 +30,13 @@ class PostsController < ApplicationController
     @unread_notifications_count = post_owner?(@post) ? @post.notifications.unread.count : 0
     @back_to_index_path = sanitize_internal_back_path(params[:from])
     @author_trust = author_trust_snapshot(@post.user)
+    @related_posts, @related_posts_reason = related_posts_for(@post)
+    queue_analytics_event(
+      "related_posts_impression",
+      post_id: @post.id,
+      related_count: @related_posts.size,
+      reason: @related_posts_reason
+    )
   end
 
   def new
@@ -230,6 +237,42 @@ class PostsController < ApplicationController
       total_likes: posts_scope.sum(:likes_count),
       last_updated_at: posts_scope.maximum(:updated_at)
     }
+  end
+
+  def related_posts_for(post)
+    candidates = Post.visible.includes(:user, desk_image_attachment: :blob).where.not(id: post.id).limit(30).to_a
+    return [ [], "none" ] if candidates.empty?
+
+    target_tags = post.tags.map(&:downcase)
+    target_category = post.category.to_s.downcase
+    target_theme = post.theme.to_s.downcase
+
+    scored = candidates.map do |candidate|
+      candidate_tags = candidate.tags.map(&:downcase)
+      overlap = candidate_tags.select { |tag| target_tags.include?(tag) }
+      score = 0
+      score += overlap.size * 4
+      score += 2 if target_category.present? && candidate.category.to_s.downcase == target_category
+      score += 1 if target_theme.present? && candidate.theme.to_s.downcase == target_theme
+      score += [ candidate.likes_count.to_i / 10, 3 ].min
+
+      {
+        candidate: candidate,
+        score: score,
+        overlap: overlap.uniq.first(2)
+      }
+    end
+
+    top = scored.sort_by { |row| [ -row[:score], -row[:candidate].likes_count.to_i, -row[:candidate].created_at.to_i ] }.first(4)
+    reason = if top.any? { |row| row[:overlap].any? }
+      "tag_overlap"
+    elsif top.any? { |row| row[:score] >= 2 }
+      "category_theme"
+    else
+      "popular_fallback"
+    end
+
+    [ top, reason ]
   end
 
   def assign_owner_token(post)
