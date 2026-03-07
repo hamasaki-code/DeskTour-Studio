@@ -1,4 +1,4 @@
-﻿class ReportsController < ApplicationController
+class ReportsController < ApplicationController
   before_action :set_post
 
   def create
@@ -58,4 +58,3 @@
     "RPT-#{report.created_at.strftime('%Y%m%d')}-#{report.id.to_s.rjust(6, '0')}"
   end
 end
-
