@@ -59,6 +59,15 @@
     </div>
   </div>
 
+  <section class="ds-card hidden p-4 sm:p-5" data-first-visit-panel>
+    <h2 class="ds-heading-sm ds-text-strong"><%= t("posts.index.first_visit_heading", default: "First time here? Start with these steps") %></h2>
+    <p class="mt-1 ds-text-support"><%= t("posts.index.first_visit_lead", default: "Search one keyword, open a post, then create your own setup when ready.") %></p>
+    <div class="mt-3 flex flex-wrap items-center gap-2">
+      <%= link_to t("navigation.onboarding", default: "Getting started"), onboarding_path, class: "tap-target cta-secondary", data: { ga_event: "onboarding_open_click", ga_category: "onboarding", ga_label: "index_first_visit" } %>
+      <a href="#index-search" class="tap-target cta-primary"><%= t("posts.index.search_button") %></a>
+    </div>
+  </section>
+
   <section class="ds-card p-4 sm:p-5" data-revisit-root>
     <div class="flex flex-wrap items-center justify-between gap-2">
       <h2 class="ds-heading-sm ds-text-strong"><%= t("posts.index.revisit_heading", default: "Continue from your last visit") %></h2>
@@ -178,7 +187,7 @@
         <% visible_tags = ranked_tags.first(max_card_tags) %>
         <% hidden_tag_count = [ranked_tags.size - visible_tags.size, 0].max %>
         <% card_url = post_path(post, from: return_path) %>
-        <article class="ds-card ds-shadow-soft ds-card-interactive flex h-full flex-col overflow-hidden" data-card-href="<%= card_url %>" data-post-id="<%= post.id %>" data-post-title="<%= post.title %>" data-post-url="<%= card_url %>">
+        <article class="ds-card ds-shadow-soft ds-card-interactive flex h-full flex-col overflow-hidden" data-card-href="<%= card_url %>" data-card-context="search_result" data-post-id="<%= post.id %>" data-post-title="<%= post.title %>" data-post-url="<%= card_url %>">
           <%= link_to card_url, class: "block", data: { post_card_link: true, post_id: post.id, ga_event: "post_card_open", ga_category: "post_index", ga_label: filtered_results ? "from_filtered_results" : "from_default_results", card_stop: true } do %>
             <div class="ds-media-frame ds-media-frame-card ds-media-skeleton" data-media-skeleton data-image-shell>
               <%= optimized_post_image_tag(post, variant: :thumbnail, class: "h-full w-full object-cover", data: { fallback_src: asset_path(ApplicationHelper::FALLBACK_POST_IMAGE) }) %>
@@ -191,7 +200,7 @@
 
           <div class="flex h-full flex-col p-4">
             <h2 class="ds-heading-sm ds-line-clamp-2 ds-break-words ds-text-strong">
-              <%= link_to post.title, card_url, class: "block leading-6 ds-hover-link", data: { post_card_link: true, post_id: post.id, ga_event: "post_card_open", ga_category: "post_index", ga_label: "title_click", card_stop: true } %>
+              <%= link_to post.title, card_url, class: "block leading-6 ds-hover-link", aria: { label: t("posts.index.open_post_with_title", default: "Open post: %{title}", title: post.title) }, data: { post_card_link: true, post_id: post.id, ga_event: "post_card_open", ga_category: "post_index", ga_label: "title_click", card_stop: true } %>
             </h2>
 
             <div class="mt-2 flex flex-wrap items-center gap-1.5" aria-label="Post classification">
@@ -223,7 +232,7 @@
 
             <div class="mt-auto border-t ds-border-muted pt-3">
               <div class="flex flex-wrap items-center justify-between gap-2">
-                <%= link_to t("posts.index.open_post", default: "Open post"), card_url, class: "tap-target cta-secondary cta-compact", data: { post_card_link: true, post_id: post.id, ga_event: "post_list_primary_cta_click", ga_category: "post_index", ga_label: filtered_results ? "filtered_card_primary" : "default_card_primary", card_stop: true } %>
+                <%= link_to t("posts.index.open_post", default: "Open post"), card_url, class: "tap-target cta-secondary cta-compact", aria: { label: t("posts.index.open_post_with_title", default: "Open post: %{title}", title: post.title) }, data: { post_card_link: true, post_id: post.id, ga_event: "post_list_primary_cta_click", ga_category: "post_index", ga_label: filtered_results ? "filtered_card_primary" : "default_card_primary", card_stop: true } %>
                 <button type="button" class="tap-target cta-tertiary cta-compact" data-card-stop data-favorite-toggle data-post-id="<%= post.id %>" data-post-title="<%= post.title %>" data-post-url="<%= card_url %>" aria-pressed="false" data-ga-event="post_list_secondary_cta_click" data-ga-category="post_index" data-ga-label="card_save_toggle">
                   <span data-favorite-label><%= t("posts.index.save_post", default: "Save") %></span>
                 </button>
@@ -300,6 +309,9 @@
     const ZERO_RESULT_STATE_KEY = "post_index_zero_result_state";
     const RECENTLY_VIEWED_KEY = "post_recently_viewed";
     const FAVORITES_KEY = "post_favorites";
+    const VISIT_MODE_KEY = "post_index_visit_count";
+    let lastCardTargetTap = { target: "", at: 0 };
+    let visitModeApplied = false;
     const searchContext = {
       hasSearchInput: <%= filtered_results ? "true" : "false" %>,
       resultCount: <%= @posts.size %>,
@@ -358,6 +370,29 @@
         favorites,
         "<%= j(t('posts.index.saved_posts_empty', default: 'No saved posts yet.')) %>"
       );
+    };
+
+    const applyVisitMode = () => {
+      if (visitModeApplied) return;
+      visitModeApplied = true;
+      const firstVisitPanel = document.querySelector("[data-first-visit-panel]");
+      const revisitPanel = document.querySelector("[data-revisit-root]");
+      if (!firstVisitPanel || !revisitPanel) return;
+
+      const visitCount = Number(localStorage.getItem(VISIT_MODE_KEY) || "0") + 1;
+      localStorage.setItem(VISIT_MODE_KEY, String(visitCount));
+      const firstVisit = visitCount <= 1;
+
+      firstVisitPanel.classList.toggle("hidden", !firstVisit);
+      revisitPanel.classList.toggle("hidden", firstVisit);
+
+      if (typeof window.gtag === "function") {
+        window.gtag("event", "home_visit_mode", {
+          event_category: "post_index",
+          event_label: firstVisit ? "first_visit" : "return_visit",
+          visit_count: visitCount
+        });
+      }
     };
 
     const setFavoriteButtonState = (button) => {
@@ -483,6 +518,29 @@
           writeJson(RECENTLY_VIEWED_KEY, next);
         }
       }
+    });
+
+    document.addEventListener("click", (event) => {
+      const card = event.target.closest("[data-card-context='search_result']");
+      if (!card || typeof window.gtag !== "function") return;
+      if (event.target.closest("[data-post-card-link], [data-favorite-toggle], a, button, input, select, textarea")) return;
+
+      const cardRect = card.getBoundingClientRect();
+      const relativeY = Math.max(0, Math.min(1, (event.clientY - cardRect.top) / Math.max(cardRect.height, 1)));
+      const roughArea = relativeY > 0.73 ? "actions_zone" : "content_zone";
+      const now = Date.now();
+      const elapsed = now - Number(lastCardTargetTap.at || 0);
+      const previous = String(lastCardTargetTap.target || "");
+      const current = roughArea;
+
+      if (previous && previous !== current && elapsed > 0 && elapsed <= 600) {
+        window.gtag("event", "search_card_mistap_estimate", {
+          event_category: "post_search",
+          event_label: `${previous}_to_${current}`,
+          elapsed_ms: elapsed
+        });
+      }
+      lastCardTargetTap = { target: current, at: now };
     });
 
     document.addEventListener("click", (event) => {
@@ -720,6 +778,7 @@
       restoreFiltersFromStorage();
       syncFavoriteButtons();
       reportSearchState();
+      applyVisitMode();
     });
     document.addEventListener("DOMContentLoaded", () => {
       markLoadedMedia();
@@ -728,6 +787,7 @@
       restoreFiltersFromStorage();
       syncFavoriteButtons();
       reportSearchState();
+      applyVisitMode();
     });
 
     window.setTimeout(() => {
@@ -736,6 +796,7 @@
       restoreListPosition();
       restoreFiltersFromStorage();
       syncFavoriteButtons();
+      applyVisitMode();
     }, 0);
   }
 </script>

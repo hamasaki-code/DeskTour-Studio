@@ -11,7 +11,7 @@
 <% tag_list_error = field_error.call(:tag_list) %>
 <% image_error = field_error.call(:desk_image) %>
 <% profile_error = field_error.call(:user) %>
-<% optional_panel_open = [category_error, theme_error, tag_list_error, post.category, post.theme, post.tag_list].any?(&:present?) %>
+<% optional_panel_open = [ category_error, theme_error, tag_list_error, post.category, post.theme, post.tag_list ].any?(&:present?) %>
 <% items_panel_open = post.items.any? { |item| item.name.present? || item.affiliate_url.present? || item.errors.any? } %>
 
 <%= form_with model: post,
@@ -26,14 +26,16 @@
                 loading_label: t("ui.processing", default: "Processing..."),
                 submitting_reason: t("ui.processing", default: "Processing..."),
                 disabled_reason_prefix: t("ui.disabled_reason", default: "Complete required fields"),
-                disabled_submit_notice: t("ui.complete_required", default: "Please complete required fields before submitting.")
+                disabled_submit_notice: t("ui.complete_required", default: "Please complete required fields before submitting."),
+                leave_guard_message: t("ui.leave_guard_post_form", default: "You have unsaved post changes. Leave this page?"),
+                post_create_flow: true
               } do |f| %>
   <% if post.errors.any? %>
     <div class="space-y-2">
       <%= render "shared/feedback_panel",
                  level: :error,
                  title: t("posts.form.error_summary", default: "Please fix the following errors."),
-                 body: t("ui.error_with_recovery", default: "Please review the fields below, then retry. If the issue continues, go back and try again."),
+                 body: t("ui.error_with_recovery", default: "Cause: one or more fields are invalid. Action: review highlighted fields. Retry: submit again after fixing."),
                  actions: [
                    { label: t("ui.focus_first_error", default: "Go to first error"), href: "#post-form-fields" },
                    { label: t("ui.back", default: "Back"), href: (request.referer.presence || root_path) }
@@ -67,132 +69,215 @@
     </div>
   <% end %>
 
-  <section id="post-form-fields" class="space-y-4 rounded-xl border ds-border-subtle ds-surface-base p-4 sm:p-5">
-    <div>
-      <h2 class="ds-heading-md"><%= t("posts.form.required_section", default: "Required basics") %></h2>
-      <p class="mt-1 ds-text-support"><%= t("posts.form.required_section_lead", default: "Start with the core information for your post.") %></p>
+  <section class="rounded-xl border ds-border-subtle ds-surface-muted p-4" aria-label="<%= t('posts.form.step_progress', default: 'Create post progress') %>">
+    <div class="flex items-center justify-between gap-2">
+      <p class="ds-text-support font-semibold"><%= t("posts.form.step_progress", default: "Create post progress") %></p>
+      <p class="ds-text-meta"><span data-step-progress-text>1 / 3</span></p>
     </div>
+    <div class="mt-2 ds-progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1" data-step-progressbar>
+      <div class="ds-progress-fill" style="width: 33.34%" data-step-progress-fill></div>
+    </div>
+    <ol class="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
+      <li class="rounded-full border ds-tone-info px-2 py-1" data-step-chip="1"><%= t("posts.form.step_basic", default: "Basic") %></li>
+      <li class="rounded-full border ds-tone-info px-2 py-1" data-step-chip="2"><%= t("posts.form.step_image", default: "Image") %></li>
+      <li class="rounded-full border ds-tone-info px-2 py-1" data-step-chip="3"><%= t("posts.form.step_confirm", default: "Confirm") %></li>
+    </ol>
+  </section>
 
-    <div class="grid gap-4 sm:grid-cols-2">
-      <% if owned_users.any? %>
+  <section id="post-form-fields" class="space-y-4" data-post-step-root>
+    <section class="space-y-4 rounded-xl border ds-border-subtle ds-surface-base p-4 sm:p-5" data-post-step-panel="1">
+      <div>
+        <h2 class="ds-heading-md"><%= t("posts.form.required_section", default: "Required basics") %></h2>
+        <p class="mt-1 ds-text-support"><%= t("posts.form.required_section_lead", default: "Start with the core information for your post.") %></p>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <% if owned_users.any? %>
+          <div class="sm:col-span-2">
+            <%= f.label :user_id, t("posts.form.profile_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
+            <%= f.collection_select :user_id, owned_users, :id, :name, {}, class: input_class.call(profile_error), aria: { invalid: profile_error.present? ? "true" : nil, describedby: "post_user_id_help post_user_id_error" } %>
+            <p id="post_user_id_help" class="ds-field-guide"><%= t("posts.form.profile_guide", default: "Choose which profile is shown as the author.") %></p>
+            <% if profile_error.present? %>
+              <p id="post_user_id_error" class="ds-field-error"><%= profile_error %></p>
+            <% end %>
+          </div>
+        <% end %>
+
         <div class="sm:col-span-2">
-          <%= f.label :user_id, t("posts.form.profile_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
-          <%= f.collection_select :user_id, owned_users, :id, :name, {}, class: input_class.call(profile_error), aria: { invalid: profile_error.present? ? "true" : nil, describedby: "post_user_id_help post_user_id_error" } %>
-          <p id="post_user_id_help" class="ds-field-guide"><%= t("posts.form.profile_guide", default: "Choose which profile is shown as the author.") %></p>
-          <% if profile_error.present? %>
-            <p id="post_user_id_error" class="ds-field-error"><%= profile_error %></p>
+          <%= f.label :title, t("posts.form.title_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
+          <%= f.text_field :title,
+                           required: true,
+                           maxlength: 120,
+                           class: input_class.call(title_error),
+                           placeholder: t("posts.form.title_placeholder"),
+                           aria: { invalid: title_error.present? ? "true" : nil, describedby: "post_title_help post_title_counter post_title_error" },
+                           data: { char_count_max: 120, char_count_target: "post_title_counter" } %>
+          <p id="post_title_help" class="ds-field-guide"><%= t("posts.form.title_guide", default: "Include setup style and one distinctive element. Max 120 characters.") %></p>
+          <p id="post_title_counter" class="ds-char-counter" aria-live="polite"></p>
+          <% if title_error.present? %>
+            <p id="post_title_error" class="ds-field-error"><%= title_error %></p>
           <% end %>
         </div>
-      <% end %>
 
-      <div class="sm:col-span-2">
-        <%= f.label :title, t("posts.form.title_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
-        <%= f.text_field :title,
-                         required: true,
-                         maxlength: 120,
-                         class: input_class.call(title_error),
-                         placeholder: t("posts.form.title_placeholder"),
-                         aria: { invalid: title_error.present? ? "true" : nil, describedby: "post_title_help post_title_counter post_title_error" },
-                         data: { char_count_max: 120, char_count_target: "post_title_counter" } %>
-        <p id="post_title_help" class="ds-field-guide"><%= t("posts.form.title_guide", default: "Include setup style and one distinctive element. Max 120 characters.") %></p>
-        <p id="post_title_counter" class="ds-char-counter" aria-live="polite"></p>
-        <% if title_error.present? %>
-          <p id="post_title_error" class="ds-field-error"><%= title_error %></p>
-        <% end %>
+        <div class="sm:col-span-2">
+          <%= f.label :description, t("posts.form.description_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
+          <%= f.text_area :description,
+                          rows: 7,
+                          required: true,
+                          maxlength: 2000,
+                          class: input_class.call(description_error),
+                          placeholder: t("posts.form.description_placeholder"),
+                          aria: { invalid: description_error.present? ? "true" : nil, describedby: "post_description_help post_description_counter post_description_error" },
+                          data: { char_count_max: 2000, char_count_target: "post_description_counter" } %>
+          <p id="post_description_help" class="ds-field-guide"><%= t("posts.form.description_guide", default: "Write 3-5 sentences about layout, devices, and workflow. Do not include private information.") %></p>
+          <p id="post_description_counter" class="ds-char-counter" aria-live="polite"></p>
+          <% if description_error.present? %>
+            <p id="post_description_error" class="ds-field-error"><%= description_error %></p>
+          <% end %>
+        </div>
       </div>
 
-      <div class="sm:col-span-2">
-        <%= f.label :description, t("posts.form.description_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
-        <%= f.text_area :description,
-                        rows: 7,
-                        required: true,
-                        maxlength: 2000,
-                        class: input_class.call(description_error),
-                        placeholder: t("posts.form.description_placeholder"),
-                        aria: { invalid: description_error.present? ? "true" : nil, describedby: "post_description_help post_description_counter post_description_error" },
-                        data: { char_count_max: 2000, char_count_target: "post_description_counter" } %>
-        <p id="post_description_help" class="ds-field-guide"><%= t("posts.form.description_guide", default: "Write 3-5 sentences about layout, devices, and workflow. Do not include private information.") %></p>
-        <p id="post_description_counter" class="ds-char-counter" aria-live="polite"></p>
-        <% if description_error.present? %>
-          <p id="post_description_error" class="ds-field-error"><%= description_error %></p>
-        <% end %>
+      <div class="flex justify-end">
+        <button type="button" class="tap-target cta-primary" data-post-step-next="1"><%= t("posts.form.next_to_image", default: "Next: image") %></button>
+      </div>
+    </section>
+
+    <section class="hidden space-y-4 rounded-xl border ds-border-subtle ds-surface-base p-4 sm:p-5" data-post-step-panel="2">
+      <div>
+        <h2 class="ds-heading-md"><%= t("posts.form.image_section", default: "Image and details") %></h2>
+        <p class="mt-1 ds-text-support"><%= t("posts.form.image_section_lead", default: "Upload one image and optionally add categorization details.") %></p>
       </div>
 
-      <div class="sm:col-span-2">
+      <div>
         <%= f.label :desk_image, t("posts.form.image_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
-        <%= f.file_field :desk_image, required: post.published?, class: input_class.call(image_error), accept: "image/*", aria: { invalid: image_error.present? ? "true" : nil, describedby: "post_image_help post_image_error" } %>
-        <p id="post_image_help" class="ds-field-guide"><%= t("posts.form.image_guide", default: "Use a bright landscape image (1200px+ recommended).") %></p>
+        <%= f.file_field :desk_image,
+                         required: post.published?,
+                         class: input_class.call(image_error),
+                         accept: "image/jpeg,image/png,image/webp,image/gif",
+                         aria: { invalid: image_error.present? ? "true" : nil, describedby: "post_image_help post_image_error post_image_upload_feedback" },
+                         data: { image_upload_input: true, has_existing_image: post.desk_image.attached? } %>
+        <p id="post_image_help" class="ds-field-guide"><%= t("posts.form.image_guide", default: "Use JPEG/PNG/WEBP/GIF up to 8MB. 1200px+ recommended.") %></p>
+        <p id="post_image_upload_feedback" class="ds-field-error hidden" data-image-upload-feedback></p>
         <% if image_error.present? %>
           <p id="post_image_error" class="ds-field-error"><%= image_error %></p>
         <% end %>
-      </div>
-    </div>
-  </section>
-
-  <details class="rounded-xl border ds-border-subtle ds-surface-muted p-4 sm:p-5" <%= "open" if optional_panel_open %>>
-    <summary class="cursor-pointer list-none">
-      <div>
-        <h2 class="ds-heading-md"><%= t("posts.form.optional_section", default: "Optional details") %></h2>
-        <p class="mt-1 ds-text-support"><%= t("posts.form.optional_section_lead", default: "Add category, theme, and tags to improve discoverability.") %></p>
-      </div>
-    </summary>
-
-    <div class="mt-4 grid gap-4 sm:grid-cols-2">
-      <div>
-        <%= f.label :category, t("posts.form.category_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
-        <%= f.text_field :category, class: input_class.call(category_error), placeholder: t("posts.form.category_placeholder"), list: "post-category-options", aria: { invalid: category_error.present? ? "true" : nil, describedby: "post_category_help post_category_error" } %>
-        <p id="post_category_help" class="ds-field-guide"><%= t("posts.form.category_guide", default: "Examples: Engineering, Design, Writing.") %></p>
-        <% if category_error.present? %>
-          <p id="post_category_error" class="ds-field-error"><%= category_error %></p>
-        <% end %>
+        <div class="mt-2">
+          <button type="button" class="tap-target cta-tertiary cta-compact" data-image-upload-retry><%= t("images.retry", default: "Retry") %></button>
+        </div>
       </div>
 
-      <div>
-        <%= f.label :theme, t("posts.form.theme_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
-        <%= f.text_field :theme, class: input_class.call(theme_error), placeholder: t("posts.form.theme_placeholder"), aria: { invalid: theme_error.present? ? "true" : nil, describedby: "post_theme_help post_theme_error" } %>
-        <p id="post_theme_help" class="ds-field-guide"><%= t("posts.form.theme_guide", default: "Examples: Dark, Minimal, Natural.") %></p>
-        <% if theme_error.present? %>
-          <p id="post_theme_error" class="ds-field-error"><%= theme_error %></p>
-        <% end %>
-      </div>
-
-      <div class="sm:col-span-2">
-        <%= f.label :tag_list, t("posts.form.tags_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
-        <%= f.text_field :tag_list,
-                         maxlength: 220,
-                         class: input_class.call(tag_list_error),
-                         placeholder: t("posts.form.tags_placeholder"),
-                         list: "post-tag-options",
-                         aria: { invalid: tag_list_error.present? ? "true" : nil, describedby: "post_tag_list_help post_tag_list_counter post_tag_list_error" },
-                         data: { char_count_max: 220, char_count_target: "post_tag_list_counter" } %>
-        <p id="post_tag_list_help" class="ds-field-guide"><%= t("posts.form.tags_guide", default: "Use up to 8 tags separated by commas. Avoid duplicates.") %></p>
-        <p id="post_tag_list_counter" class="ds-char-counter" aria-live="polite"></p>
-        <% if tag_list_error.present? %>
-          <p id="post_tag_list_error" class="ds-field-error"><%= tag_list_error %></p>
-        <% end %>
-      </div>
-    </div>
-  </details>
-
-  <details class="rounded-xl border ds-border-subtle ds-surface-muted p-4" <%= "open" if items_panel_open %>>
-    <summary class="cursor-pointer list-none text-sm font-semibold ds-text-strong"><%= t("posts.form.related_items") %></summary>
-    <div class="mt-3 space-y-4">
-      <%= f.fields_for :items do |item_fields| %>
-        <div class="grid gap-3 rounded-lg border ds-border-subtle ds-surface-base p-3 sm:grid-cols-2">
+      <details class="rounded-xl border ds-border-subtle ds-surface-muted p-4 sm:p-5" <%= "open" if optional_panel_open %>>
+        <summary class="cursor-pointer list-none">
           <div>
-            <%= item_fields.label :name, t("posts.form.item_name_label"), class: "mb-1 block text-xs font-medium ds-text-strong" %>
-            <%= item_fields.text_field :name, class: "ds-form-control", placeholder: t("posts.form.item_name_placeholder") %>
-            <p class="ds-field-guide"><%= t("posts.form.item_name_guide", default: "Example: HHKB Professional HYBRID Type-S") %></p>
+            <h2 class="ds-heading-md"><%= t("posts.form.optional_section", default: "Optional details") %></h2>
+            <p class="mt-1 ds-text-support"><%= t("posts.form.optional_section_lead", default: "Add category, theme, and tags to improve discoverability.") %></p>
           </div>
+        </summary>
+
+        <div class="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
-            <%= item_fields.label :affiliate_url, t("posts.form.affiliate_url_label"), class: "mb-1 block text-xs font-medium ds-text-strong" %>
-            <%= item_fields.url_field :affiliate_url, class: "ds-form-control", placeholder: t("posts.form.affiliate_url_placeholder") %>
-            <p class="ds-field-guide"><%= t("posts.form.affiliate_url_guide", default: "Use official product page or trusted store URL.") %></p>
+            <%= f.label :category, t("posts.form.category_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
+            <%= f.text_field :category, class: input_class.call(category_error), placeholder: t("posts.form.category_placeholder"), list: "post-category-options", aria: { invalid: category_error.present? ? "true" : nil, describedby: "post_category_help post_category_error" } %>
+            <p id="post_category_help" class="ds-field-guide"><%= t("posts.form.category_guide", default: "Examples: Engineering, Design, Writing.") %></p>
+            <% if category_error.present? %>
+              <p id="post_category_error" class="ds-field-error"><%= category_error %></p>
+            <% end %>
+          </div>
+
+          <div>
+            <%= f.label :theme, t("posts.form.theme_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
+            <%= f.text_field :theme, class: input_class.call(theme_error), placeholder: t("posts.form.theme_placeholder"), aria: { invalid: theme_error.present? ? "true" : nil, describedby: "post_theme_help post_theme_error" } %>
+            <p id="post_theme_help" class="ds-field-guide"><%= t("posts.form.theme_guide", default: "Examples: Dark, Minimal, Natural.") %></p>
+            <% if theme_error.present? %>
+              <p id="post_theme_error" class="ds-field-error"><%= theme_error %></p>
+            <% end %>
+          </div>
+
+          <div class="sm:col-span-2">
+            <%= f.label :tag_list, t("posts.form.tags_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
+            <%= f.text_field :tag_list,
+                             maxlength: 220,
+                             class: input_class.call(tag_list_error),
+                             placeholder: t("posts.form.tags_placeholder"),
+                             list: "post-tag-options",
+                             aria: { invalid: tag_list_error.present? ? "true" : nil, describedby: "post_tag_list_help post_tag_list_counter post_tag_list_error" },
+                             data: { char_count_max: 220, char_count_target: "post_tag_list_counter" } %>
+            <p id="post_tag_list_help" class="ds-field-guide"><%= t("posts.form.tags_guide", default: "Use up to 8 tags separated by commas. Avoid duplicates.") %></p>
+            <p id="post_tag_list_counter" class="ds-char-counter" aria-live="polite"></p>
+            <% if tag_list_error.present? %>
+              <p id="post_tag_list_error" class="ds-field-error"><%= tag_list_error %></p>
+            <% end %>
           </div>
         </div>
-      <% end %>
-    </div>
-  </details>
+      </details>
+
+      <details class="rounded-xl border ds-border-subtle ds-surface-muted p-4" <%= "open" if items_panel_open %>>
+        <summary class="cursor-pointer list-none text-sm font-semibold ds-text-strong"><%= t("posts.form.related_items") %></summary>
+        <div class="mt-3 space-y-4">
+          <%= f.fields_for :items do |item_fields| %>
+            <div class="grid gap-3 rounded-lg border ds-border-subtle ds-surface-base p-3 sm:grid-cols-2">
+              <div>
+                <%= item_fields.label :name, t("posts.form.item_name_label"), class: "mb-1 block text-xs font-medium ds-text-strong" %>
+                <%= item_fields.text_field :name, class: "ds-form-control", placeholder: t("posts.form.item_name_placeholder") %>
+                <p class="ds-field-guide"><%= t("posts.form.item_name_guide", default: "Example: HHKB Professional HYBRID Type-S") %></p>
+              </div>
+              <div>
+                <%= item_fields.label :affiliate_url, t("posts.form.affiliate_url_label"), class: "mb-1 block text-xs font-medium ds-text-strong" %>
+                <%= item_fields.url_field :affiliate_url, class: "ds-form-control", placeholder: t("posts.form.affiliate_url_placeholder") %>
+                <p class="ds-field-guide"><%= t("posts.form.affiliate_url_guide", default: "Use official product page or trusted store URL.") %></p>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </details>
+
+      <div class="flex flex-wrap justify-between gap-2">
+        <button type="button" class="tap-target cta-secondary" data-post-step-prev="2"><%= t("ui.back", default: "Back") %></button>
+        <button type="button" class="tap-target cta-primary" data-post-step-next="2"><%= t("posts.form.next_to_confirm", default: "Next: confirm") %></button>
+      </div>
+    </section>
+
+    <section class="hidden space-y-4 rounded-xl border ds-border-subtle ds-surface-base p-4 sm:p-5" data-post-step-panel="3">
+      <div>
+        <h2 class="ds-heading-md"><%= t("posts.form.confirm_section", default: "Confirm and publish") %></h2>
+        <p class="mt-1 ds-text-support"><%= t("posts.form.confirm_section_lead", default: "Review your input before publishing. You can still go back and edit.") %></p>
+      </div>
+
+      <dl class="grid gap-3 sm:grid-cols-2" data-post-review>
+        <div class="rounded-lg border ds-border-subtle ds-surface-muted p-3 sm:col-span-2">
+          <dt class="ds-text-meta font-semibold ds-text-weak"><%= t("posts.form.title_label") %></dt>
+          <dd class="mt-1 text-sm ds-text-support ds-break-words" data-review-title>-</dd>
+        </div>
+        <div class="rounded-lg border ds-border-subtle ds-surface-muted p-3 sm:col-span-2">
+          <dt class="ds-text-meta font-semibold ds-text-weak"><%= t("posts.form.description_label") %></dt>
+          <dd class="mt-1 text-sm ds-text-support ds-break-words" data-review-description>-</dd>
+        </div>
+        <div class="rounded-lg border ds-border-subtle ds-surface-muted p-3">
+          <dt class="ds-text-meta font-semibold ds-text-weak"><%= t("posts.form.category_label") %></dt>
+          <dd class="mt-1 text-sm ds-text-support ds-break-words" data-review-category>-</dd>
+        </div>
+        <div class="rounded-lg border ds-border-subtle ds-surface-muted p-3">
+          <dt class="ds-text-meta font-semibold ds-text-weak"><%= t("posts.form.theme_label") %></dt>
+          <dd class="mt-1 text-sm ds-text-support ds-break-words" data-review-theme>-</dd>
+        </div>
+      </dl>
+
+      <div class="flex flex-wrap gap-3">
+        <button type="button" class="tap-target cta-secondary" data-post-step-prev="3"><%= t("ui.back", default: "Back") %></button>
+
+        <%= f.button type: :submit, class: "tap-target cta-primary ds-cta-experiment", data: { variant: "control", ga_event: "post_form_submit_click", ga_category: "post_form", ga_label: "publish_primary", confirm_action: true, confirm_title: t("posts.form.confirm_submit_title", default: "Publish this post?"), confirm_message: t("ui.critical_submit_message", default: "Cause: this will publish your post publicly. Action: review your content. Retry: cancel and edit if needed."), confirm_label: submit_label, confirm_level: "warning" } do %>
+          <span class="inline-flex items-center gap-1.5">
+            <%= ui_icon(:check_circle, class_name: "h-4 w-4") %>
+            <span data-submit-label><%= submit_label %></span>
+          </span>
+        <% end %>
+
+        <%= f.button type: :submit, name: "save_as_draft", value: "1", class: "tap-target cta-secondary", data: { ga_event: "post_form_submit_click", ga_category: "post_form", ga_label: "save_draft_secondary" } do %>
+          <span data-submit-label><%= t("posts.form.save_draft") %></span>
+        <% end %>
+      </div>
+    </section>
+  </section>
 
   <% if category_suggestions.any? %>
     <datalist id="post-category-options">
@@ -210,19 +295,6 @@
     </datalist>
   <% end %>
 
-  <div class="flex flex-wrap gap-3">
-    <%= f.button type: :submit, class: "tap-target cta-primary ds-cta-experiment", data: { variant: "control", ga_event: "post_form_submit_click", ga_category: "post_form", ga_label: "publish_primary" } do %>
-      <span class="inline-flex items-center gap-1.5">
-        <%= ui_icon(:check_circle, class_name: "h-4 w-4") %>
-        <span data-submit-label><%= submit_label %></span>
-      </span>
-    <% end %>
-
-    <%= f.button type: :submit, name: "save_as_draft", value: "1", class: "tap-target cta-secondary", data: { ga_event: "post_form_submit_click", ga_category: "post_form", ga_label: "save_draft_secondary" } do %>
-      <span data-submit-label><%= t("posts.form.save_draft") %></span>
-    <% end %>
-  </div>
-
   <p class="ds-text-muted">
     <%= t("posts.form.draft_restore_hint", default: "Draft is saved locally while you type. If you return later, it is restored automatically.") %>
   </p>
@@ -238,21 +310,252 @@
 <% end %>
 
 <script>
-  if (!window.__postFormErrorAutofocusInstalled) {
-    window.__postFormErrorAutofocusInstalled = true;
+  if (!window.__postFormFlowInstalled) {
+    window.__postFormFlowInstalled = true;
 
-    const focusFirstErrorField = () => {
-      const form = document.querySelector("[data-form-autofocus-errors]");
+    const withPostForm = (callback) => {
+      const form = document.querySelector("form[data-post-create-flow]");
       if (!form) return;
-      const firstInvalid = form.querySelector("[aria-invalid='true']");
-      if (!firstInvalid) return;
-      firstInvalid.focus();
-      if (typeof firstInvalid.scrollIntoView === "function") {
-        firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
+      callback(form);
     };
 
-    document.addEventListener("turbo:load", focusFirstErrorField);
-    document.addEventListener("DOMContentLoaded", focusFirstErrorField);
+    const focusFirstErrorField = () => {
+      withPostForm((form) => {
+        const firstInvalid = form.querySelector("[aria-invalid='true']");
+        if (!firstInvalid) return;
+        firstInvalid.focus();
+        if (typeof firstInvalid.scrollIntoView === "function") {
+          firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      });
+    };
+
+    const installFlow = () => {
+      withPostForm((form) => {
+        if (form.dataset.postFlowBound === "1") return;
+        form.dataset.postFlowBound = "1";
+
+        const maxUploadBytes = 8 * 1024 * 1024;
+        const allowedTypes = [ "image/jpeg", "image/png", "image/webp", "image/gif" ];
+        const steps = [ 1, 2, 3 ];
+        let currentStep = 1;
+
+        const progressText = form.querySelector("[data-step-progress-text]");
+        const progressBar = form.querySelector("[data-step-progressbar]");
+        const progressFill = form.querySelector("[data-step-progress-fill]");
+
+        const updateReview = () => {
+          const title = form.querySelector("#post_title")?.value?.trim() || "-";
+          const description = form.querySelector("#post_description")?.value?.trim() || "-";
+          const category = form.querySelector("#post_category")?.value?.trim() || "-";
+          const theme = form.querySelector("#post_theme")?.value?.trim() || "-";
+          const write = (selector, value) => {
+            const node = form.querySelector(selector);
+            if (node) node.textContent = value;
+          };
+          write("[data-review-title]", title);
+          write("[data-review-description]", description.length > 200 ? `${description.slice(0, 200)}...` : description);
+          write("[data-review-category]", category);
+          write("[data-review-theme]", theme);
+        };
+
+        const publishStepViewed = (step) => {
+          if (typeof window.gtag !== "function") return;
+          const labels = { 1: "start", 2: "image", 3: "confirm" };
+          window.gtag("event", "post_create_step_view", {
+            event_category: "post_form",
+            event_label: labels[step] || `step_${step}`,
+            step_number: step
+          });
+        };
+
+        const showStep = (step, opts = {}) => {
+          currentStep = step;
+          form.dataset.postCurrentStep = String(step);
+          form.querySelectorAll("[data-post-step-panel]").forEach((panel) => {
+            panel.classList.toggle("hidden", Number(panel.dataset.postStepPanel) !== step);
+          });
+          form.querySelectorAll("[data-step-chip]").forEach((chip) => {
+            const chipStep = Number(chip.dataset.stepChip);
+            chip.classList.toggle("ds-tone-info", chipStep === step);
+            chip.classList.toggle("ds-tone-success", chipStep < step);
+          });
+
+          const percent = (step / steps.length) * 100;
+          if (progressText) progressText.textContent = `${step} / ${steps.length}`;
+          if (progressFill) progressFill.style.width = `${percent}%`;
+          if (progressBar) progressBar.setAttribute("aria-valuenow", String(step));
+          updateReview();
+
+          if (!opts.silent) {
+            publishStepViewed(step);
+          }
+        };
+
+        const stepHasBlockingFields = (step) => {
+          if (step === 1) {
+            const required = [ "#post_title", "#post_description" ];
+            if (form.querySelector("#post_user_id")) required.push("#post_user_id");
+            return required.some((selector) => !(form.querySelector(selector)?.value || "").trim());
+          }
+
+          if (step === 2) {
+            const input = form.querySelector("[data-image-upload-input]");
+            if (!input || !input.required) return false;
+            const hasExisting = input.dataset.hasExistingImage === "true";
+            const hasSelectedFile = input.files && input.files.length > 0;
+            return !(hasExisting || hasSelectedFile);
+          }
+
+          return false;
+        };
+
+        const setUploadFeedback = (message = "") => {
+          const feedback = form.querySelector("[data-image-upload-feedback]");
+          const input = form.querySelector("[data-image-upload-input]");
+          if (!feedback || !input) return;
+
+          if (!message) {
+            feedback.textContent = "";
+            feedback.classList.add("hidden");
+            input.setCustomValidity("");
+            return;
+          }
+
+          feedback.textContent = message;
+          feedback.classList.remove("hidden");
+          input.setCustomValidity(message);
+          input.setAttribute("aria-invalid", "true");
+        };
+
+        const validateUpload = () => {
+          const input = form.querySelector("[data-image-upload-input]");
+          if (!input || !input.files || input.files.length === 0) {
+            setUploadFeedback("");
+            return true;
+          }
+
+          const file = input.files[0];
+          if (!allowedTypes.includes(file.type)) {
+            const message = "Cause: unsupported image format. Action: use JPEG/PNG/WEBP/GIF. Retry: choose another file.";
+            setUploadFeedback(message);
+            if (typeof window.gtag === "function") {
+              window.gtag("event", "image_upload_failure", {
+                event_category: "post_form",
+                event_label: "unsupported_format"
+              });
+            }
+            return false;
+          }
+
+          if (Number(file.size || 0) > maxUploadBytes) {
+            const message = "Cause: file exceeds 8MB. Action: compress the image. Retry: upload a smaller file.";
+            setUploadFeedback(message);
+            if (typeof window.gtag === "function") {
+              window.gtag("event", "image_upload_failure", {
+                event_category: "post_form",
+                event_label: "file_too_large",
+                file_size: Number(file.size || 0)
+              });
+            }
+            return false;
+          }
+
+          setUploadFeedback("");
+          if (typeof window.gtag === "function") {
+            window.gtag("event", "image_upload_selected", {
+              event_category: "post_form",
+              event_label: "valid_file",
+              file_size: Number(file.size || 0)
+            });
+          }
+          return true;
+        };
+
+        form.querySelectorAll("[data-post-step-next]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const from = Number(button.dataset.postStepNext);
+            if (stepHasBlockingFields(from)) {
+              if (typeof window.dsNotify === "function") {
+                window.dsNotify("Complete required fields before proceeding.", "warning");
+              }
+              return;
+            }
+
+            if (from === 2 && !validateUpload()) {
+              return;
+            }
+
+            const target = Math.min(from + 1, steps.length);
+            showStep(target);
+            if (typeof window.gtag === "function") {
+              window.gtag("event", "post_create_step_transition", {
+                event_category: "post_form",
+                event_label: `${from}_to_${target}`
+              });
+            }
+          });
+        });
+
+        form.querySelectorAll("[data-post-step-prev]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const from = Number(button.dataset.postStepPrev);
+            const target = Math.max(1, from - 1);
+            showStep(target);
+          });
+        });
+
+        const uploadInput = form.querySelector("[data-image-upload-input]");
+        if (uploadInput) {
+          uploadInput.addEventListener("change", validateUpload);
+        }
+
+        const retryButton = form.querySelector("[data-image-upload-retry]");
+        if (retryButton && uploadInput) {
+          retryButton.addEventListener("click", () => {
+            uploadInput.value = "";
+            setUploadFeedback("");
+            uploadInput.focus();
+            if (typeof window.gtag === "function") {
+              window.gtag("event", "image_upload_retry", {
+                event_category: "post_form",
+                event_label: "retry_button"
+              });
+            }
+          });
+        }
+
+        form.addEventListener("input", updateReview);
+        form.addEventListener("change", updateReview);
+
+        form.addEventListener("submit", () => {
+          if (typeof window.gtag !== "function") return;
+          window.gtag("event", "post_create_step_complete", {
+            event_category: "post_form",
+            event_label: form.dataset.postCurrentStep || "unknown"
+          });
+        });
+
+        window.addEventListener("beforeunload", () => {
+          if (form.dataset.uiFormDirty !== "true" || form.dataset.uiSubmitting === "true") return;
+          if (typeof window.gtag !== "function") return;
+          window.gtag("event", "post_create_step_dropout", {
+            event_category: "post_form",
+            event_label: form.dataset.postCurrentStep || "unknown"
+          });
+        });
+
+        const hasImageErrors = Boolean(form.querySelector("#post_image_error"));
+        const hasOptionalErrors = Boolean(form.querySelector("#post_category_error, #post_theme_error, #post_tag_list_error"));
+        const initialStep = hasImageErrors || hasOptionalErrors ? 2 : 1;
+        showStep(initialStep, { silent: true });
+        publishStepViewed(initialStep);
+        updateReview();
+      });
+    };
+
+    document.addEventListener("turbo:load", () => { focusFirstErrorField(); installFlow(); });
+    document.addEventListener("DOMContentLoaded", () => { focusFirstErrorField(); installFlow(); });
+    window.setTimeout(() => { focusFirstErrorField(); installFlow(); }, 0);
   }
 </script>

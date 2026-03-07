@@ -103,16 +103,16 @@
 
                 <section class="ds-utility-section">
                   <p class="ds-utility-section-title"><%= t("navigation.utility_settings", default: "Settings") %></p>
-                  <div class="rounded-lg border ds-border-subtle ds-surface-base p-2">
+      <div class="rounded-lg border ds-border-subtle ds-surface-base p-2">
                     <p class="mb-1 ds-text-meta font-semibold"><%= t("language.switch_aria") %></p>
                     <div class="ds-locale-switch w-full" role="group" aria-label="<%= t('language.switch_aria') %>">
-                      <%= link_to locale_switch_path(:ja), class: "ds-locale-pill #{locale_selected?(:ja) ? 'ds-locale-pill-active' : 'ds-locale-pill-inactive'}", aria: { current: (locale_selected?(:ja) ? "true" : nil) }, data: { ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "desktop_locale_ja" } do %>
+                      <%= link_to locale_switch_path(:ja), class: "ds-locale-pill #{locale_selected?(:ja) ? 'ds-locale-pill-active' : 'ds-locale-pill-inactive'}", aria: { current: (locale_selected?(:ja) ? "true" : nil) }, data: { locale_switch_link: true, target_locale: "ja", ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "desktop_locale_ja" } do %>
                         <span><%= t("language.option_ja") %></span>
                         <% if locale_selected?(:ja) %>
                           <%= ui_icon(:check, class_name: "h-3 w-3") %>
                         <% end %>
                       <% end %>
-                      <%= link_to locale_switch_path(:en), class: "ds-locale-pill #{locale_selected?(:en) ? 'ds-locale-pill-active' : 'ds-locale-pill-inactive'}", aria: { current: (locale_selected?(:en) ? "true" : nil) }, data: { ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "desktop_locale_en" } do %>
+                      <%= link_to locale_switch_path(:en), class: "ds-locale-pill #{locale_selected?(:en) ? 'ds-locale-pill-active' : 'ds-locale-pill-inactive'}", aria: { current: (locale_selected?(:en) ? "true" : nil) }, data: { locale_switch_link: true, target_locale: "en", ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "desktop_locale_en" } do %>
                         <span><%= t("language.option_en") %></span>
                         <% if locale_selected?(:en) %>
                           <%= ui_icon(:check, class_name: "h-3 w-3") %>
@@ -159,13 +159,13 @@
             <div class="rounded-lg border ds-border-subtle ds-surface-base p-2">
               <p class="mb-1 ds-text-meta font-semibold"><%= t("language.switch_aria") %></p>
               <div class="ds-locale-switch" role="group" aria-label="<%= t('language.switch_aria') %>">
-                <%= link_to locale_switch_path(:ja), class: "ds-locale-pill #{locale_selected?(:ja) ? 'ds-locale-pill-active' : 'ds-locale-pill-inactive'}", aria: { current: (locale_selected?(:ja) ? "true" : nil) }, data: { mobile_header_action: true, ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "mobile_locale_ja" } do %>
+                <%= link_to locale_switch_path(:ja), class: "ds-locale-pill #{locale_selected?(:ja) ? 'ds-locale-pill-active' : 'ds-locale-pill-inactive'}", aria: { current: (locale_selected?(:ja) ? "true" : nil) }, data: { locale_switch_link: true, target_locale: "ja", mobile_header_action: true, ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "mobile_locale_ja" } do %>
                   <span><%= t("language.option_ja") %></span>
                   <% if locale_selected?(:ja) %>
                     <%= ui_icon(:check, class_name: "ml-1 h-3 w-3") %>
                   <% end %>
                 <% end %>
-                <%= link_to locale_switch_path(:en), class: "ds-locale-pill #{locale_selected?(:en) ? 'ds-locale-pill-active' : 'ds-locale-pill-inactive'}", aria: { current: (locale_selected?(:en) ? "true" : nil) }, data: { mobile_header_action: true, ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "mobile_locale_en" } do %>
+                <%= link_to locale_switch_path(:en), class: "ds-locale-pill #{locale_selected?(:en) ? 'ds-locale-pill-active' : 'ds-locale-pill-inactive'}", aria: { current: (locale_selected?(:en) ? "true" : nil) }, data: { locale_switch_link: true, target_locale: "en", mobile_header_action: true, ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "mobile_locale_en" } do %>
                   <span><%= t("language.option_en") %></span>
                   <% if locale_selected?(:en) %>
                     <%= ui_icon(:check, class_name: "ml-1 h-3 w-3") %>
@@ -231,7 +231,7 @@
         when :error
           "error"
         when :warning
-          "info"
+          "warning"
         else
           "success"
         end %>
@@ -265,6 +265,16 @@
         </div>
       </div>
     </footer>
+    <dialog id="ui-confirm-dialog" class="ds-dialog-surface w-full max-w-md rounded-xl border ds-border-subtle p-0 shadow-lg">
+      <div class="border-b ds-border-subtle px-4 py-3">
+        <h2 class="text-base font-semibold ds-text-strong" data-confirm-title><%= t("ui.confirm_title", default: "Please confirm") %></h2>
+        <p class="mt-1 text-xs ds-text-weak" data-confirm-message><%= t("ui.confirm_message", default: "Check this action before continuing.") %></p>
+      </div>
+      <div class="flex justify-end gap-2 px-4 py-4">
+        <button type="button" class="tap-target cta-tertiary" data-confirm-cancel><%= t("ui.cancel", default: "Cancel") %></button>
+        <button type="button" class="tap-target cta-primary" data-confirm-ok><%= t("ui.confirm", default: "Continue") %></button>
+      </div>
+    </dialog>
     <p id="ui-live-region" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
     <div id="ui-toast-region" class="ds-toast-region" aria-live="polite" aria-atomic="true"></div>
 
@@ -273,6 +283,8 @@
         window.__mobileHeaderBindingInstalled = true;
         const menuOpenedMessage = "<%= j(t('navigation.menu_opened', default: 'Menu opened')) %>";
         const menuClosedMessage = "<%= j(t('navigation.menu_closed', default: 'Menu closed')) %>";
+        const localeSwitchSessionKey = "locale_switch_session_context";
+        let activeMenuRoot = null;
         const syncStickyInsets = () => {
           const header = document.querySelector("[data-mobile-header-root]");
           if (header) {
@@ -318,22 +330,134 @@
           announceToRegion("<%= j(t('ui.page_changed', default: 'Screen updated')) %>");
         };
 
-        window.dsNotify = (message, level = "info") => {
-          if (!message) return;
-          announceToRegion(message);
+        const trackLocaleSwitchContinuation = () => {
+          const contextRaw = sessionStorage.getItem(localeSwitchSessionKey);
+          if (!contextRaw || typeof window.gtag !== "function") return;
+          try {
+            const context = JSON.parse(contextRaw);
+            const now = Date.now();
+            const currentLocale = (document.documentElement.getAttribute("lang") || "").toLowerCase();
+            if (!context || !context.target_locale) return;
+            const sameLocale = currentLocale === String(context.target_locale).toLowerCase();
+            const elapsed = now - Number(context.at || 0);
+            if (sameLocale && elapsed <= (10 * 60 * 1000)) {
+              window.gtag("event", "language_switch_session_continued", {
+                event_category: "navigation",
+                event_label: context.target_locale,
+                elapsed_ms: elapsed
+              });
+            }
+          } catch (_) {
+          } finally {
+            sessionStorage.removeItem(localeSwitchSessionKey);
+          }
+        };
 
+        const enableMenuFocusTrap = (menuRoot, toggleButton) => {
+          activeMenuRoot = menuRoot;
+          const firstFocusable = menuRoot.querySelector("a, button, [tabindex='0']");
+          if (firstFocusable && typeof firstFocusable.focus === "function") {
+            window.setTimeout(() => firstFocusable.focus(), 0);
+          }
+          if (toggleButton) toggleButton.dataset.menuToggle = "true";
+        };
+
+        const disableMenuFocusTrap = () => {
+          activeMenuRoot = null;
+        };
+
+        const toastQueue = [];
+        let toastRendering = false;
+        const toastPolicies = {
+          success: { duration: 2200, tone: "ds-toast-success", priority: 1 },
+          info: { duration: 2600, tone: "ds-toast-info", priority: 1 },
+          warning: { duration: 3600, tone: "ds-toast-warning", priority: 2 },
+          error: { duration: 5200, tone: "ds-toast-error", priority: 3 }
+        };
+
+        const renderNextToast = () => {
+          if (toastRendering || toastQueue.length === 0) return;
+          toastQueue.sort((a, b) => b.priority - a.priority);
+          const nextToast = toastQueue.shift();
           const toastRegion = document.getElementById("ui-toast-region");
-          if (!toastRegion) return;
+          if (!toastRegion || !nextToast) return;
+
+          toastRendering = true;
           const toast = document.createElement("div");
-          const toneClass = level === "error" ? "ds-toast-error" : level === "success" ? "ds-toast-success" : "ds-toast-info";
-          toast.className = `ds-toast ${toneClass}`;
-          toast.textContent = message;
+          toast.className = `ds-toast ${nextToast.tone}`;
+          toast.textContent = nextToast.message;
           toastRegion.appendChild(toast);
           window.setTimeout(() => {
             toast.remove();
-          }, 1800);
+            toastRendering = false;
+            renderNextToast();
+          }, nextToast.duration);
+        };
+
+        window.dsNotify = (message, level = "info") => {
+          if (!message) return;
+          announceToRegion(message);
+          const key = String(level || "info");
+          const policy = toastPolicies[key] || toastPolicies.info;
+          toastQueue.push({ message, ...policy });
+          renderNextToast();
         };
         window.dsAnnounce = (message) => announceToRegion(message);
+
+        window.dsConfirmAction = (options = {}) => {
+          const dialog = document.getElementById("ui-confirm-dialog");
+          if (!dialog || typeof dialog.showModal !== "function") return Promise.resolve(false);
+
+          const titleNode = dialog.querySelector("[data-confirm-title]");
+          const messageNode = dialog.querySelector("[data-confirm-message]");
+          const cancelButton = dialog.querySelector("[data-confirm-cancel]");
+          const okButton = dialog.querySelector("[data-confirm-ok]");
+          const previousFocus = document.activeElement;
+          const level = options.level === "danger" ? "danger" : options.level === "warning" ? "warning" : "primary";
+
+          if (titleNode) titleNode.textContent = options.title || "<%= j(t('ui.confirm_title', default: 'Please confirm')) %>";
+          if (messageNode) messageNode.textContent = options.message || "<%= j(t('ui.confirm_message', default: 'Check this action before continuing.')) %>";
+          if (okButton) okButton.textContent = options.confirmLabel || "<%= j(t('ui.confirm', default: 'Continue')) %>";
+          if (cancelButton) cancelButton.textContent = options.cancelLabel || "<%= j(t('ui.cancel', default: 'Cancel')) %>";
+
+          if (okButton) {
+            okButton.classList.remove("cta-primary", "cta-warning", "cta-danger");
+            okButton.classList.add(level === "danger" ? "cta-danger" : level === "warning" ? "cta-warning" : "cta-primary");
+          }
+
+          return new Promise((resolve) => {
+            const cleanup = () => {
+              dialog.removeEventListener("cancel", onCancel);
+              if (cancelButton) cancelButton.removeEventListener("click", onCancel);
+              if (okButton) okButton.removeEventListener("click", onConfirm);
+              if (previousFocus && typeof previousFocus.focus === "function") {
+                window.setTimeout(() => previousFocus.focus(), 0);
+              }
+            };
+
+            const onCancel = (event) => {
+              if (event) event.preventDefault();
+              cleanup();
+              dialog.close();
+              resolve(false);
+            };
+
+            const onConfirm = (event) => {
+              if (event) event.preventDefault();
+              cleanup();
+              dialog.close();
+              resolve(true);
+            };
+
+            dialog.addEventListener("cancel", onCancel, { once: true });
+            if (cancelButton) cancelButton.addEventListener("click", onCancel, { once: true });
+            if (okButton) okButton.addEventListener("click", onConfirm, { once: true });
+            dialog.showModal();
+            window.setTimeout(() => {
+              (cancelButton || okButton || dialog).focus();
+            }, 0);
+          });
+        };
 
         const closeMobileHeaderMenu = (reason = "dismissed") => {
           const menu = document.querySelector("[data-mobile-header-menu]");
@@ -342,6 +466,7 @@
 
           menu.classList.add("hidden");
           if (toggle) toggle.setAttribute("aria-expanded", "false");
+          disableMenuFocusTrap();
           window.dsNotify(menuClosedMessage, "info");
           if (typeof window.gtag === "function") {
             window.gtag("event", "navigation_mobile_menu_close", {
@@ -358,6 +483,7 @@
 
           menu.classList.add("hidden");
           if (toggle) toggle.setAttribute("aria-expanded", "false");
+          disableMenuFocusTrap();
           if (typeof window.gtag === "function") {
             window.gtag("event", "navigation_desktop_utility_close", {
               event_category: "navigation",
@@ -367,6 +493,12 @@
         };
 
         document.addEventListener("click", (event) => {
+          const localeLink = event.target.closest("[data-locale-switch-link]");
+          if (localeLink) {
+            const targetLocale = localeLink.dataset.targetLocale || "";
+            sessionStorage.setItem(localeSwitchSessionKey, JSON.stringify({ target_locale: targetLocale, at: Date.now() }));
+          }
+
           const toggle = event.target.closest("[data-mobile-header-toggle]");
           if (toggle) {
             const menu = document.querySelector("[data-mobile-header-menu]");
@@ -379,6 +511,7 @@
               toggle.setAttribute("aria-expanded", "true");
               menu.classList.remove("hidden");
               window.dsNotify(menuOpenedMessage, "info");
+              enableMenuFocusTrap(menu, toggle);
             }
             return;
           }
@@ -393,6 +526,7 @@
             } else {
               desktopToggle.setAttribute("aria-expanded", "true");
               menu.classList.remove("hidden");
+              enableMenuFocusTrap(menu, desktopToggle);
             }
             return;
           }
@@ -417,15 +551,34 @@
         });
 
         document.addEventListener("keydown", (event) => {
-          if (event.key !== "Escape") return;
-          closeMobileHeaderMenu("escape");
-          closeDesktopUtilityMenu("escape");
+          if (event.key === "Escape") {
+            closeMobileHeaderMenu("escape");
+            closeDesktopUtilityMenu("escape");
+            return;
+          }
+          if (event.key !== "Tab" || !activeMenuRoot || activeMenuRoot.classList.contains("hidden")) return;
+          const candidates = Array.from(activeMenuRoot.querySelectorAll("a[href], button:not([disabled]), [tabindex='0']")).filter((node) => !node.hasAttribute("disabled"));
+          if (candidates.length === 0) return;
+          const first = candidates[0];
+          const last = candidates[candidates.length - 1];
+          const current = document.activeElement;
+          if (event.shiftKey && current === first) {
+            event.preventDefault();
+            last.focus();
+          } else if (!event.shiftKey && current === last) {
+            event.preventDefault();
+            first.focus();
+          }
         });
 
         bindStickyInsetSync();
+        trackLocaleSwitchContinuation();
         document.addEventListener("turbo:load", announceScreenTransition);
+        document.addEventListener("turbo:load", trackLocaleSwitchContinuation);
         document.addEventListener("DOMContentLoaded", announceScreenTransition);
+        document.addEventListener("DOMContentLoaded", trackLocaleSwitchContinuation);
         window.setTimeout(announceScreenTransition, 0);
+        window.setTimeout(trackLocaleSwitchContinuation, 0);
       }
     </script>
 
