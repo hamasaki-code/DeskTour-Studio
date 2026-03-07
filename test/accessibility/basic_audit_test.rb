@@ -69,9 +69,9 @@ class BasicAccessibilityAuditTest < ActionDispatch::IntegrationTest
 
   test "design tokens keep body contrast above 4.5 ratio" do
     samples = [
-      { fg: [15, 23, 42], bg: [248, 250, 252], label: "main on page" },
-      { fg: [51, 65, 85], bg: [255, 255, 255], label: "body on surface" },
-      { fg: [30, 41, 59], bg: [241, 245, 249], label: "support on muted" }
+      { fg: [ 15, 23, 42 ], bg: [ 248, 250, 252 ], label: "main on page" },
+      { fg: [ 51, 65, 85 ], bg: [ 255, 255, 255 ], label: "body on surface" },
+      { fg: [ 30, 41, 59 ], bg: [ 241, 245, 249 ], label: "support on muted" }
     ]
 
     samples.each do |sample|
@@ -83,8 +83,8 @@ class BasicAccessibilityAuditTest < ActionDispatch::IntegrationTest
   private
 
   def contrast_ratio(foreground_rgb, background_rgb)
-    lighter, darker = [relative_luminance(foreground_rgb), relative_luminance(background_rgb)].max,
-                      [relative_luminance(foreground_rgb), relative_luminance(background_rgb)].min
+    lighter, darker = [ relative_luminance(foreground_rgb), relative_luminance(background_rgb) ].max,
+                      [ relative_luminance(foreground_rgb), relative_luminance(background_rgb) ].min
     (lighter + 0.05) / (darker + 0.05)
   end
 
