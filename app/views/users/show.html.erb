@@ -1,9 +1,8 @@
 <% content_for :title, @user.name %>
 <% content_for :description, truncate(@user.bio.to_s, length: 120) %>
-<% locale_ja = I18n.locale.to_s == "ja" %>
 <% create_post_label = t("navigation.create_post") %>
-<% browse_gallery_label = locale_ja ? "投稿一覧を見る" : "Browse gallery" %>
-<% draft_hint = locale_ja ? "下書きは本人のみ表示されます。" : "Drafts are visible only to you." %>
+<% browse_gallery_label = t("users.show.browse_gallery", default: "Browse gallery") %>
+<% draft_hint = t("users.show.draft_visibility_hint", default: "Drafts are visible only to you.") %>
 
 <section class="space-y-content" data-page-content>
   <header class="ds-card p-6">
@@ -32,24 +31,30 @@
         <% @published_posts.each do |post| %>
           <% visible_tags = post.tags.first(2) %>
           <% hidden_tag_count = [post.tags.size - visible_tags.size, 0].max %>
-          <article class="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <article class="ds-card flex h-full flex-col overflow-hidden shadow-sm">
             <%= link_to post_path(post), class: "block" do %>
-              <%= optimized_post_image_tag(post, variant: :thumbnail, class: "h-40 w-full object-cover sm:h-44") %>
+              <div class="ds-media-frame ds-media-frame-card ds-media-skeleton" data-media-skeleton data-image-shell>
+                <%= optimized_post_image_tag(post, variant: :thumbnail, class: "h-full w-full object-cover ds-thumbnail-crop", data: { fallback_src: asset_path(ApplicationHelper::FALLBACK_POST_IMAGE) }) %>
+                <div class="ds-image-fallback hidden" data-image-fallback>
+                  <p><%= t("images.fallback_text", default: "Image is unavailable") %></p>
+                  <button type="button" data-image-retry><%= t("images.retry", default: "Retry") %></button>
+                </div>
+              </div>
             <% end %>
             <div class="flex h-full flex-col p-4">
-              <h3 class="text-base font-semibold text-slate-900">
-                <%= link_to post.title, post_path(post), class: "ds-line-clamp-2 block leading-5 hover:text-blue-600" %>
+              <h3 class="text-base font-semibold ds-text-strong">
+                <%= link_to post.title, post_path(post), class: "ds-line-clamp-2 block leading-5 ds-hover-link" %>
               </h3>
               <p class="mt-2 ds-line-clamp-2 ds-text-support"><%= truncate(post.description, length: 90) %></p>
-              <div class="mt-2.5 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-400">
+              <div class="mt-2.5 flex flex-wrap items-center gap-1.5 text-[11px] ds-text-muted">
                 <% visible_tags.each do |tag| %>
-                  <%= link_to "##{tag}", posts_path(tag: tag), class: "tap-target inline-flex items-center rounded-full border border-slate-100 bg-slate-50 px-2 py-0.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600" %>
+                  <%= link_to "##{tag}", posts_path(tag: tag), class: "tap-target inline-flex items-center rounded-full border ds-border-muted ds-surface-muted px-2 py-0.5 ds-text-muted ds-hover-muted ds-hover-link" %>
                 <% end %>
                 <% if hidden_tag_count.positive? %>
-                  <span class="inline-flex items-center rounded-full border border-slate-100 bg-slate-50 px-2 py-0.5 text-slate-400">+<%= hidden_tag_count %></span>
+                  <span class="inline-flex items-center rounded-full border ds-border-muted ds-surface-muted px-2 py-0.5 ds-text-muted">+<%= hidden_tag_count %></span>
                 <% end %>
               </div>
-              <div class="mt-auto border-t border-slate-100 pt-3 ds-text-meta">
+              <div class="mt-auto border-t ds-border-muted pt-3 ds-text-meta">
                 <div class="flex flex-wrap items-center gap-2">
                   <%= timestamp_tag(post.created_at, style: :date) %>
                   <span class="inline-flex items-center gap-1">
@@ -63,7 +68,7 @@
         <% end %>
       </div>
     <% else %>
-      <div class="mt-4 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center">
+      <div class="mt-4 rounded-lg border border-dashed ds-border-strong ds-surface-muted px-4 py-8 text-center">
         <p class="ds-text-support"><%= t("users.show.no_published_posts") %></p>
         <div class="mt-3 flex flex-wrap items-center justify-center gap-2">
           <% if user_owner?(@user) %>
@@ -85,10 +90,10 @@
       <% if @draft_posts.any? %>
         <div class="mt-4 grid gap-4 sm:grid-cols-2">
           <% @draft_posts.each do |post| %>
-            <article class="flex h-full flex-col rounded-lg border border-slate-200 bg-slate-50 p-4">
-              <h3 class="ds-line-clamp-2 text-base font-semibold text-slate-900"><%= post.title.presence || t("users.show.untitled_draft") %></h3>
+            <article class="flex h-full flex-col rounded-lg border ds-border-subtle ds-surface-muted p-4">
+              <h3 class="ds-line-clamp-2 text-base font-semibold ds-text-strong"><%= post.title.presence || t("users.show.untitled_draft") %></h3>
               <p class="mt-2 ds-line-clamp-2 ds-text-support"><%= truncate(post.description.to_s, length: 120) %></p>
-              <div class="mt-auto flex items-center justify-between border-t border-slate-200 pt-3">
+              <div class="mt-auto flex items-center justify-between border-t ds-border-subtle pt-3">
                 <%= timestamp_tag(post.updated_at, style: :date) %>
                 <%= link_to edit_post_path(post), class: "tap-target cta-secondary cta-compact" do %>
                   <%= ui_icon(:pencil_square, class_name: "h-3.5 w-3.5") %>
@@ -99,7 +104,7 @@
           <% end %>
         </div>
       <% else %>
-        <div class="mt-4 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center">
+        <div class="mt-4 rounded-lg border border-dashed ds-border-strong ds-surface-muted px-4 py-8 text-center">
           <p class="ds-text-support"><%= t("users.show.no_drafts") %></p>
           <div class="mt-3">
             <%= link_to create_post_label, new_post_path, class: "tap-target cta-secondary" %>

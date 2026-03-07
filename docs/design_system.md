@@ -33,7 +33,7 @@
 
 ## Fixed Mobile Bar Rules
 - Use `mobile-sticky-bar` for all fixed bottom action bars.
-- When fixed bars overlap critical inputs (comment forms), hide the bar while input fields are focused.
+- When fixed bars overlap critical inputs (forms), hide the bar while input fields are focused.
 - Keep a minimum `44px` tap target (`tap-target`) on all touch controls.
 - If in-page CTA already owns the current task (for example, search submit), suppress competing fixed-bar CTA while that task UI is visible or active.
 
@@ -84,7 +84,7 @@
 ## Ads Placement
 - Wrap ad slots in a low-noise container (`ad-slot-surface`) with clear spacing from content groups.
 - Add a compact disclosure label (`ad-slot-label`) to separate ads from primary content.
-- Add a context separator before ad groups (`ad-slot-divider`) when placed between reading/comment sections.
+- Add a context separator before ad groups (`ad-slot-divider`) when placed between reading/action sections.
 
 ## Responsive Density Rules
 - Define information density by breakpoint:
@@ -149,7 +149,7 @@
 - Track UI changes against measurable outcomes:
   - Search zero-result rate
   - Card-to-detail click-through rate
-  - Comment completion rate
+  - Report submission completion rate
   - Share/copy action rate
   - Back-navigation recovery success (list position restore)
 - PRs that change conversion-critical UI must include:
@@ -166,11 +166,11 @@
   - KPI: search submit-to-result CTR
   - Guardrail: filter abandonment rate
 - Detail first-view value emphasis:
-  - KPI: detail-to-comment scroll reach rate
+  - KPI: detail action engagement rate
   - Guardrail: bounce rate on detail page
-- Comment form simplification and reply context:
-  - KPI: comment completion rate
-  - Guardrail: comment error re-submit rate
+- Report form simplification and context:
+  - KPI: report completion rate
+  - Guardrail: report error re-submit rate
 
 ## Design Audit Workflow
 - Pull requests that modify UI must complete a design-system checklist in the PR template.

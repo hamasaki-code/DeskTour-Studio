@@ -16,7 +16,7 @@
 2. Confirm visible `:focus-visible` on all interactive elements.
 3. Open/close menus and dialogs using keyboard only.
 4. Verify `Esc` closes layer and focus returns to trigger.
-5. Verify comment/report forms can be completed without pointer.
+5. Verify post/report forms can be completed without pointer.
 
 ## Accessibility Read Order Script
 1. Confirm one `h1` per page.

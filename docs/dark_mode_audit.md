@@ -7,7 +7,7 @@ Owner: UI backlog implementation
 Complete pre-migration inventory for dark mode by identifying hard-coded colors and prioritizing token migration.
 
 ## Priority Buckets
-- P0 (high-frequency UI): header, navigation CTA, post cards, form controls, flash/toast, comment threads.
+- P0 (high-frequency UI): header, navigation CTA, post cards, form controls, flash/toast, action layers.
 - P1 (medium-frequency UI): report modal, notifications page, profile screens, onboarding, ad wrappers.
 - P2 (low-frequency UI): admin panels, legal pages, email templates.
 

@@ -192,6 +192,18 @@ module ApplicationHelper
 
   def context_breadcrumbs
     base = [ { label: "DeskTour Studio", href: root_path } ]
+    if controller_path.start_with?("admin/")
+      admin_root = { label: t("navigation.admin", default: "Admin"), href: admin_posts_path }
+      base << admin_root
+      case controller_path
+      when "admin/posts"
+        base << { label: t("navigation.admin_posts", default: "Post Management"), href: admin_posts_path }
+      when "admin/reports"
+        base << { label: t("navigation.admin_reports", default: "Report Queue"), href: admin_reports_path }
+      end
+      return base
+    end
+
     return base if controller_name == "posts" && action_name == "index"
 
     case controller_name
@@ -199,6 +211,9 @@ module ApplicationHelper
       base << { label: t("posts.index.title"), href: root_path }
       if action_name == "show" && defined?(@post) && @post.present?
         base << { label: truncate(@post.title, length: 40), href: post_path(@post) }
+      elsif action_name == "notifications" && defined?(@post) && @post.present?
+        base << { label: truncate(@post.title, length: 40), href: post_path(@post) }
+        base << { label: t("posts.notifications.heading", default: "Notifications"), href: notifications_post_path(@post) }
       elsif action_name.in?(%w[new create])
         base << { label: t("posts.new.heading"), href: new_post_path }
       elsif action_name.in?(%w[edit update]) && defined?(@post) && @post.present?
@@ -352,10 +367,10 @@ module ApplicationHelper
   end
   def status_badge(level:, label:, icon:)
     tones = {
-      success: "border-emerald-300 bg-emerald-50 text-emerald-700",
-      warning: "border-amber-300 bg-amber-50 text-amber-800",
-      error: "border-red-300 bg-red-50 text-red-700",
-      info: "border-blue-200 bg-blue-50 text-blue-700"
+      success: "ds-tone-success",
+      warning: "ds-tone-warning",
+      error: "ds-tone-danger",
+      info: "ds-tone-info"
     }
     tone = tones.fetch(level.to_sym, tones.fetch(:info))
 

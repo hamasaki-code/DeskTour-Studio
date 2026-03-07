@@ -7,6 +7,13 @@ ja:
     create_post: "投稿する"
     menu_opened: "メニューを開きました"
     menu_closed: "メニューを閉じました"
+    utility_menu: "ユーティリティ"
+    utility_create: "作成"
+    utility_browse: "閲覧"
+    utility_settings: "設定"
+    admin: "管理"
+    admin_posts: "投稿管理"
+    admin_reports: "通報キュー"
   footer:
     terms: "利用規約"
     privacy_policy: "プライバシーポリシー"
@@ -16,3 +23,5 @@ ja:
     copy_failed: "コピーに失敗しました"
   meta:
     default_description: "DeskTour Studioでデスクセットアップのアイデアを探し、あなたのワークスペースを共有しましょう。"
+  ui:
+    page_changed: "画面を更新しました"

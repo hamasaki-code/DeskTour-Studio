@@ -4,13 +4,13 @@
 <% actions = Array(local_assigns[:actions]) %>
 <% tone = case level
 when :error
-  "border-red-300 bg-red-50 text-red-800"
+  "ds-tone-danger"
 when :warning
-  "border-amber-300 bg-amber-50 text-amber-900"
+  "ds-tone-warning"
 when :success
-  "border-emerald-300 bg-emerald-50 text-emerald-800"
+  "ds-tone-success"
 else
-  "border-blue-300 bg-blue-50 text-blue-900"
+  "ds-tone-info"
 end %>
 <% icon = case level
 when :error then :x_circle

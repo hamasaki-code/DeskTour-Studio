@@ -22,3 +22,4 @@ en:
     unknown: "Unknown"
   notification_labels:
     read: "Read"
+    unread: "Unread"

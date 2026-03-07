@@ -1,13 +1,13 @@
 <% content_for :title, "Post Management" %>
 
-<section class="space-y-4">
+<section class="space-y-4" data-page-content>
   <div class="flex flex-wrap items-center justify-between gap-3">
-    <h1 class="text-2xl font-bold text-slate-900">Post Management</h1>
-    <%= link_to "Report Queue", admin_reports_path, class: "rounded border border-slate-300 px-3 py-1 text-xs hover:bg-slate-100" %>
+    <h1 class="ds-heading-xl">Post Management</h1>
+    <%= link_to "Report Queue", admin_reports_path, class: "tap-target cta-secondary cta-compact" %>
   </div>
-  <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+  <div class="overflow-x-auto rounded-xl border ds-border-subtle ds-surface-base">
     <table class="min-w-full text-left text-sm">
-      <thead class="bg-slate-50 text-slate-600">
+      <thead class="ds-surface-muted ds-text-weak">
         <tr>
           <th class="px-4 py-3">Title</th>
           <th class="px-4 py-3">Status</th>
@@ -16,10 +16,10 @@
       </thead>
       <tbody>
         <% @posts.each do |post| %>
-          <tr class="border-t border-slate-200">
+          <tr class="border-t ds-border-subtle">
             <td class="px-4 py-3">
               <% if post.published? %>
-                <%= link_to post.title, post_path(post), class: "text-blue-600 hover:text-blue-700" %>
+                <%= link_to post.title, post_path(post), class: "ds-link-primary" %>
               <% else %>
                 <span><%= post.title.presence || "(Untitled draft)" %></span>
               <% end %>

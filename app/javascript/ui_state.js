@@ -164,12 +164,42 @@ const bindFormState = (scope = document) => {
 
     form.dataset.uiFormBound = "1";
     form.dataset.uiFormDirty = "false";
+    form.dataset.uiStartTracked = form.dataset.uiStartTracked || "false";
+    form.dataset.uiErrorExposureTracked = form.dataset.uiErrorExposureTracked || "false";
 
     const draftKey = `${FORM_DRAFT_PREFIX}${form.dataset.offlineDraftKey || form.getAttribute("action") || form.id || "default"}`;
+    const formContext = form.dataset.formAnalyticsContext || "generic_form";
     const serializableFields = () => Array.from(form.querySelectorAll("input[name], textarea[name], select[name]")).filter((field) => {
       const type = (field.getAttribute("type") || "").toLowerCase();
       return ![ "password", "file", "submit", "button", "image" ].includes(type);
     });
+
+    const emitFormEvent = (name, payload = {}) => {
+      if (typeof window.gtag !== "function") return;
+      window.gtag("event", name, { event_category: "form", event_label: formContext, ...payload });
+    };
+
+    const trackFormStart = (field) => {
+      if (form.dataset.uiStartTracked === "true") return;
+      form.dataset.uiStartTracked = "true";
+      emitFormEvent("form_start", {
+        field_name: field?.name || "",
+        form_action: form.getAttribute("action") || ""
+      });
+    };
+
+    const trackErrorExposure = () => {
+      if (form.dataset.uiErrorExposureTracked === "true") return;
+      const invalidFields = Array.from(form.querySelectorAll("[aria-invalid='true']"));
+      if (invalidFields.length === 0) return;
+      form.dataset.uiErrorExposureTracked = "true";
+      invalidFields.slice(0, 5).forEach((field) => {
+        emitFormEvent("form_error_exposure", {
+          field_name: field.getAttribute("name") || "",
+          field_label: controlLabel(field, form)
+        });
+      });
+    };
 
     const saveDraft = () => {
       const payload = {};
@@ -204,11 +234,15 @@ const bindFormState = (scope = document) => {
     };
 
     form.addEventListener("input", () => {
+      const currentField = document.activeElement?.closest("input[name], textarea[name], select[name]");
+      trackFormStart(currentField);
       form.dataset.uiFormDirty = "true";
       updateFormState(form);
       if (form.dataset.offlineDraftKey) saveDraft();
     });
     form.addEventListener("change", () => {
+      const currentField = document.activeElement?.closest("input[name], textarea[name], select[name]");
+      trackFormStart(currentField);
       form.dataset.uiFormDirty = "true";
       updateFormState(form);
       if (form.dataset.offlineDraftKey) saveDraft();
@@ -243,6 +277,10 @@ const bindFormState = (scope = document) => {
       const blocked = submitButtons.some((button) => button.disabled);
       if (blocked) {
         event.preventDefault();
+        const missingRequiredCount = Array.from(form.querySelectorAll("[required]")).filter(requiredFieldBlank).length;
+        emitFormEvent("form_submit_blocked", {
+          missing_required_count: missingRequiredCount
+        });
         if (typeof window.dsNotify === "function") {
           window.dsNotify(form.dataset.disabledSubmitNotice || "Please complete required fields.", "error");
         }
@@ -252,6 +290,9 @@ const bindFormState = (scope = document) => {
       form.dataset.uiSubmitting = "true";
       form.setAttribute("aria-busy", "true");
       form.classList.add("ds-form-submitting");
+      emitFormEvent("form_submit_attempt", {
+        form_action: form.getAttribute("action") || ""
+      });
 
       const submitText = form.dataset.loadingLabel || "Processing...";
       submitButtons.forEach((button) => {
@@ -280,6 +321,7 @@ const bindFormState = (scope = document) => {
 
     restoreDraft();
     updateFormState(form);
+    trackErrorExposure();
   });
 };
 

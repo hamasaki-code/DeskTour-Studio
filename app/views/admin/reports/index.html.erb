@@ -1,14 +1,14 @@
 <% content_for :title, "Report Queue" %>
 
-<section class="space-y-6">
+<section class="space-y-6" data-page-content>
   <div class="flex flex-wrap items-center justify-between gap-3">
-    <h1 class="text-2xl font-bold text-slate-900">Report Queue</h1>
-    <%= link_to "Post Management", admin_posts_path, class: "rounded border border-slate-300 px-3 py-1 text-xs hover:bg-slate-100" %>
+    <h1 class="ds-heading-xl">Report Queue</h1>
+    <%= link_to "Post Management", admin_posts_path, class: "tap-target cta-secondary cta-compact" %>
   </div>
 
-  <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+  <div class="overflow-x-auto rounded-xl border ds-border-subtle ds-surface-base">
     <table class="min-w-full text-left text-sm">
-      <thead class="bg-slate-50 text-slate-600">
+      <thead class="ds-surface-muted ds-text-weak">
         <tr>
           <th class="px-4 py-3">Post</th>
           <th class="px-4 py-3">Reason</th>
@@ -21,15 +21,15 @@
       <tbody>
         <% if @queued_reports.any? %>
           <% @queued_reports.each do |report| %>
-            <tr class="border-t border-slate-200 align-top">
+            <tr class="border-t ds-border-subtle align-top">
               <td class="px-4 py-3">
                 <% if report.post&.published? %>
-                  <%= link_to report.post.title, post_path(report.post), class: "text-blue-600 hover:text-blue-700" %>
+                  <%= link_to report.post.title, post_path(report.post), class: "ds-link-primary" %>
                 <% else %>
                   <span><%= report.post&.title.presence || "(Deleted post)" %></span>
                 <% end %>
                 <% if report.post&.hidden? %>
-                  <p class="mt-1 text-xs text-amber-700">Currently hidden</p>
+                  <p class="mt-1 text-xs ds-text-warning">Currently hidden</p>
                 <% end %>
               </td>
               <td class="px-4 py-3"><%= Report.reason_label(report.reason) %></td>
@@ -46,20 +46,20 @@
             </tr>
           <% end %>
         <% else %>
-          <tr class="border-t border-slate-200">
-            <td colspan="6" class="px-4 py-6 text-center text-slate-500">No queued reports.</td>
+          <tr class="border-t ds-border-subtle">
+            <td colspan="6" class="px-4 py-6 text-center ds-text-weak">No queued reports.</td>
           </tr>
         <% end %>
       </tbody>
     </table>
   </div>
 
-  <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
-    <div class="border-b border-slate-200 px-4 py-3">
-      <h2 class="text-sm font-semibold text-slate-900">Recently reviewed</h2>
+  <div class="overflow-x-auto rounded-xl border ds-border-subtle ds-surface-base">
+    <div class="border-b ds-border-subtle px-4 py-3">
+      <h2 class="text-sm font-semibold ds-text-strong">Recently reviewed</h2>
     </div>
     <table class="min-w-full text-left text-sm">
-      <thead class="bg-slate-50 text-slate-600">
+      <thead class="ds-surface-muted ds-text-weak">
         <tr>
           <th class="px-4 py-3">Post</th>
           <th class="px-4 py-3">Reason</th>
@@ -70,7 +70,7 @@
       <tbody>
         <% if @reviewed_reports.any? %>
           <% @reviewed_reports.each do |report| %>
-            <tr class="border-t border-slate-200">
+            <tr class="border-t ds-border-subtle">
               <td class="px-4 py-3"><%= report.post&.title.presence || "(Deleted post)" %></td>
               <td class="px-4 py-3"><%= Report.reason_label(report.reason) %></td>
               <td class="px-4 py-3"><%= report_status_badge(report.status) %></td>
@@ -78,8 +78,8 @@
             </tr>
           <% end %>
         <% else %>
-          <tr class="border-t border-slate-200">
-            <td colspan="4" class="px-4 py-6 text-center text-slate-500">No reviewed reports.</td>
+          <tr class="border-t ds-border-subtle">
+            <td colspan="4" class="px-4 py-6 text-center ds-text-weak">No reviewed reports.</td>
           </tr>
         <% end %>
       </tbody>

@@ -22,3 +22,4 @@ ja:
     unknown: "不明"
   notification_labels:
     read: "既読"
+    unread: "未読"

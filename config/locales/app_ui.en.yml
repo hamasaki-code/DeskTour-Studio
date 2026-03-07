@@ -23,6 +23,9 @@ en:
       detailed_filters_toggle: "Detailed filters"
       author_label: "Author"
       empty_state: "No posts match your filters."
+      open_post: "Open post"
+      result_count: "%{count} posts"
+      search_status: "Search status"
     new:
       title: "Create Post"
       description: "Create a new desk post on DeskTour Studio."
@@ -54,11 +57,10 @@ en:
       affiliate_url_placeholder: "https://www.amazon.com/..."
       publish: "Publish"
       save_draft: "Save draft"
+      draft_restore_hint: "Draft is saved locally while you type and restored when you return."
     show:
       posted_by: "Posted by"
       overview_heading: "Overview"
-      comments_lead: "After reading the post and related items, join the conversation below."
-      comment_empty_cta: "Write the first comment"
       related_items: "Related items"
       item_preview: "Item preview"
       item_brand: "Brand"
@@ -83,6 +85,11 @@ en:
         storage: "Storage"
       open_product_page: "Open product page"
       no_related_items: "No related items yet."
+      layer_read: "Read"
+      layer_react: "React"
+      layer_report: "Report"
+      jump_to_content: "Jump to content"
+      report_owner_hint: "Reporting is disabled on your own post."
       actions:
         like: "Like"
         share: "Share"
@@ -104,18 +111,6 @@ en:
         details_placeholder: "Add additional context for moderators."
         cancel: "Cancel"
         submit: "Submit report"
-      comments:
-        title: "Comments"
-        reply: "Reply"
-        replied_by: "%{name} replied"
-        empty_state: "No comments yet."
-        replying_to: "Replying to %{name}"
-        cancel: "Cancel"
-        comment_as_profile: "Comment as profile (optional)"
-        post_as_guest: "Post as guest"
-        name: "Name"
-        comment: "Comment"
-        post_comment: "Post comment"
     notifications:
       title: "Notifications"
       description: "A list of reactions on this post."
@@ -134,12 +129,6 @@ en:
       published: "Post published."
       create_profile_before_posting: "Create a profile before posting."
       not_allowed: "You are not allowed to edit this post."
-  comments:
-    flash:
-      recaptcha_failed: "reCAPTCHA verification failed."
-      posted: "Comment posted."
-      invalid_parent: "is invalid"
-      notification: "%{author} commented on your post."
   reports:
     reasons:
       spam: "Spam / Misleading"
@@ -170,6 +159,8 @@ en:
     show:
       no_profile_description: "No profile description yet."
       edit_profile: "Edit profile"
+      browse_gallery: "Browse gallery"
+      draft_visibility_hint: "Drafts are visible only to you."
       published_posts: "Published posts"
       no_published_posts: "No published posts yet."
       drafts: "Drafts"
@@ -182,8 +173,10 @@ en:
       name_placeholder: "e.g. Desk Lover"
       bio_label: "Profile bio"
       bio_placeholder: "Tell people about your workspace style and setup."
+      name_recommended: "Recommended: 2-20 characters for readability."
+      bio_recommended: "Recommended: 60-180 characters."
       email_label: "Email address"
-      email_hint: "Used only for comment reply notifications."
+      email_hint: "Used only for account-related notifications."
       email_notifications: "Receive email notifications"
       submit_create: "Create"
       submit_update: "Update"
@@ -191,3 +184,6 @@ en:
       created: "Profile created."
       updated: "Profile updated."
       owner_only: "Only the owner can edit this profile."
+  onboarding:
+    progress_title: "Progress"
+    progress_value: "3 / 3 steps"

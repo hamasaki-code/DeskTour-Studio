@@ -13,12 +13,23 @@ class ReportsController < ApplicationController
     report.reporter_token = current_reporter_token
 
     if report.save
+      queue_analytics_event(
+        "report_form_completed",
+        post_id: @post.id,
+        reason: report.reason,
+        reported_as_profile: report.reporter_user_id.present?
+      )
       if @post.reload.hidden?
         redirect_to root_path, notice: t("reports.flash.thanks_hidden")
       else
         redirect_to post_path(@post), notice: t("reports.flash.thanks")
       end
     else
+      queue_analytics_event(
+        "report_form_failed",
+        post_id: @post.id,
+        error_count: report.errors.size
+      )
       redirect_to post_path(@post), alert: t("reports.flash.submit_failed", default: "Report could not be submitted. Please retry.")
     end
   end
