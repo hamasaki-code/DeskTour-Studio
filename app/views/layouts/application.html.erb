@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="<%= I18n.locale %>">
   <head>
     <title><%= page_title(content_for(:title)) %></title>
@@ -19,7 +19,7 @@
     <meta name="twitter:title" content="<%= share_card_title(page_title(content_for(:title))) %>">
     <meta name="twitter:description" content="<%= share_card_description(meta_description(content_for(:description))) %>">
     <meta name="twitter:image" content="<%= content_for(:og_image_url) || og_image_url %>">
-    <meta name="twitter:image:alt" content="<%= t('images.desk_alt', default: 'Desk image') %>">
+    <meta name="twitter:image:alt" content="<%= t('images.desk_alt') %>">
     <% if search_console_verification_token.present? %>
       <meta name="google-site-verification" content="<%= search_console_verification_token %>">
     <% end %>
@@ -75,15 +75,15 @@
           <div class="relative" data-desktop-utility-root>
             <button type="button" data-desktop-utility-toggle aria-expanded="false" aria-controls="desktop-utility-menu" class="tap-target cta-tertiary" data-ga-event="navigation_desktop_utility_toggle_click" data-ga-category="navigation" data-ga-label="desktop_utility_toggle">
               <span class="inline-flex items-center gap-1.5">
-                <span><%= t("navigation.utility_menu", default: "Utility") %></span>
+                <span><%= t("navigation.utility_menu") %></span>
                 <%= ui_icon(:chevron_down, class_name: "h-4 w-4 ds-text-weak") %>
               </span>
             </button>
 
-            <div id="desktop-utility-menu" data-desktop-utility-menu class="absolute right-0 top-full z-30 mt-2 hidden w-72 ds-popover-surface p-3">
+            <div id="desktop-utility-menu" data-desktop-utility-menu class="absolute right-0 top-full z-30 mt-2 hidden w-72 ds-popover-surface ds-motion-popover p-3">
               <div class="space-y-2.5">
                 <section class="ds-utility-section">
-                  <p class="ds-utility-section-title"><%= t("navigation.utility_create", default: "Create") %></p>
+                  <p class="ds-utility-section-title"><%= t("navigation.utility_create") %></p>
                   <div class="space-y-1">
                     <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target cta-tertiary w-full justify-start", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "desktop_utility_create_post" } %>
                     <%= link_to t("navigation.create_profile"), new_user_path, class: "tap-target cta-tertiary w-full justify-start", data: { ga_event: "navigation_profile_create_click", ga_category: "navigation", ga_label: "desktop_utility_create_profile" } %>
@@ -91,18 +91,19 @@
                 </section>
 
                 <section class="ds-utility-section">
-                  <p class="ds-utility-section-title"><%= t("navigation.utility_browse", default: "Browse") %></p>
+                  <p class="ds-utility-section-title"><%= t("navigation.utility_browse") %></p>
                   <div class="space-y-1">
-                    <%= link_to t("posts.index.title", default: "Desk Gallery"), root_path, class: "tap-target cta-tertiary w-full justify-start", data: { ga_event: "navigation_home_click", ga_category: "navigation", ga_label: "desktop_utility_home" } %>
+                    <%= link_to t("posts.index.title"), root_path, class: "tap-target cta-tertiary w-full justify-start", data: { ga_event: "navigation_home_click", ga_category: "navigation", ga_label: "desktop_utility_home" } %>
+                    <%= link_to t("navigation.users_index"), users_path, class: "tap-target cta-tertiary w-full justify-start", data: { ga_event: "navigation_user_index_click", ga_category: "navigation", ga_label: "desktop_utility_users" } %>
                     <% if owned_users.any? %>
                       <%= link_to t("navigation.my_profile"), user_path(owned_users.first), class: "tap-target cta-tertiary w-full justify-start", data: { ga_event: "navigation_profile_click", ga_category: "navigation", ga_label: "desktop_header_my_profile" } %>
                     <% end %>
-                    <%= link_to t("navigation.onboarding", default: "Getting started"), onboarding_path, class: "tap-target cta-tertiary w-full justify-start", data: { ga_event: "navigation_onboarding_click", ga_category: "navigation", ga_label: "desktop_header_onboarding" } %>
+                    <%= link_to t("navigation.onboarding"), onboarding_path, class: "tap-target cta-tertiary w-full justify-start", data: { ga_event: "navigation_onboarding_click", ga_category: "navigation", ga_label: "desktop_header_onboarding" } %>
                   </div>
                 </section>
 
                 <section class="ds-utility-section">
-                  <p class="ds-utility-section-title"><%= t("navigation.utility_settings", default: "Settings") %></p>
+                  <p class="ds-utility-section-title"><%= t("navigation.utility_settings") %></p>
       <div class="rounded-lg border ds-border-subtle ds-surface-base p-2">
                     <p class="mb-1 ds-text-meta font-semibold"><%= t("language.switch_aria") %></p>
                     <div class="ds-locale-switch w-full" role="group" aria-label="<%= t('language.switch_aria') %>">
@@ -132,10 +133,10 @@
         </div>
       </div>
 
-      <div id="mobile-header-menu" data-mobile-header-menu class="hidden border-t ds-border-subtle ds-surface-base sm:hidden">
+      <div id="mobile-header-menu" data-mobile-header-menu class="hidden border-t ds-border-subtle ds-surface-base ds-motion-popover sm:hidden">
         <div class="mx-auto w-full max-w-6xl space-y-2.5 px-4 py-2.5">
           <section class="ds-utility-section">
-            <p class="ds-utility-section-title"><%= t("navigation.utility_create", default: "Create") %></p>
+            <p class="ds-utility-section-title"><%= t("navigation.utility_create") %></p>
             <div class="grid grid-cols-2 gap-2">
               <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target cta-primary flex w-full items-center justify-center", data: { mobile_header_action: true, ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "mobile_header_create_post_menu" } %>
               <% if owned_users.any? %>
@@ -147,15 +148,16 @@
           </section>
 
           <section class="ds-utility-section">
-            <p class="ds-utility-section-title"><%= t("navigation.utility_browse", default: "Browse") %></p>
+            <p class="ds-utility-section-title"><%= t("navigation.utility_browse") %></p>
             <div class="space-y-1">
-              <%= link_to t("posts.index.title", default: "Desk Gallery"), root_path, class: "tap-target cta-tertiary flex w-full items-center justify-start", data: { mobile_header_action: true, ga_event: "navigation_home_click", ga_category: "navigation", ga_label: "mobile_header_home" } %>
-              <%= link_to t("navigation.onboarding", default: "Getting started"), onboarding_path, class: "tap-target cta-tertiary flex w-full items-center justify-start", data: { mobile_header_action: true, ga_event: "navigation_onboarding_click", ga_category: "navigation", ga_label: "mobile_header_onboarding" } %>
+              <%= link_to t("posts.index.title"), root_path, class: "tap-target cta-tertiary flex w-full items-center justify-start", data: { mobile_header_action: true, ga_event: "navigation_home_click", ga_category: "navigation", ga_label: "mobile_header_home" } %>
+              <%= link_to t("navigation.users_index"), users_path, class: "tap-target cta-tertiary flex w-full items-center justify-start", data: { mobile_header_action: true, ga_event: "navigation_user_index_click", ga_category: "navigation", ga_label: "mobile_header_users" } %>
+              <%= link_to t("navigation.onboarding"), onboarding_path, class: "tap-target cta-tertiary flex w-full items-center justify-start", data: { mobile_header_action: true, ga_event: "navigation_onboarding_click", ga_category: "navigation", ga_label: "mobile_header_onboarding" } %>
             </div>
           </section>
 
           <section class="ds-utility-section">
-            <p class="ds-utility-section-title"><%= t("navigation.utility_settings", default: "Settings") %></p>
+            <p class="ds-utility-section-title"><%= t("navigation.utility_settings") %></p>
             <div class="rounded-lg border ds-border-subtle ds-surface-base p-2">
               <p class="mb-1 ds-text-meta font-semibold"><%= t("language.switch_aria") %></p>
               <div class="ds-locale-switch" role="group" aria-label="<%= t('language.switch_aria') %>">
@@ -186,7 +188,7 @@
     <main class="mx-auto w-full max-w-6xl px-4 pt-8 <%= main_padding_class %> sm:px-6">
       <% breadcrumbs = context_breadcrumbs %>
       <% if breadcrumbs.size > 1 %>
-        <nav aria-label="<%= t('navigation.breadcrumb', default: 'Breadcrumb') %>" class="mb-4">
+        <nav aria-label="<%= t('navigation.breadcrumb') %>" class="mb-4">
           <ol class="flex flex-wrap items-center gap-1.5 text-xs ds-text-weak">
             <% breadcrumbs.each_with_index do |crumb, idx| %>
               <li class="inline-flex items-center gap-1.5">
@@ -204,12 +206,14 @@
         </nav>
       <% end %>
 
-      <p class="mb-4 ds-offline-banner"><%= t("ui.offline_banner", default: "Offline mode: your input is saved locally. It will be sent when connection returns.") %></p>
-      <p class="mb-4 ds-low-bandwidth-banner"><%= t("ui.low_bandwidth_banner", default: "Low-bandwidth mode: heavy media is reduced to keep key information visible.") %></p>
+      <%= render "shared/policy_revision_banner" %>
+
+      <p class="mb-4 ds-offline-banner"><%= t("ui.offline_banner") %></p>
+      <p class="mb-4 ds-low-bandwidth-banner"><%= t("ui.low_bandwidth_banner") %></p>
 
       <% if controller_name == "posts" && action_name.in?(%w[index show new]) %>
         <div class="mb-4 ds-legal-links">
-          <span class="ds-text-weak"><%= t("legal.quick_links", default: "Policies") %>:</span>
+          <span class="ds-text-weak"><%= t("legal.quick_links") %>:</span>
           <%= link_to t("footer.terms"), terms_path %>
           <%= link_to t("footer.privacy_policy"), privacy_policy_path %>
           <%= link_to t("footer.cookie_policy"), cookie_policy_path %>
@@ -248,7 +252,7 @@
     </main>
 
     <% if controller_name == "posts" && action_name == "index" %>
-      <div class="mobile-sticky-bar transition-all duration-200 sm:hidden" data-index-mobile-cta>
+      <div class="mobile-sticky-bar ds-motion-slide sm:hidden" data-index-mobile-cta>
         <div class="mx-auto w-full max-w-6xl px-4 pt-3">
           <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target cta-primary flex w-full justify-center rounded-xl px-4", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "mobile_create_post_bottom_bar" } %>
         </div>
@@ -267,12 +271,12 @@
     </footer>
     <dialog id="ui-confirm-dialog" class="ds-dialog-surface w-full max-w-md rounded-xl border ds-border-subtle p-0 shadow-lg">
       <div class="border-b ds-border-subtle px-4 py-3">
-        <h2 class="text-base font-semibold ds-text-strong" data-confirm-title><%= t("ui.confirm_title", default: "Please confirm") %></h2>
-        <p class="mt-1 text-xs ds-text-weak" data-confirm-message><%= t("ui.confirm_message", default: "Check this action before continuing.") %></p>
+        <h2 class="text-base font-semibold ds-text-strong" data-confirm-title><%= t("ui.confirm_title") %></h2>
+        <p class="mt-1 text-xs ds-text-weak" data-confirm-message><%= t("ui.confirm_message") %></p>
       </div>
       <div class="flex justify-end gap-2 px-4 py-4">
-        <button type="button" class="tap-target cta-tertiary" data-confirm-cancel><%= t("ui.cancel", default: "Cancel") %></button>
-        <button type="button" class="tap-target cta-primary" data-confirm-ok><%= t("ui.confirm", default: "Continue") %></button>
+        <button type="button" class="tap-target cta-tertiary" data-confirm-cancel><%= t("ui.cancel") %></button>
+        <button type="button" class="tap-target cta-primary" data-confirm-ok><%= t("ui.confirm") %></button>
       </div>
     </dialog>
     <p id="ui-live-region" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
@@ -281,8 +285,8 @@
     <script>
       if (!window.__mobileHeaderBindingInstalled) {
         window.__mobileHeaderBindingInstalled = true;
-        const menuOpenedMessage = "<%= j(t('navigation.menu_opened', default: 'Menu opened')) %>";
-        const menuClosedMessage = "<%= j(t('navigation.menu_closed', default: 'Menu closed')) %>";
+        const menuOpenedMessage = "<%= j(t('navigation.menu_opened')) %>";
+        const menuClosedMessage = "<%= j(t('navigation.menu_closed')) %>";
         const localeSwitchSessionKey = "locale_switch_session_context";
         let activeMenuRoot = null;
         const syncStickyInsets = () => {
@@ -327,7 +331,7 @@
           const screen = body.dataset.screen || "";
           if (!screen || window.__lastAnnouncedScreen === screen) return;
           window.__lastAnnouncedScreen = screen;
-          announceToRegion("<%= j(t('ui.page_changed', default: 'Screen updated')) %>");
+          announceToRegion("<%= j(t('ui.page_changed')) %>");
         };
 
         const trackLocaleSwitchContinuation = () => {
@@ -368,6 +372,8 @@
 
         const toastQueue = [];
         let toastRendering = false;
+        let lastToastFingerprint = "";
+        let lastToastAt = 0;
         const toastPolicies = {
           success: { duration: 2200, tone: "ds-toast-success", priority: 1 },
           info: { duration: 2600, tone: "ds-toast-info", priority: 1 },
@@ -399,6 +405,11 @@
           announceToRegion(message);
           const key = String(level || "info");
           const policy = toastPolicies[key] || toastPolicies.info;
+          const fingerprint = `${key}:${message}`;
+          const now = Date.now();
+          if (fingerprint === lastToastFingerprint && (now - lastToastAt) <= 1200) return;
+          lastToastFingerprint = fingerprint;
+          lastToastAt = now;
           toastQueue.push({ message, ...policy });
           renderNextToast();
         };
@@ -415,10 +426,10 @@
           const previousFocus = document.activeElement;
           const level = options.level === "danger" ? "danger" : options.level === "warning" ? "warning" : "primary";
 
-          if (titleNode) titleNode.textContent = options.title || "<%= j(t('ui.confirm_title', default: 'Please confirm')) %>";
-          if (messageNode) messageNode.textContent = options.message || "<%= j(t('ui.confirm_message', default: 'Check this action before continuing.')) %>";
-          if (okButton) okButton.textContent = options.confirmLabel || "<%= j(t('ui.confirm', default: 'Continue')) %>";
-          if (cancelButton) cancelButton.textContent = options.cancelLabel || "<%= j(t('ui.cancel', default: 'Cancel')) %>";
+          if (titleNode) titleNode.textContent = options.title || "<%= j(t('ui.confirm_title')) %>";
+          if (messageNode) messageNode.textContent = options.message || "<%= j(t('ui.confirm_message')) %>";
+          if (okButton) okButton.textContent = options.confirmLabel || "<%= j(t('ui.confirm')) %>";
+          if (cancelButton) cancelButton.textContent = options.cancelLabel || "<%= j(t('ui.cancel')) %>";
 
           if (okButton) {
             okButton.classList.remove("cta-primary", "cta-warning", "cta-danger");
@@ -635,3 +646,4 @@
     <% end %>
   </body>
 </html>
+

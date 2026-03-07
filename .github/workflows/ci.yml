@@ -85,6 +85,9 @@ jobs:
       - name: Load Test Schema
         run: DATABASE_URL=postgres://postgres:postgres@localhost:5432/desktour_studio_test bundle exec bin/rails db:schema:load RAILS_ENV=test
 
+      - name: Check critical i18n fallback usage
+        run: ruby script/check_no_default_fallbacks.rb
+
       - name: Run tests
         env:
           RAILS_ENV: test
@@ -92,6 +95,18 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         run: DATABASE_URL=postgres://postgres:postgres@localhost:5432/desktour_studio_test bundle exec bin/rails test test:system
+
+      - name: Compare UI screenshots to baseline
+        if: always()
+        run: ruby script/ui_screenshot_compare.rb
+
+      - name: Upload screenshots for UI review
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ui-screenshots
+          path: ${{ github.workspace }}/tmp/screenshots
+          if-no-files-found: ignore
 
       - name: Keep screenshots from failed system tests
         uses: actions/upload-artifact@v4

@@ -10,6 +10,7 @@
 - State design: loading, success, error, empty, zero-results, disabled reason.
 - Accessibility: keyboard flow, focus visibility, live region updates, heading structure.
 - Metrics hypothesis: expected KPI impact + guardrail metric.
+- Governance: link PR to a Design Debt ID (`UXR-*`) with owner/date/done-condition.
 
 ## Keyboard Completion Script
 1. Traverse with `Tab` and `Shift+Tab` from page top to bottom.
@@ -26,5 +27,8 @@
 
 ## PR Artifact Requirements
 - Before/after screenshots (desktop + mobile).
+- Run `ruby script/ui_screenshot_compare.rb` when baseline screenshots are configured.
+- Run `ruby script/check_no_default_fallbacks.rb` for critical locale fallback audit.
 - Checklist result notes for CTA/state/accessibility/metrics.
 - Manual verification notes for keyboard and locale switch.
+- KPI card with expected KPI, guardrail KPI, rollback trigger, and observation review date.

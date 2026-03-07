@@ -177,6 +177,8 @@ const bindFormState = (scope = document) => {
 
     const draftKey = `${FORM_DRAFT_PREFIX}${form.dataset.offlineDraftKey || form.getAttribute("action") || form.id || "default"}`;
     const formContext = form.dataset.formAnalyticsContext || "generic_form";
+    const draftTtlDays = Number(form.dataset.offlineDraftTtlDays || "7");
+    const draftTtlMs = Number.isFinite(draftTtlDays) && draftTtlDays > 0 ? draftTtlDays * 24 * 60 * 60 * 1000 : (7 * 24 * 60 * 60 * 1000);
     const serializableFields = () => Array.from(form.querySelectorAll("input[name], textarea[name], select[name]")).filter((field) => {
       const type = (field.getAttribute("type") || "").toLowerCase();
       return ![ "password", "file", "submit", "button", "image" ].includes(type);
@@ -220,12 +222,26 @@ const bindFormState = (scope = document) => {
           payload[field.name] = field.value;
         }
       });
-      writeJson(draftKey, payload);
+      writeJson(draftKey, {
+        saved_at: Date.now(),
+        values: payload
+      });
     };
 
     const restoreDraft = () => {
-      const payload = readJson(draftKey, {});
+      const raw = readJson(draftKey, {});
+      const savedAt = Number(raw?.saved_at || 0);
+      const payload = raw && raw.values && typeof raw.values === "object" ? raw.values : raw;
       if (!payload || Object.keys(payload).length === 0) return;
+      const expired = savedAt > 0 && (Date.now() - savedAt) > draftTtlMs;
+      if (expired) {
+        localStorage.removeItem(draftKey);
+        if (typeof window.dsNotify === "function") {
+          window.dsNotify(form.dataset.draftExpiredMessage || "Saved draft expired and was removed.", "info");
+        }
+        return;
+      }
+
       serializableFields().forEach((field) => {
         if (!(field.name in payload)) return;
         if (field.type === "checkbox") {
@@ -359,6 +375,15 @@ const bindFormState = (scope = document) => {
     });
 
     restoreDraft();
+    const clearDraftButton = form.querySelector("[data-clear-form-draft]");
+    if (clearDraftButton) {
+      clearDraftButton.addEventListener("click", () => {
+        localStorage.removeItem(draftKey);
+        if (typeof window.dsNotify === "function") {
+          window.dsNotify(form.dataset.draftClearedMessage || "Local draft removed.", "success");
+        }
+      });
+    }
     updateFormState(form);
     trackErrorExposure();
   });

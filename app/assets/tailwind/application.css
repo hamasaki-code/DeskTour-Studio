@@ -51,9 +51,11 @@
     --ds-safe-area-bottom: env(safe-area-inset-bottom, 0px);
     --ds-safe-area-top: env(safe-area-inset-top, 0px);
     --ds-header-height: 4.25rem;
-    --ds-mobile-bar-height: 5.25rem;
+    --ds-mobile-bar-height: 4.5rem;
     --ds-motion-duration-fast: 160ms;
     --ds-motion-duration-normal: 220ms;
+    --ds-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+    --ds-motion-easing-emphasis: cubic-bezier(0.2, 0.9, 0.2, 1);
     --ds-skeleton-base: rgb(226 232 240);
     --ds-skeleton-shimmer: rgb(241 245 249);
   }
@@ -101,17 +103,17 @@
   input,
   select,
   textarea {
-    transition: box-shadow var(--ds-motion-duration-fast) ease,
-                border-color var(--ds-motion-duration-fast) ease,
-                background-color var(--ds-motion-duration-fast) ease,
-                color var(--ds-motion-duration-fast) ease;
+    transition: box-shadow var(--ds-motion-duration-fast) var(--ds-motion-easing-standard),
+                border-color var(--ds-motion-duration-fast) var(--ds-motion-easing-standard),
+                background-color var(--ds-motion-duration-fast) var(--ds-motion-easing-standard),
+                color var(--ds-motion-duration-fast) var(--ds-motion-easing-standard);
   }
 
   a,
   button {
-    transition: box-shadow var(--ds-motion-duration-fast) ease,
-                background-color var(--ds-motion-duration-fast) ease,
-                color var(--ds-motion-duration-fast) ease;
+    transition: box-shadow var(--ds-motion-duration-fast) var(--ds-motion-easing-standard),
+                background-color var(--ds-motion-duration-fast) var(--ds-motion-easing-standard),
+                color var(--ds-motion-duration-fast) var(--ds-motion-easing-standard);
   }
 
   a:focus-visible,
@@ -278,6 +280,25 @@
   .tap-target {
     min-height: 44px;
     min-width: 44px;
+  }
+
+  .ds-chip-tap-target {
+    min-height: 36px;
+    padding-inline: 0.625rem;
+  }
+
+  .ds-chip-interactive {
+    transition: transform var(--ds-motion-duration-fast) var(--ds-motion-easing-standard),
+                background-color var(--ds-motion-duration-fast) var(--ds-motion-easing-standard),
+                border-color var(--ds-motion-duration-fast) var(--ds-motion-easing-standard);
+  }
+
+  .ds-chip-interactive:active {
+    transform: scale(0.98);
+  }
+
+  .ds-reading-measure {
+    max-width: 68ch;
   }
 
   .ds-card {
@@ -771,7 +792,18 @@
 
   .ds-progress-fill {
     @apply h-full rounded-full bg-blue-600;
-    transition: width var(--ds-motion-duration-normal) ease;
+    transition: width var(--ds-motion-duration-normal) var(--ds-motion-easing-standard);
+  }
+
+  .ds-motion-slide {
+    transition: transform var(--ds-motion-duration-normal) var(--ds-motion-easing-standard),
+                opacity var(--ds-motion-duration-normal) var(--ds-motion-easing-standard);
+  }
+
+  .ds-motion-popover {
+    transition: opacity var(--ds-motion-duration-fast) var(--ds-motion-easing-emphasis),
+                transform var(--ds-motion-duration-fast) var(--ds-motion-easing-emphasis);
+    transform-origin: top;
   }
 
   .ds-notification-group {
@@ -915,6 +947,10 @@
 
     .ad-slot-surface {
       @apply py-5;
+    }
+
+    .ds-reading-measure {
+      max-width: 36ch;
     }
   }
 

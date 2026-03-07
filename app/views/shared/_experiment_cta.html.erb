@@ -1,6 +1,7 @@
 <% href = local_assigns.fetch(:href) %>
 <% label = local_assigns.fetch(:label) %>
 <% variant = local_assigns.fetch(:variant, "control") %>
+<% experiment_id = local_assigns.fetch(:experiment_id, nil) %>
 <% tone = local_assigns.fetch(:tone, "primary") %>
 <% css = case tone.to_s
 when "secondary" then "cta-secondary"
@@ -9,6 +10,8 @@ else "cta-primary"
 end %>
 <% html_options = (local_assigns[:html_options] || {}).deep_dup %>
 <% html_options[:class] = ["tap-target", css, "ds-cta-experiment", html_options[:class]].compact.join(" ") %>
-<% html_options[:data] = { variant: variant }.merge(html_options[:data] || {}) %>
+<% base_data = { variant: variant } %>
+<% base_data[:experiment_id] = experiment_id if experiment_id.present? %>
+<% html_options[:data] = base_data.merge(html_options[:data] || {}) %>
 
 <%= link_to label, href, html_options %>

@@ -50,14 +50,12 @@
       </div>
     <% else %>
       <div class="rounded-lg border border-dashed ds-border-strong ds-surface-muted px-4 py-8 text-center">
-        <p class="ds-text-support"><%= t("posts.notifications.empty_state") %></p>
-        <div class="mt-3 flex flex-wrap items-center justify-center gap-2">
-          <%= link_to post_path(@post), class: "tap-target cta-secondary", data: { ga_event: "notification_back_to_post_click", ga_category: "notifications", ga_label: "empty_back_to_post" } do %>
-            <%= ui_icon(:arrow_uturn_left, class_name: "h-4 w-4") %>
-            <span><%= t("posts.notifications.back_to_post") %></span>
-          <% end %>
-          <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target cta-primary", data: { ga_event: "notification_empty_create_post_click", ga_category: "notifications", ga_label: "empty_create_post" } %>
-        </div>
+        <%= render "shared/state_action",
+                   level: :info,
+                   title: t("posts.notifications.empty_state"),
+                   body: t("posts.notifications.description"),
+                   primary_action: { label: t("posts.notifications.back_to_post"), href: post_path(@post), data: { ga_event: "notification_back_to_post_click", ga_category: "notifications", ga_label: "empty_back_to_post" } },
+                   secondary_action: { label: t("navigation.create_post"), href: new_post_path, data: { ga_event: "notification_empty_create_post_click", ga_category: "notifications", ga_label: "empty_create_post" } } %>
       </div>
     <% end %>
   </div>

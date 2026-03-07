@@ -67,6 +67,18 @@ class BasicAccessibilityAuditTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "main pages expose core landmarks for screen readers" do
+    pages = [ root_path, users_path, onboarding_path ]
+
+    pages.each do |path|
+      get path
+      assert_response :success
+      doc = Nokogiri::HTML.parse(@response.body)
+      assert doc.at_css("main"), "Expected <main> landmark on #{path}"
+      assert doc.at_css("header"), "Expected <header> landmark on #{path}"
+    end
+  end
+
   test "design tokens keep body contrast above 4.5 ratio" do
     samples = [
       { fg: [ 15, 23, 42 ], bg: [ 248, 250, 252 ], label: "main on page" },

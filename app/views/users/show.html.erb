@@ -1,8 +1,9 @@
-<% content_for :title, @user.name %>
+﻿<% content_for :title, @user.name %>
 <% content_for :description, truncate(@user.bio.to_s, length: 120) %>
 <% create_post_label = t("navigation.create_post") %>
-<% browse_gallery_label = t("users.show.browse_gallery", default: "Browse gallery") %>
-<% draft_hint = t("users.show.draft_visibility_hint", default: "Drafts are visible only to you.") %>
+<% browse_gallery_label = t("users.show.browse_gallery") %>
+<% draft_hint = t("users.show.draft_visibility_hint") %>
+<% top_categories = Array(@profile_stats[:top_categories]) %>
 
 <section class="space-y-content" data-page-content>
   <header class="ds-card p-6">
@@ -16,12 +17,35 @@
         <% end %>
       </div>
       <% if user_owner?(@user) %>
-        <%= link_to edit_user_path(@user), class: "tap-target cta-secondary" do %>
-          <%= ui_icon(:pencil_square, class_name: "h-4 w-4") %>
-          <span><%= t("users.show.edit_profile") %></span>
+        <div class="flex flex-wrap gap-2">
+          <%= link_to users_path, class: "tap-target cta-tertiary cta-compact" do %>
+            <span><%= t("users.show.browse_users") %></span>
+          <% end %>
+          <%= link_to edit_user_path(@user), class: "tap-target cta-secondary" do %>
+            <%= ui_icon(:pencil_square, class_name: "h-4 w-4") %>
+            <span><%= t("users.show.edit_profile") %></span>
+          <% end %>
+        </div>
+      <% else %>
+        <%= link_to users_path, class: "tap-target cta-tertiary cta-compact" do %>
+          <span><%= t("users.show.browse_users") %></span>
         <% end %>
       <% end %>
     </div>
+    <dl class="mt-4 grid gap-2 text-xs sm:grid-cols-3">
+      <div class="rounded-lg border ds-border-subtle ds-surface-muted px-3 py-2">
+        <dt class="ds-text-weak"><%= t("users.show.published_posts") %></dt>
+        <dd class="mt-0.5 text-sm font-semibold ds-text-strong"><%= localized_number(@profile_stats[:published_posts_count]) %></dd>
+      </div>
+      <div class="rounded-lg border ds-border-subtle ds-surface-muted px-3 py-2">
+        <dt class="ds-text-weak"><%= t("users.show.recent_activity") %></dt>
+        <dd class="mt-0.5 text-sm font-semibold ds-text-strong"><%= @profile_stats[:recent_activity_at].present? ? formatted_date(@profile_stats[:recent_activity_at]) : "-" %></dd>
+      </div>
+      <div class="rounded-lg border ds-border-subtle ds-surface-muted px-3 py-2">
+        <dt class="ds-text-weak"><%= t("users.show.top_categories") %></dt>
+        <dd class="mt-0.5 text-sm font-semibold ds-text-strong"><%= top_categories.any? ? top_categories.join(" / ") : "-" %></dd>
+      </div>
+    </dl>
   </header>
 
   <section class="ds-card p-6">
@@ -36,8 +60,8 @@
               <div class="ds-media-frame ds-media-frame-card ds-media-skeleton" data-media-skeleton data-image-shell>
                 <%= optimized_post_image_tag(post, variant: :thumbnail, class: "h-full w-full object-cover ds-thumbnail-crop", data: { fallback_src: asset_path(ApplicationHelper::FALLBACK_POST_IMAGE) }) %>
                 <div class="ds-image-fallback hidden" data-image-fallback>
-                  <p><%= t("images.fallback_text", default: "Image is unavailable") %></p>
-                  <button type="button" data-image-retry><%= t("images.retry", default: "Retry") %></button>
+                  <p><%= t("images.fallback_text") %></p>
+                  <button type="button" data-image-retry><%= t("images.retry") %></button>
                 </div>
               </div>
             <% end %>
@@ -69,14 +93,11 @@
       </div>
     <% else %>
       <div class="mt-4 rounded-lg border border-dashed ds-border-strong ds-surface-muted px-4 py-8 text-center">
-        <p class="ds-text-support"><%= t("users.show.no_published_posts") %></p>
-        <div class="mt-3 flex flex-wrap items-center justify-center gap-2">
-          <% if user_owner?(@user) %>
-            <%= link_to create_post_label, new_post_path, class: "tap-target cta-primary" %>
-          <% else %>
-            <%= link_to browse_gallery_label, root_path, class: "tap-target cta-secondary" %>
-          <% end %>
-        </div>
+        <%= render "shared/state_action",
+                   level: :info,
+                   title: t("users.show.no_published_posts"),
+                   body: t("users.show.browse_gallery"),
+                   primary_action: (user_owner?(@user) ? { label: create_post_label, href: new_post_path } : { label: browse_gallery_label, href: root_path }) %>
       </div>
     <% end %>
   </section>
@@ -105,10 +126,11 @@
         </div>
       <% else %>
         <div class="mt-4 rounded-lg border border-dashed ds-border-strong ds-surface-muted px-4 py-8 text-center">
-          <p class="ds-text-support"><%= t("users.show.no_drafts") %></p>
-          <div class="mt-3">
-            <%= link_to create_post_label, new_post_path, class: "tap-target cta-secondary" %>
-          </div>
+          <%= render "shared/state_action",
+                     level: :info,
+                     title: t("users.show.no_drafts"),
+                     body: draft_hint,
+                     primary_action: { label: create_post_label, href: new_post_path } %>
         </div>
       <% end %>
     </section>
@@ -118,3 +140,4 @@
 <section class="hidden" data-page-skeleton aria-hidden="true">
   <%= render "shared/screen_skeleton", variant: :list %>
 </section>
+

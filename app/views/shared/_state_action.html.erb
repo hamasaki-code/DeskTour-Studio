@@ -1,0 +1,14 @@
+<% level = (local_assigns[:level] || :info).to_sym %>
+<% title = local_assigns[:title] %>
+<% body = local_assigns[:body] %>
+<% primary_action = local_assigns[:primary_action] %>
+<% secondary_action = local_assigns[:secondary_action] %>
+<% actions = [] %>
+<% if primary_action.respond_to?(:[]) && primary_action[:label].present? %>
+  actions << primary_action.merge(class: primary_action[:class].presence || "tap-target cta-primary")
+<% end %>
+<% if secondary_action.respond_to?(:[]) && secondary_action[:label].present? %>
+  actions << secondary_action.merge(class: secondary_action[:class].presence || "tap-target cta-secondary")
+<% end %>
+
+<%= render "shared/feedback_panel", level: level, title: title, body: body, actions: actions %>
