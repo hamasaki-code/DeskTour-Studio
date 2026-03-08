@@ -193,13 +193,13 @@ module ApplicationHelper
   def context_breadcrumbs
     base = [ { label: "DeskTour Studio", href: root_path } ]
     if controller_path.start_with?("admin/")
-      admin_root = { label: t("navigation.admin", default: "Admin"), href: admin_posts_path }
+      admin_root = { label: t("navigation.admin"), href: admin_posts_path }
       base << admin_root
       case controller_path
       when "admin/posts"
-        base << { label: t("navigation.admin_posts", default: "Post Management"), href: admin_posts_path }
+        base << { label: t("navigation.admin_posts"), href: admin_posts_path }
       when "admin/reports"
-        base << { label: t("navigation.admin_reports", default: "Report Queue"), href: admin_reports_path }
+        base << { label: t("navigation.admin_reports"), href: admin_reports_path }
       end
       return base
     end
@@ -213,7 +213,7 @@ module ApplicationHelper
         base << { label: truncate(@post.title, length: 40), href: post_path(@post) }
       elsif action_name == "notifications" && defined?(@post) && @post.present?
         base << { label: truncate(@post.title, length: 40), href: post_path(@post) }
-        base << { label: t("posts.notifications.heading", default: "Notifications"), href: notifications_post_path(@post) }
+        base << { label: t("posts.notifications.heading"), href: notifications_post_path(@post) }
       elsif action_name.in?(%w[new create])
         base << { label: t("posts.new.heading"), href: new_post_path }
       elsif action_name.in?(%w[edit update]) && defined?(@post) && @post.present?
@@ -221,7 +221,9 @@ module ApplicationHelper
         base << { label: t("posts.edit.heading"), href: edit_post_path(@post) }
       end
     when "users"
-      if action_name.in?(%w[new create])
+      if action_name == "index"
+        base << { label: t("users.index.heading"), href: users_path }
+      elsif action_name.in?(%w[new create])
         base << { label: t("users.new.heading"), href: new_user_path }
       elsif defined?(@user) && @user.present?
         base << { label: @user.name, href: user_path(@user) }
@@ -232,7 +234,7 @@ module ApplicationHelper
         "privacy" => { label: t("footer.privacy_policy"), href: privacy_policy_path },
         "terms" => { label: t("footer.terms"), href: terms_path },
         "cookie" => { label: t("footer.cookie_policy"), href: cookie_policy_path },
-        "onboarding" => { label: t("navigation.onboarding", default: "Getting started"), href: onboarding_path }
+        "onboarding" => { label: t("navigation.onboarding"), href: onboarding_path }
       }
       candidate = page_map[action_name]
       base << candidate if candidate.present?
@@ -246,7 +248,7 @@ module ApplicationHelper
     return [] if raw.blank?
 
     sections = []
-    current = { title: t("posts.show.section_overview", default: "Overview"), lines: [] }
+    current = { title: t("posts.show.section_overview"), lines: [] }
 
     raw.each_line do |line|
       heading_match = line.match(/\A##\s+(.+)\z/)
@@ -261,9 +263,10 @@ module ApplicationHelper
     sections << current if current[:lines].any?
 
     sections.each_with_index.map do |section, idx|
+      section_fallback = "#{t('posts.show.section_label')} #{idx + 1}"
       {
         id: "section-#{idx + 1}",
-        title: section[:title].presence || "#{t('posts.show.section_label', default: 'Section')} #{idx + 1}",
+        title: section[:title].presence || section_fallback,
         body: section[:lines].join.strip
       }
     end.reject { |section| section[:body].blank? }
@@ -271,18 +274,18 @@ module ApplicationHelper
 
   def sort_option_label(value)
     labels = {
-      "newest" => t("posts.index.sort_newest", default: "Newest"),
-      "popular" => t("posts.index.sort_popular", default: "Most liked"),
-      "recently_updated" => t("posts.index.sort_recently_updated", default: "Recently updated")
+      "newest" => t("posts.index.sort_newest"),
+      "popular" => t("posts.index.sort_popular"),
+      "recently_updated" => t("posts.index.sort_recently_updated")
     }
     labels.fetch(value.to_s, labels.fetch("newest"))
   end
 
   def sort_option_hint(value)
     hints = {
-      "newest" => t("posts.index.sort_hint_newest", default: "Ordered by publish date. Updates every time a post is published."),
-      "popular" => t("posts.index.sort_hint_popular", default: "Ordered by likes. Updated when likes change."),
-      "recently_updated" => t("posts.index.sort_hint_recently_updated", default: "Ordered by latest edit timestamp. Updated when authors edit.")
+      "newest" => t("posts.index.sort_hint_newest"),
+      "popular" => t("posts.index.sort_hint_popular"),
+      "recently_updated" => t("posts.index.sort_hint_recently_updated")
     }
     hints.fetch(value.to_s, hints.fetch("newest"))
   end
@@ -305,7 +308,7 @@ module ApplicationHelper
     label = style == :date ? formatted_date(value) : formatted_datetime(value)
     aria_label = if include_relative
       distance = distance_of_time_in_words(value, Time.current)
-      relative = t("time.relative_ago", distance: distance, default: "#{distance} ago")
+      relative = I18n.exists?("time.relative_ago") ? t("time.relative_ago", distance: distance) : "#{distance} ago"
       "#{label} (#{relative})"
     else
       label
@@ -345,25 +348,36 @@ module ApplicationHelper
     facts = []
     brand = extract_brand(name, host: host)
     if brand.present?
-      facts << { key: :brand, label: t("posts.show.item_brand", default: "Brand"), value: brand }
+      facts << { key: :brand, label: t("posts.show.item_brand"), value: brand }
     end
 
     category = guess_item_category("#{downcased} #{url_text}".strip)
     if category.present?
-      category_label = t("posts.show.item_categories.#{category}", default: category.to_s.humanize)
-      facts << { key: :category, label: t("posts.show.item_category", default: "Category"), value: category_label }
+      category_key = "posts.show.item_categories.#{category}"
+      category_label = I18n.exists?(category_key) ? t(category_key) : category.to_s.humanize
+      facts << { key: :category, label: t("posts.show.item_category"), value: category_label }
     end
 
     price = extract_price(name: name, url_text: url_text, query_params: query_params)
     if price.present?
-      facts << { key: :price, label: t("posts.show.item_price", default: "Price"), value: price }
+      facts << { key: :price, label: t("posts.show.item_price"), value: price }
     end
 
     if host.present?
-      facts << { key: :source, label: t("posts.show.item_source", default: "Source"), value: host }
+      facts << { key: :source, label: t("posts.show.item_source"), value: host }
     end
 
     facts.uniq { |fact| [ fact[:key], fact[:value] ] }.first(3)
+  end
+
+  def related_item_label(key)
+    label_key = "posts.show.item_#{key}"
+    I18n.exists?(label_key) ? t(label_key) : key.to_s.humanize
+  end
+
+  def status_level_label(level)
+    label_key = "status_levels.#{level}"
+    I18n.exists?(label_key) ? t(label_key) : level.to_s.humanize
   end
   def status_badge(level:, label:, icon:)
     tones = {
@@ -401,9 +415,39 @@ module ApplicationHelper
     status_badge(level: visual[:level], icon: visual[:icon], label: t(visual[:label_key]))
   end
 
+  def policy_inline_copy(context)
+    context_key = "legal.contexts.#{context}"
+    summary_key = "#{context_key}.summary"
+    details_key = "#{context_key}.details"
+    heading_key = "#{context_key}.heading"
+    {
+      heading: I18n.exists?(heading_key) ? t(heading_key) : t("legal.inline.heading"),
+      summary: I18n.exists?(summary_key) ? Array(t(summary_key)) : [],
+      details: I18n.exists?(details_key) ? Array(t(details_key)) : []
+    }
+  end
+
+  def policy_revision_notice
+    revision_id = ENV.fetch("POLICY_REVISION_ID", "").to_s.strip
+    return if revision_id.blank?
+
+    highlight_lines = ENV.fetch("POLICY_REVISION_HIGHLIGHTS", "").to_s.split("|").map(&:strip).reject(&:blank?)
+    {
+      id: revision_id,
+      effective_on: ENV.fetch("POLICY_REVISION_EFFECTIVE_ON", "").to_s.strip.presence,
+      summary: ENV.fetch("POLICY_REVISION_SUMMARY", "").to_s.strip.presence || t("legal.revision.default_summary"),
+      highlights: highlight_lines,
+      link: ENV.fetch("POLICY_REVISION_LINK", "").to_s.strip.presence || terms_path
+    }
+  end
+
   def ui_icon(name, class_name: "h-4 w-4")
     path_attrs = { "stroke-linecap": "round", "stroke-linejoin": "round" }
     paths = case name.to_sym
+    when :check
+      [
+        tag.path(path_attrs.merge(d: "m4.5 12.75 4.5 4.5 10.5-10.5"))
+      ]
     when :check_circle
       [
         tag.path(path_attrs.merge(d: "m9 12.75 2.25 2.25 3.75-3.75")),
@@ -486,6 +530,14 @@ module ApplicationHelper
     when :chevron_down
       [
         tag.path(path_attrs.merge(d: "m19.5 8.25-7.5 7.5-7.5-7.5"))
+      ]
+    when :bookmark
+      [
+        tag.path(path_attrs.merge(d: "M17.25 21 12 17.25 6.75 21V5.25A2.25 2.25 0 0 1 9 3h6a2.25 2.25 0 0 1 2.25 2.25V21Z"))
+      ]
+    when :bookmark_solid
+      [
+        tag.path(d: "M6.75 3A2.25 2.25 0 0 0 4.5 5.25V21l7.5-4.5 7.5 4.5V5.25A2.25 2.25 0 0 0 17.25 3h-10.5Z", fill: "currentColor", stroke: "none")
       ]
     else
       [ tag.path(path_attrs.merge(d: "M12 6v6m0 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z")) ]

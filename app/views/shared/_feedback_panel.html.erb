@@ -21,7 +21,7 @@ end %>
 
 <div class="rounded-lg border px-4 py-3 text-sm <%= tone %>" role="<%= level == :error ? 'alert' : 'status' %>" aria-live="<%= level == :error ? 'assertive' : 'polite' %>">
   <div class="flex items-start gap-2">
-    <%= status_badge(level: level, icon: icon, label: title.presence || t("status_levels.#{level}", default: level.to_s.humanize)) %>
+    <%= status_badge(level: level, icon: icon, label: title.presence || status_level_label(level)) %>
     <div class="space-y-2">
       <% if body.present? %>
         <p class="pt-0.5"><%= body %></p>
@@ -31,9 +31,9 @@ end %>
           <% actions.each do |action| %>
             <% next unless action.respond_to?(:[]) && action[:label].present? %>
             <% if action[:href].present? %>
-              <%= link_to action[:label], action[:href], class: "tap-target cta-tertiary cta-compact", data: action[:data] || {} %>
+              <%= link_to action[:label], action[:href], class: action[:class].presence || "tap-target cta-tertiary cta-compact", data: action[:data] || {} %>
             <% elsif action[:button].present? %>
-              <button type="button" class="tap-target cta-tertiary cta-compact" <%= tag.attributes(action[:button]) %>><%= action[:label] %></button>
+              <button type="button" class="<%= action[:class].presence || 'tap-target cta-tertiary cta-compact' %>" <%= tag.attributes(action[:button]) %>><%= action[:label] %></button>
             <% end %>
           <% end %>
         </div>

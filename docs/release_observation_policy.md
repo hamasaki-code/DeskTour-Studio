@@ -14,8 +14,14 @@
 - Guardrail KPI.
 - Rollback trigger threshold.
 - Owner and review date.
+- Experiment mode (`A/B` for primary CTA changes) and audience split.
 
 ## Required Outputs After Observation
 - Outcome state (Success / Hold / Rollback).
 - Evidence summary with dates.
 - Next action (scale / tune / revert).
+
+## A/B Defaults For Conversion-Critical UI
+- Use a 14-day window as baseline for CTA hierarchy, search, and report-flow changes.
+- Keep split at `50/50` unless traffic is insufficient; document deviations.
+- Promote a variant only when expected KPI improves and guardrail KPI is neutral or better.

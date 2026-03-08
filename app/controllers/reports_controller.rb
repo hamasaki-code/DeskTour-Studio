@@ -13,6 +13,7 @@ class ReportsController < ApplicationController
     report.reporter_token = current_reporter_token
 
     if report.save
+      receipt = report_reference(report)
       queue_analytics_event(
         "report_form_completed",
         post_id: @post.id,
@@ -20,9 +21,9 @@ class ReportsController < ApplicationController
         reported_as_profile: report.reporter_user_id.present?
       )
       if @post.reload.hidden?
-        redirect_to root_path, notice: t("reports.flash.thanks_hidden")
+        redirect_to root_path, notice: t("reports.flash.thanks_hidden_with_receipt", receipt: receipt, eta: t("reports.eta"))
       else
-        redirect_to post_path(@post), notice: t("reports.flash.thanks")
+        redirect_to post_path(@post), notice: t("reports.flash.thanks_with_receipt", receipt: receipt, eta: t("reports.eta"))
       end
     else
       queue_analytics_event(
@@ -30,7 +31,9 @@ class ReportsController < ApplicationController
         post_id: @post.id,
         error_count: report.errors.size
       )
-      redirect_to post_path(@post), alert: t("reports.flash.submit_failed", default: "Report could not be submitted. Please retry.")
+      next_action = t("reports.next_action_hint")
+      detail = report.errors.full_messages.first.presence || t("reports.flash.submit_failed")
+      redirect_to post_path(@post), alert: "#{detail} #{next_action}"
     end
   end
 
@@ -49,5 +52,9 @@ class ReportsController < ApplicationController
     return if selected_id.zero?
 
     owned_users.find_by(id: selected_id)
+  end
+
+  def report_reference(report)
+    "RPT-#{report.created_at.strftime('%Y%m%d')}-#{report.id.to_s.rjust(6, '0')}"
   end
 end

@@ -1,59 +1,59 @@
-<% content_for :title, t("onboarding.title", default: "Getting Started") %>
-<% content_for :description, t("onboarding.description", default: "A short guide to browse, post, and revisit favorites on DeskTour Studio.") %>
+<% content_for :title, t("onboarding.title") %>
+<% content_for :description, t("onboarding.description") %>
 
 <section class="mx-auto w-full max-w-3xl space-y-content" data-page-content>
   <header class="rounded-2xl bg-gradient-to-br from-slate-900 via-sky-900 to-cyan-700 px-6 py-7 text-white">
-    <h1 class="ds-heading-xl"><%= t("onboarding.heading", default: "Start in 3 steps") %></h1>
-    <p class="mt-2 ds-text-support ds-text-inverse-support max-w-2xl"><%= t("onboarding.lead", default: "If this is your first visit, follow this flow: browse setups, publish your own, and save favorites.") %></p>
+    <h1 class="ds-heading-xl"><%= t("onboarding.heading") %></h1>
+    <p class="mt-2 ds-text-support ds-text-inverse-support max-w-2xl"><%= t("onboarding.lead") %></p>
   </header>
 
-  <section class="ds-card p-4 sm:p-5" aria-label="<%= t('onboarding.progress_title', default: 'Progress') %>">
+  <section class="ds-card p-4 sm:p-5" aria-label="<%= t('onboarding.progress_title') %>">
     <div class="flex items-center justify-between gap-2">
-      <p class="ds-text-support font-semibold"><%= t("onboarding.progress_title", default: "Progress") %></p>
-      <p class="ds-text-meta"><%= t("onboarding.progress_value", default: "3 / 3 steps") %></p>
+      <p class="ds-text-support font-semibold"><%= t("onboarding.progress_title") %></p>
+      <p class="ds-text-meta"><%= t("onboarding.progress_value") %></p>
     </div>
-    <div class="mt-2 ds-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="3" aria-valuenow="3" aria-label="<%= t('onboarding.progress_title', default: 'Progress') %>">
+    <div class="mt-2 ds-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="3" aria-valuenow="3" aria-label="<%= t('onboarding.progress_title') %>">
       <div class="ds-progress-fill" style="width: 100%"></div>
     </div>
     <ol class="mt-3 grid grid-cols-3 gap-2 text-center">
-      <li class="rounded-full border ds-tone-info px-2 py-1 text-xs font-semibold"><%= t("onboarding.step", default: "Step") %> 1</li>
-      <li class="rounded-full border ds-tone-info px-2 py-1 text-xs font-semibold"><%= t("onboarding.step", default: "Step") %> 2</li>
-      <li class="rounded-full border ds-tone-info px-2 py-1 text-xs font-semibold"><%= t("onboarding.step", default: "Step") %> 3</li>
+      <li class="rounded-full border ds-tone-info px-2 py-1 text-xs font-semibold"><%= t("onboarding.step") %> 1</li>
+      <li class="rounded-full border ds-tone-info px-2 py-1 text-xs font-semibold"><%= t("onboarding.step") %> 2</li>
+      <li class="rounded-full border ds-tone-info px-2 py-1 text-xs font-semibold"><%= t("onboarding.step") %> 3</li>
     </ol>
   </section>
 
   <ol class="space-y-3">
     <li class="ds-card p-4 sm:p-5">
-      <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("onboarding.step", default: "Step") %> 1</p>
-      <h2 class="mt-1 ds-heading-md ds-text-strong"><%= t("onboarding.browse_title", default: "Browse the gallery") %></h2>
-      <p class="mt-1 ds-text-support"><%= t("onboarding.browse_body", default: "Use keyword search and filters to find layouts, devices, and ideas.") %></p>
+      <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("onboarding.step") %> 1</p>
+      <h2 class="mt-1 ds-heading-md ds-text-strong"><%= t("onboarding.browse_title") %></h2>
+      <p class="mt-1 ds-text-support"><%= t("onboarding.browse_body") %></p>
       <div class="mt-3">
-        <%= render "shared/experiment_cta", href: root_path, label: t("onboarding.browse_cta", default: "Open gallery"), tone: "secondary", variant: "control" %>
+        <%= render "shared/experiment_cta", href: root_path, label: t("onboarding.browse_cta"), tone: "secondary", variant: "control" %>
       </div>
     </li>
 
     <li class="ds-card p-4 sm:p-5">
-      <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("onboarding.step", default: "Step") %> 2</p>
-      <h2 class="mt-1 ds-heading-md ds-text-strong"><%= t("onboarding.post_title", default: "Publish your setup") %></h2>
-      <p class="mt-1 ds-text-support"><%= t("onboarding.post_body", default: "Create a profile, add your photo, and share key details so others can learn from your workflow.") %></p>
+      <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("onboarding.step") %> 2</p>
+      <h2 class="mt-1 ds-heading-md ds-text-strong"><%= t("onboarding.post_title") %></h2>
+      <p class="mt-1 ds-text-support"><%= t("onboarding.post_body") %></p>
       <div class="mt-3 flex flex-wrap gap-2">
-        <%= render "shared/experiment_cta", href: new_user_path, label: t("onboarding.create_profile", default: "Create profile"), tone: "secondary", variant: "compact" %>
-        <%= render "shared/experiment_cta", href: new_post_path, label: t("onboarding.create_post", default: "Create post"), tone: "primary", variant: "high-contrast" %>
+        <%= render "shared/experiment_cta", href: new_user_path, label: t("onboarding.create_profile"), tone: "secondary", variant: "compact" %>
+        <%= render "shared/experiment_cta", href: new_post_path, label: t("onboarding.create_post"), tone: "primary", variant: "high-contrast" %>
       </div>
     </li>
 
     <li class="ds-card p-4 sm:p-5">
-      <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("onboarding.step", default: "Step") %> 3</p>
-      <h2 class="mt-1 ds-heading-md ds-text-strong"><%= t("onboarding.revisit_title", default: "Save and revisit") %></h2>
-      <p class="mt-1 ds-text-support"><%= t("onboarding.revisit_body", default: "Save posts you like, then come back later from your recently viewed list.") %></p>
+      <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("onboarding.step") %> 3</p>
+      <h2 class="mt-1 ds-heading-md ds-text-strong"><%= t("onboarding.revisit_title") %></h2>
+      <p class="mt-1 ds-text-support"><%= t("onboarding.revisit_body") %></p>
       <div class="mt-3">
-        <a href="<%= root_path %>#index-search" class="tap-target cta-secondary"><%= t("onboarding.find_post", default: "Browse posts" ) %></a>
+        <a href="<%= root_path %>#index-search" class="tap-target cta-secondary"><%= t("onboarding.find_post") %></a>
       </div>
     </li>
   </ol>
 
   <div class="ds-legal-links border-t ds-border-subtle pt-3">
-    <span class="ds-text-weak"><%= t("legal.quick_links", default: "Policies") %>:</span>
+    <span class="ds-text-weak"><%= t("legal.quick_links") %>:</span>
     <%= link_to t("footer.terms"), terms_path %>
     <%= link_to t("footer.privacy_policy"), privacy_policy_path %>
     <%= link_to t("footer.cookie_policy"), cookie_policy_path %>

@@ -1,9 +1,9 @@
-<% if adsense_enabled? && slot.present? %>
-  <div class="my-12 sm:my-14" role="complementary" aria-label="<%= t('ads.sponsored_placement', default: 'Sponsored placement') %>">
+﻿<% if adsense_enabled? && slot.present? %>
+  <div class="my-12 sm:my-14" role="complementary" aria-label="<%= t('ads.sponsored_placement') %>">
     <div class="ad-slot-surface">
       <div class="mb-3 flex items-center justify-between gap-3 border-b ds-border-subtle pb-2">
-        <p class="ad-slot-label">Sponsored</p>
-        <p class="text-[11px] font-medium ds-text-weak"><%= t("ads.not_content", default: "Advertisement") %></p>
+        <p class="ad-slot-label"><%= t("ads.sponsored_label") %></p>
+        <p class="text-[11px] font-medium ds-text-weak"><%= t("ads.not_content") %></p>
       </div>
       <div class="flex justify-center rounded-lg border ds-border-subtle ds-surface-base px-2 py-3">
         <ins class="adsbygoogle"
@@ -19,3 +19,4 @@
     </div>
   </div>
 <% end %>
+

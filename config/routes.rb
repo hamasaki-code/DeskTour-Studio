@@ -5,7 +5,7 @@ Rails.application.routes.draw do
 
   root "posts#index"
 
-  resources :users, only: %i[new create show edit update]
+  resources :users, only: %i[index new create show edit update]
 
   resources :posts, only: %i[index show new create edit update destroy] do
     post :like, on: :member

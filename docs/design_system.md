@@ -161,6 +161,9 @@
   - Keep each rollout independently reversible.
   - Compare against a 7-day baseline before the next batch.
 
+## Copy Governance
+- Use `docs/copy_tone_guidelines.md` as the source of truth for JP/EN tone and wording consistency.
+
 ## UX Polish Mapping
 - Search hierarchy and filter contrast:
   - KPI: search submit-to-result CTR

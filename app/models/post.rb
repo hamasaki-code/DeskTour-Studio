@@ -70,7 +70,7 @@ class Post < ApplicationRecord
     return unless published?
     return if desk_image.attached?
 
-    errors.add(:desk_image, I18n.t("posts.errors.image_required", default: "Cause: No image selected. Action: Select one image. Retry: Submit again."))
+    errors.add(:desk_image, I18n.t("posts.errors.image_required"))
   end
 
   def desk_image_constraints
@@ -81,13 +81,13 @@ class Post < ApplicationRecord
 
     allowed_types = %w[image/jpeg image/png image/webp image/gif]
     unless allowed_types.include?(blob.content_type.to_s)
-      errors.add(:desk_image, I18n.t("posts.errors.image_format", default: "Cause: Unsupported format. Action: Use JPEG, PNG, WEBP, or GIF. Retry: Choose another file and submit again."))
+      errors.add(:desk_image, I18n.t("posts.errors.image_format"))
     end
 
     max_bytes = 8.megabytes
     return unless blob.byte_size.to_i > max_bytes
 
     max_human_size = ActiveSupport::NumberHelper.number_to_human_size(max_bytes)
-    errors.add(:desk_image, I18n.t("posts.errors.image_size", size: max_human_size, default: "Cause: File size exceeds %{size}. Action: Compress the image. Retry: Upload again."))
+    errors.add(:desk_image, I18n.t("posts.errors.image_size", size: max_human_size))
   end
 end

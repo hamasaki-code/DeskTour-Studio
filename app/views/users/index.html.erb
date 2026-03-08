@@ -1,0 +1,48 @@
+<% content_for :title, t("users.index.title") %>
+<% content_for :description, t("users.index.description") %>
+
+<section class="space-y-content" data-page-content>
+  <header class="ds-card p-5 sm:p-6">
+    <h1 class="ds-heading-xl ds-text-strong"><%= t("users.index.heading") %></h1>
+    <p class="mt-2 ds-text-support"><%= t("users.index.lead") %></p>
+  </header>
+
+  <% if @users.any? %>
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <% @users.each do |user| %>
+        <% top_categories = Array(@top_categories_by_user[user.id]) %>
+        <article class="ds-card p-4">
+          <h2 class="ds-heading-sm ds-text-strong">
+            <%= link_to user.name, user_path(user), class: "ds-link-underlined ds-hover-link" %>
+          </h2>
+          <p class="mt-2 ds-line-clamp-2 ds-text-support"><%= user.bio.presence || t("users.show.no_profile_description") %></p>
+          <dl class="mt-3 grid gap-2 text-xs sm:grid-cols-2">
+            <div class="rounded-md border ds-border-subtle ds-surface-muted px-2 py-1.5">
+              <dt class="ds-text-weak"><%= t("users.show.published_posts") %></dt>
+              <dd class="font-semibold ds-text-strong"><%= localized_number(user.read_attribute(:published_posts_count).to_i) %></dd>
+            </div>
+            <div class="rounded-md border ds-border-subtle ds-surface-muted px-2 py-1.5">
+              <dt class="ds-text-weak"><%= t("users.show.recent_activity") %></dt>
+              <dd class="font-semibold ds-text-strong"><%= user.read_attribute(:last_activity_at).present? ? formatted_date(user.read_attribute(:last_activity_at)) : "-" %></dd>
+            </div>
+          </dl>
+          <% if top_categories.any? %>
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              <% top_categories.each do |category| %>
+                <span class="ds-badge-info"><%= category %></span>
+              <% end %>
+            </div>
+          <% end %>
+        </article>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="ds-card p-6 text-center">
+      <%= render "shared/state_action",
+                 level: :info,
+                 title: t("users.index.empty"),
+                 body: t("users.index.lead"),
+                 primary_action: { label: t("navigation.create_profile"), href: new_user_path } %>
+    </div>
+  <% end %>
+</section>

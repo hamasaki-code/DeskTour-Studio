@@ -1,0 +1,22 @@
+<% context = local_assigns.fetch(:context) %>
+<% copy = policy_inline_copy(context) %>
+<% summary_lines = copy[:summary].map(&:to_s).map(&:strip).reject(&:blank?).first(3) %>
+<% detail_lines = copy[:details].map(&:to_s).map(&:strip).reject(&:blank?) %>
+<% return if summary_lines.empty? && detail_lines.empty? %>
+
+<section class="rounded-lg border ds-border-subtle ds-surface-muted p-3" aria-label="<%= copy[:heading] %>">
+  <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= copy[:heading] %></p>
+  <% summary_lines.each do |line| %>
+    <p class="mt-1 text-sm ds-text-support"><%= line %></p>
+  <% end %>
+  <% if detail_lines.any? %>
+    <details class="mt-2">
+      <summary class="cursor-pointer text-xs font-semibold ds-link-underlined ds-hover-link"><%= t("legal.inline.show_details") %></summary>
+      <ul class="mt-2 list-disc space-y-1 pl-5 text-xs ds-text-support">
+        <% detail_lines.each do |line| %>
+          <li><%= line %></li>
+        <% end %>
+      </ul>
+    </details>
+  <% end %>
+</section>

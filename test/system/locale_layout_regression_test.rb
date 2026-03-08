@@ -6,7 +6,8 @@ class LocaleLayoutRegressionTest < ApplicationSystemTestCase
     assert_text "DeskTour Studio"
     assert no_horizontal_overflow?, "Expected no horizontal overflow in ja locale"
 
-    click_link "English"
+    find("[data-desktop-utility-toggle]", visible: :visible).click
+    find("[data-locale-switch-link][data-target-locale='en']", visible: :visible).click
     assert_text I18n.t("navigation.create_post", locale: :en)
     assert no_horizontal_overflow?, "Expected no horizontal overflow in en locale"
   end
