@@ -282,40 +282,7 @@ end %>
                    level: :warning,
                    title: no_results_title,
                    body: "#{no_results_hint} #{zero_reason_text}",
-                   primary_action: { label: clear_all_label, href: posts_path, data: { ga_event: "post_search_reset_click", ga_category: "post_search", ga_label: "index_empty_clear_all" } },
-                   secondary_action: { label: t("posts.index.zero_reset"), href: posts_path, data: { ga_event: "post_search_reset_click", ga_category: "post_search", ga_label: "index_empty_reset_conditions" } } %>
-        <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
-          <% if params[:q].present? %>
-            <%= link_to remove_keyword_label, posts_path(persisted_query.except(:q)), class: "tap-target cta-tertiary cta-compact", data: { ga_event: "post_search_filter_clear_click", ga_category: "post_search", ga_label: "index_empty_remove_keyword" } %>
-          <% end %>
-          <% if first_active_filter_key.present? %>
-            <%= link_to remove_one_filter_label, posts_path(persisted_query.except(first_active_filter_key)), class: "tap-target cta-tertiary cta-compact", data: { ga_event: "post_search_filter_clear_click", ga_category: "post_search", ga_label: "index_empty_remove_one_filter" } %>
-          <% end %>
-        </div>
-
-        <% if @popular_tags.any? %>
-          <div class="mx-auto mt-5 max-w-2xl">
-            <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("posts.index.popular_tags") %></p>
-            <div class="mt-2 flex flex-wrap items-center justify-center gap-2">
-              <% @popular_tags.each do |tag| %>
-                <%= link_to "##{tag}", posts_path(tag: tag, details: "1", sort: sort_option), class: "tap-target ds-badge-inactive", data: { ga_event: "post_search_recovery_click", ga_category: "post_search", ga_label: "zero_state_popular_tag" } %>
-              <% end %>
-            </div>
-          </div>
-        <% end %>
-
-        <% if @recent_posts.any? %>
-          <div class="mx-auto mt-5 max-w-2xl text-left">
-            <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("posts.index.recent_posts") %></p>
-            <ul class="mt-2 space-y-1.5">
-              <% @recent_posts.each do |recent_post| %>
-                <li>
-                  <%= link_to recent_post.title, post_path(recent_post, from: return_path), class: "text-sm ds-link-primary ds-link-underlined", data: { ga_event: "post_search_recovery_click", ga_category: "post_search", ga_label: "zero_state_recent_post" } %>
-                </li>
-              <% end %>
-            </ul>
-          </div>
-        <% end %>
+                   primary_action: { label: clear_all_label, href: posts_path, data: { ga_event: "post_search_reset_click", ga_category: "post_search", ga_label: "index_empty_clear_all" } } %>
       <% else %>
         <%= render "shared/state_action",
                    level: :info,
