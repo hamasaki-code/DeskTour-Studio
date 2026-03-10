@@ -12,42 +12,42 @@
     --ds-space-section: 2.25rem;
     --ds-space-block: 1.5rem;
     --ds-space-component: 0.875rem;
-    --ds-focus-ring-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
-    --ds-focus-border-color: rgb(37, 99, 235);
-    --ds-text-main: rgb(15 23 42);
-    --ds-text-body: rgb(51 65 85);
-    --ds-text-support: rgb(30 41 59);
-    --ds-text-meta: rgb(51 65 85);
-    --ds-text-muted: rgb(51 65 85);
-    --ds-text-weak: rgb(71 85 105);
-    --ds-text-link: rgb(29 78 216);
-    --ds-text-link-hover: rgb(30 64 175);
-    --ds-text-danger: rgb(185 28 28);
-    --ds-text-warning: rgb(146 64 14);
-    --ds-text-success: rgb(4 120 87);
-    --ds-text-inverse-support: rgb(219 234 254);
-    --ds-text-inverse-meta: rgb(191 219 254 / 0.9);
-    --ds-surface-page: rgb(248 250 252);
-    --ds-surface-base: rgb(255 255 255);
-    --ds-surface-muted: rgb(241 245 249);
-    --ds-surface-overlay: rgb(255 255 255 / 0.94);
-    --ds-border-subtle: rgb(226 232 240);
-    --ds-border-strong: rgb(203 213 225);
-    --ds-border-muted: rgb(241 245 249);
-    --ds-overlay-weak: rgb(2 6 23 / 0.2);
-    --ds-overlay-strong: rgb(2 6 23 / 0.35);
-    --ds-tone-info-bg: rgb(239 246 255);
-    --ds-tone-info-border: rgb(191 219 254);
-    --ds-tone-info-text: rgb(29 78 216);
-    --ds-tone-success-bg: rgb(236 253 245);
-    --ds-tone-success-border: rgb(110 231 183);
-    --ds-tone-success-text: rgb(4 120 87);
-    --ds-tone-warning-bg: rgb(255 251 235);
-    --ds-tone-warning-border: rgb(252 211 77);
-    --ds-tone-warning-text: rgb(146 64 14);
-    --ds-tone-danger-bg: rgb(254 242 242);
-    --ds-tone-danger-border: rgb(252 165 165);
-    --ds-tone-danger-text: rgb(185 28 28);
+    --ds-focus-ring-shadow: 0 0 0 3px rgba(199, 231, 255, 0.35);
+    --ds-focus-border-color: rgb(199 231 255);
+    --ds-text-main: rgb(243 244 246);
+    --ds-text-body: rgb(226 232 240);
+    --ds-text-support: rgb(203 213 225);
+    --ds-text-meta: rgb(148 163 184);
+    --ds-text-muted: rgb(148 163 184);
+    --ds-text-weak: rgb(148 163 184);
+    --ds-text-link: rgb(186 230 253);
+    --ds-text-link-hover: rgb(224 242 254);
+    --ds-text-danger: rgb(253 164 175);
+    --ds-text-warning: rgb(252 211 77);
+    --ds-text-success: rgb(110 231 183);
+    --ds-text-inverse-support: rgb(226 232 240);
+    --ds-text-inverse-meta: rgb(148 163 184);
+    --ds-surface-page: rgb(15 17 21);
+    --ds-surface-base: rgb(22 26 34);
+    --ds-surface-muted: rgb(27 34 48);
+    --ds-surface-overlay: rgb(22 26 34 / 0.94);
+    --ds-border-subtle: rgb(148 163 184 / 0.16);
+    --ds-border-strong: rgb(148 163 184 / 0.26);
+    --ds-border-muted: rgb(148 163 184 / 0.1);
+    --ds-overlay-weak: rgb(2 6 23 / 0.32);
+    --ds-overlay-strong: rgb(2 6 23 / 0.44);
+    --ds-tone-info-bg: rgb(125 211 252 / 0.12);
+    --ds-tone-info-border: rgb(125 211 252 / 0.35);
+    --ds-tone-info-text: rgb(186 230 253);
+    --ds-tone-success-bg: rgb(52 211 153 / 0.12);
+    --ds-tone-success-border: rgb(52 211 153 / 0.35);
+    --ds-tone-success-text: rgb(167 243 208);
+    --ds-tone-warning-bg: rgb(251 191 36 / 0.12);
+    --ds-tone-warning-border: rgb(251 191 36 / 0.33);
+    --ds-tone-warning-text: rgb(253 230 138);
+    --ds-tone-danger-bg: rgb(251 113 133 / 0.12);
+    --ds-tone-danger-border: rgb(251 113 133 / 0.33);
+    --ds-tone-danger-text: rgb(254 205 211);
     --ds-safe-area-bottom: env(safe-area-inset-bottom, 0px);
     --ds-safe-area-top: env(safe-area-inset-top, 0px);
     --ds-header-height: 4.25rem;
@@ -56,8 +56,20 @@
     --ds-motion-duration-normal: 220ms;
     --ds-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
     --ds-motion-easing-emphasis: cubic-bezier(0.2, 0.9, 0.2, 1);
-    --ds-skeleton-base: rgb(226 232 240);
-    --ds-skeleton-shimmer: rgb(241 245 249);
+    --ds-skeleton-base: rgb(51 65 85);
+    --ds-skeleton-shimmer: rgb(71 85 105 / 0.62);
+    --ds-color-page: #0f1115;
+    --ds-color-page-grad-end: #121722;
+    --ds-color-surface-1: #161a22;
+    --ds-color-surface-2: #1b2230;
+    --ds-color-border-soft: rgba(148, 163, 184, 0.16);
+    --ds-color-border-strong: rgba(148, 163, 184, 0.26);
+    --ds-color-accent-primary: #c7e7ff;
+    --ds-color-accent-primary-hover: #d6ecff;
+    --ds-color-accent-primary-ink: #0f172a;
+    --ds-color-accent-secondary-ink: #e2e8f0;
+    --ds-color-accent-violet: #a78bfa;
+    --ds-color-accent-warm: #f5d0a9;
   }
 
   html[lang="ja"] {
@@ -307,6 +319,50 @@
     background-color: var(--ds-surface-base);
   }
 
+  .ds-page-atmosphere {
+    background:
+      radial-gradient(circle at top left, rgb(125 211 252 / 0.1), transparent 32%),
+      radial-gradient(circle at top right, rgb(167 139 250 / 0.08), transparent 26%),
+      radial-gradient(circle at bottom, rgb(245 208 169 / 0.05), transparent 24%),
+      linear-gradient(180deg, var(--ds-color-page) 0%, var(--ds-color-page-grad-end) 100%);
+  }
+
+  .ds-header-shell {
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(17 21 29 / 0.8);
+    backdrop-filter: blur(24px);
+  }
+
+  .ds-panel-elevated {
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(22 26 34 / 0.95);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(20px);
+  }
+
+  .ds-surface-panel {
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(22 26 34 / 0.8);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(8px);
+  }
+
+  .ds-surface-panel-strong {
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(22 26 34 / 0.85);
+    box-shadow: 0 16px 42px rgba(0, 0, 0, 0.35);
+  }
+
+  .ds-surface-subtle {
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(27 34 48 / 0.7);
+  }
+
+  .ds-surface-empty {
+    border-color: rgb(255 255 255 / 0.2);
+    background-color: rgb(22 26 34 / 0.75);
+  }
+
   .ds-surface-base {
     background-color: var(--ds-surface-base);
   }
@@ -398,9 +454,9 @@
 
   .ds-popover-surface {
     @apply rounded-xl border p-2 shadow-2xl;
-    border-color: var(--ds-border-strong);
-    background-color: var(--ds-surface-base);
-    box-shadow: 0 12px 32px rgb(15 23 42 / 0.18);
+    border-color: var(--ds-border-subtle);
+    background-color: var(--ds-surface-overlay);
+    box-shadow: 0 18px 44px rgb(0 0 0 / 0.4);
   }
 
   .ds-form-control {
@@ -419,8 +475,9 @@
     color: var(--ds-tone-danger-text);
   }
 
-  dialog.ds-dialog-surface::backdrop {
-    background-color: rgb(15 23 42 / 0.3);
+  dialog.ds-dialog-surface::backdrop,
+  #ui-confirm-dialog::backdrop {
+    background-color: rgb(2 6 23 / 0.62);
   }
 
   .ds-card-interactive {
@@ -429,33 +486,50 @@
   }
 
   .ds-card-interactive:hover {
-    border-color: rgb(148 163 184);
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.09);
+    border-color: var(--ds-border-strong);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.34);
   }
 
   .ds-card-interactive:focus-visible {
-    box-shadow: var(--ds-focus-ring-shadow), 0 8px 24px rgba(15, 23, 42, 0.09);
-    border-color: rgb(59 130 246);
+    box-shadow: var(--ds-focus-ring-shadow), 0 12px 34px rgba(0, 0, 0, 0.34);
+    border-color: rgb(199 231 255 / 0.65);
   }
 
   .ds-badge {
-    @apply inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-600;
+    @apply inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium;
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(255 255 255 / 0.04);
+    color: rgb(203 213 225);
   }
 
   .ds-badge-active {
-    @apply inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-blue-300 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-800;
+    @apply inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2.5 py-1 text-xs font-semibold;
+    border-color: rgb(199 231 255 / 0.42);
+    background-color: rgb(199 231 255 / 0.14);
+    color: rgb(224 242 254);
   }
 
   .ds-badge-inactive {
-    @apply inline-flex items-center whitespace-nowrap rounded-full border border-slate-300 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100;
+    @apply inline-flex items-center whitespace-nowrap rounded-full border px-2.5 py-1 text-xs font-medium;
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(255 255 255 / 0.03);
+    color: rgb(203 213 225);
+  }
+
+  .ds-badge-inactive:hover {
+    background-color: rgb(255 255 255 / 0.08);
+    color: rgb(241 245 249);
   }
 
   .ds-badge-info {
-    @apply inline-flex items-center whitespace-nowrap rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-600;
+    @apply inline-flex items-center whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium;
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(255 255 255 / 0.03);
+    color: rgb(148 163 184);
   }
 
   .ds-shadow-soft {
-    box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
   }
 
   .ds-icon-button {
@@ -473,7 +547,9 @@
   }
 
   .ds-media-frame {
-    @apply relative overflow-hidden rounded-xl border border-slate-200 bg-slate-100;
+    @apply relative overflow-hidden rounded-xl border;
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(30 41 59 / 0.35);
   }
 
   .ds-media-frame img {
@@ -513,23 +589,47 @@
   }
 
   .ds-filter-shell {
-    @apply bg-slate-50/70;
+    background-color: rgb(255 255 255 / 0.03);
   }
 
   .ds-filter-shell-collapsed {
-    @apply border-slate-200/80 bg-slate-50/35;
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(255 255 255 / 0.02);
   }
 
   .cta-primary {
-    @apply inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700;
+    @apply inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold;
+    background-color: var(--ds-color-accent-primary);
+    color: var(--ds-color-accent-primary-ink);
+    border: 1px solid rgb(214 236 255 / 0.42);
+    box-shadow: 0 10px 24px rgb(168 209 242 / 0.2);
+  }
+
+  .cta-primary:hover {
+    background-color: var(--ds-color-accent-primary-hover);
+    box-shadow: 0 12px 28px rgb(168 209 242 / 0.24);
   }
 
   .cta-secondary {
-    @apply inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100;
+    @apply inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-semibold;
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(255 255 255 / 0.04);
+    color: var(--ds-color-accent-secondary-ink);
+  }
+
+  .cta-secondary:hover {
+    background-color: rgb(255 255 255 / 0.1);
+    color: rgb(248 250 252);
   }
 
   .cta-tertiary {
-    @apply inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900;
+    @apply inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-sm font-medium;
+    color: rgb(203 213 225);
+  }
+
+  .cta-tertiary:hover {
+    background-color: rgb(255 255 255 / 0.08);
+    color: rgb(241 245 249);
   }
 
   .cta-compact {
@@ -537,11 +637,25 @@
   }
 
   .cta-warning {
-    @apply inline-flex items-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-800 hover:bg-amber-100;
+    @apply inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-semibold;
+    border-color: rgb(251 191 36 / 0.35);
+    background-color: rgb(251 191 36 / 0.14);
+    color: rgb(254 240 138);
+  }
+
+  .cta-warning:hover {
+    background-color: rgb(251 191 36 / 0.22);
   }
 
   .cta-danger {
-    @apply inline-flex items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100;
+    @apply inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-semibold;
+    border-color: rgb(251 113 133 / 0.38);
+    background-color: rgb(251 113 133 / 0.14);
+    color: rgb(254 205 211);
+  }
+
+  .cta-danger:hover {
+    background-color: rgb(251 113 133 / 0.22);
   }
 
   .cta-primary:focus-visible,
@@ -578,21 +692,26 @@
     @apply fixed inset-x-0 bottom-0 z-50 border-t backdrop-blur;
     border-color: var(--ds-border-subtle);
     background-color: var(--ds-surface-overlay);
-    box-shadow: 0 -10px 24px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 -14px 28px rgba(0, 0, 0, 0.34);
     padding-bottom: max(var(--ds-safe-area-bottom), 0px);
     min-height: var(--ds-mobile-bar-height);
   }
 
   .ad-slot-surface {
-    @apply rounded-xl border border-slate-300 bg-slate-50/75 px-4 py-5 sm:px-5 sm:py-5;
+    @apply rounded-xl border px-4 py-5 sm:px-5 sm:py-5;
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(255 255 255 / 0.03);
   }
 
   .ad-slot-label {
-    @apply mb-2 inline-flex items-center rounded-full border border-slate-300 bg-white px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-600;
+    @apply mb-2 inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide;
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(255 255 255 / 0.04);
+    color: rgb(148 163 184);
   }
 
   .ad-slot-divider {
-    @apply mb-2 text-center text-xs font-semibold text-slate-600;
+    @apply mb-2 text-center text-xs font-semibold text-slate-400;
   }
 
   .lang-ja .ds-reading-column {
@@ -631,9 +750,10 @@
   }
 
   .ds-locale-pill-active {
-    @apply rounded-full text-white shadow-sm;
-    background-color: var(--ds-text-main);
-    box-shadow: 0 0 0 1px var(--ds-text-main);
+    @apply rounded-full shadow-sm;
+    background-color: var(--ds-color-accent-primary);
+    color: var(--ds-color-accent-primary-ink);
+    box-shadow: 0 0 0 1px rgb(214 236 255 / 0.5);
   }
 
   .ds-locale-pill-inactive {
@@ -641,7 +761,7 @@
   }
 
   .ds-locale-pill-inactive:hover {
-    @apply bg-slate-100;
+    background-color: rgb(255 255 255 / 0.08);
   }
 
   .ds-toast-region {
@@ -656,39 +776,47 @@
   }
 
   .ds-toast-success {
-    @apply border-emerald-300 bg-emerald-50 text-emerald-800;
+    border-color: rgb(52 211 153 / 0.35);
+    background-color: rgb(52 211 153 / 0.14);
+    color: rgb(167 243 208);
   }
 
   .ds-toast-warning {
-    @apply border-amber-300 bg-amber-50 text-amber-900;
+    border-color: rgb(251 191 36 / 0.35);
+    background-color: rgb(251 191 36 / 0.14);
+    color: rgb(253 230 138);
   }
 
   .ds-toast-error {
-    @apply border-red-300 bg-red-50 text-red-800;
+    border-color: rgb(251 113 133 / 0.38);
+    background-color: rgb(251 113 133 / 0.14);
+    color: rgb(254 205 211);
   }
 
   .ds-toast-info {
-    @apply border-slate-300 bg-white text-slate-800;
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(22 26 34 / 0.92);
+    color: rgb(226 232 240);
   }
 
   .ds-char-counter {
-    @apply mt-1 text-xs text-slate-500;
+    @apply mt-1 text-xs text-slate-400;
   }
 
   .ds-char-counter-warning {
-    @apply font-semibold text-amber-700;
+    @apply font-semibold text-amber-300;
   }
 
   .ds-char-counter-error {
-    @apply font-semibold text-red-700;
+    @apply font-semibold text-rose-300;
   }
 
   .ds-disabled-reason {
-    @apply min-h-5 text-xs font-medium text-slate-600;
+    @apply min-h-5 text-xs font-medium text-slate-400;
   }
 
   .ds-field-guide {
-    @apply mt-1 text-xs leading-5 text-slate-500;
+    @apply mt-1 text-xs leading-5 text-slate-400;
   }
 
   .ds-loading-shell {
@@ -701,7 +829,8 @@
 
   .ds-skeleton-line,
   .ds-skeleton-block {
-    @apply rounded bg-slate-200;
+    @apply rounded;
+    background-color: var(--ds-skeleton-base);
     position: relative;
     overflow: hidden;
   }
@@ -726,11 +855,11 @@
   }
 
   .ds-loading-inline {
-    @apply inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600;
+    @apply inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400;
   }
 
   .ds-loading-dot {
-    @apply h-1.5 w-1.5 rounded-full bg-slate-400;
+    @apply h-1.5 w-1.5 rounded-full bg-slate-500;
     animation: ds-loading-pulse 950ms infinite ease-in-out;
   }
 
@@ -755,19 +884,25 @@
   }
 
   .ds-legal-links {
-    @apply flex flex-wrap items-center gap-3 text-xs text-slate-600;
+    @apply flex flex-wrap items-center gap-3 text-xs text-slate-400;
   }
 
   .ds-legal-links a {
-    @apply underline decoration-slate-300 underline-offset-2 hover:text-slate-900;
+    @apply underline decoration-slate-600 underline-offset-2 hover:text-slate-100;
   }
 
   .ds-trust-note {
-    @apply rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-900;
+    @apply rounded-lg border px-3 py-2 text-xs;
+    border-color: rgb(199 231 255 / 0.35);
+    background-color: rgb(199 231 255 / 0.12);
+    color: rgb(224 242 254);
   }
 
   .ds-offline-banner {
-    @apply hidden rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-900;
+    @apply hidden rounded-lg border px-3 py-2 text-xs font-semibold;
+    border-color: rgb(255 255 255 / 0.08);
+    background-color: rgb(255 255 255 / 0.02);
+    color: rgb(148 163 184);
   }
 
   html.ds-offline .ds-offline-banner {
@@ -791,7 +926,8 @@
   }
 
   .ds-progress-fill {
-    @apply h-full rounded-full bg-blue-600;
+    @apply h-full rounded-full;
+    background-color: var(--ds-color-accent-primary);
     transition: width var(--ds-motion-duration-normal) var(--ds-motion-easing-standard);
   }
 
@@ -823,9 +959,9 @@
   }
 
   .ds-notification-item-unread {
-    @apply border-blue-200;
-    background-color: rgb(239 246 255);
-    box-shadow: inset 3px 0 0 rgb(59 130 246);
+    border-color: rgb(199 231 255 / 0.34);
+    background-color: rgb(199 231 255 / 0.1);
+    box-shadow: inset 3px 0 0 rgb(199 231 255 / 0.74);
   }
 
   .ds-notification-item-read {
@@ -862,7 +998,10 @@
   }
 
   .ds-low-bandwidth-banner {
-    @apply hidden rounded-lg border border-sky-300 bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-900;
+    @apply hidden rounded-lg border px-3 py-2 text-xs font-semibold;
+    border-color: rgb(255 255 255 / 0.08);
+    background-color: rgb(255 255 255 / 0.02);
+    color: rgb(148 163 184);
   }
 
   html.ds-low-bandwidth .ds-low-bandwidth-banner {
@@ -879,19 +1018,23 @@
   }
 
   .ds-cta-experiment[data-variant="control"] {
-    --ds-cta-accent: rgb(37 99 235);
+    --ds-cta-accent: var(--ds-color-accent-primary);
+    --ds-cta-ink: var(--ds-color-accent-primary-ink);
   }
 
   .ds-cta-experiment[data-variant="high-contrast"] {
-    --ds-cta-accent: rgb(2 132 199);
+    --ds-cta-accent: rgb(224 242 254);
+    --ds-cta-ink: rgb(15 23 42);
   }
 
   .ds-cta-experiment[data-variant="compact"] {
-    --ds-cta-accent: rgb(29 78 216);
+    --ds-cta-accent: rgb(186 230 253);
+    --ds-cta-ink: rgb(15 23 42);
   }
 
   .ds-cta-experiment.cta-primary {
     background-color: var(--ds-cta-accent);
+    color: var(--ds-cta-ink, var(--ds-color-accent-primary-ink));
   }
 
   [data-page-skeleton] {

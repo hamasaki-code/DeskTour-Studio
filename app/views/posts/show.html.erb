@@ -7,185 +7,192 @@
 <% long_read = @post.description.to_s.length > 700 || reading_sections_data.size > 1 %>
 
 <article class="space-y-content" data-page-content>
-  <header class="space-y-4">
-    <div class="flex flex-wrap items-center justify-between gap-2">
-      <div class="flex flex-wrap items-center gap-2 ds-text-meta ds-text-weak">
-        <%= timestamp_tag(@post.created_at, style: :date, include_relative: true) %>
-        <% if @post.category.present? %><span class="ds-badge-inactive"><%= @post.category %></span><% end %>
-        <% if @post.theme.present? %><span class="ds-badge-info"><%= @post.theme %></span><% end %>
-      </div>
-      <% if @back_to_index_path.present? %>
-        <%= link_to @back_to_index_path, class: "tap-target cta-secondary cta-compact", data: { mobile_risk_target: "back", ga_event: "post_detail_back_click", ga_category: "post_detail", ga_label: "back_to_results" } do %>
-          <%= ui_icon(:arrow_uturn_left, class_name: "h-4 w-4") %>
-          <span><%= t("posts.show.back_to_results") %></span>
-        <% end %>
-      <% end %>
-    </div>
-
-    <h1 class="ds-heading-xl ds-break-words ds-text-strong"><%= @post.title %></h1>
-    <p class="ds-text-support">
-      <%= t("posts.show.posted_by") %>
-      <%= link_to @post.user.name, user_path(@post.user), class: "font-medium ds-link-primary" %>
-    </p>
-    <div class="flex flex-wrap items-center gap-2 ds-text-meta ds-text-weak">
-      <span class="ds-badge-info"><%= t("posts.show.profile_completion", percent: @author_trust[:completion]) %></span>
-      <span class="ds-badge-info"><%= t("posts.show.author_posts", count: localized_number(@author_trust[:published_posts_count])) %></span>
-      <span class="ds-badge-info"><%= t("posts.show.author_likes", count: localized_number(@author_trust[:total_likes])) %></span>
-      <% if @author_trust[:last_updated_at].present? %>
-        <span class="ds-badge-info"><%= t("posts.show.author_last_updated", date: formatted_date(@author_trust[:last_updated_at])) %></span>
-      <% end %>
-      <button type="button" class="tap-target cta-tertiary cta-compact" data-favorite-toggle data-post-id="<%= @post.id %>" data-post-title="<%= @post.title %>" data-post-url="<%= share_url %>" aria-pressed="false">
-        <span data-favorite-label><%= t("posts.show.save_post") %></span>
-      </button>
-    </div>
-    <p class="ds-text-body ds-reading-measure ds-break-words"><%= truncate(@post.description.to_s.squish, length: 170) %></p>
-  </header>
-
-  <div class="ds-media-frame ds-media-frame-main ds-media-skeleton" data-media-skeleton data-image-shell>
-    <%= optimized_post_image_tag(@post, variant: :main, class: "h-full w-full object-cover", data: { fallback_src: asset_path(ApplicationHelper::FALLBACK_POST_IMAGE) }) %>
-    <div class="ds-image-fallback hidden" data-image-fallback>
-      <p><%= t("images.fallback_text") %></p>
-      <button type="button" data-image-retry><%= t("images.retry") %></button>
-    </div>
-  </div>
-
-  <section class="ds-section-card space-y-4">
-    <h2 class="ds-heading-lg ds-text-strong"><%= t("posts.show.overview_heading") %></h2>
-    <% if long_read %>
-      <div class="rounded-lg border ds-border-subtle ds-surface-muted p-3">
-        <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("posts.show.reading_toc") %></p>
-        <ol class="mt-2 list-decimal space-y-1 pl-5 text-sm ds-text-weak">
-          <% reading_sections_data.each do |section| %>
-            <li><a href="##{section[:id]}" class="ds-link-underlined ds-hover-link"><%= section[:title] %></a></li>
-          <% end %>
-        </ol>
-      </div>
-      <details class="rounded-lg border ds-border-subtle ds-surface-base p-3">
-        <summary class="cursor-pointer text-sm font-semibold ds-text-strong"><%= t("posts.show.expand_full_text") %></summary>
-        <div class="mt-3 space-y-4">
-          <% reading_sections_data.each do |section| %>
-            <section id="<%= section[:id] %>" class="space-y-2">
-              <h3 class="ds-heading-sm ds-text-strong"><%= section[:title] %></h3>
-              <p class="ds-text-body ds-reading-measure whitespace-pre-wrap ds-break-words"><%= section[:body] %></p>
-            </section>
-          <% end %>
-        </div>
-      </details>
-    <% else %>
-      <p class="ds-text-body ds-reading-measure whitespace-pre-wrap ds-break-words"><%= @post.description %></p>
-    <% end %>
-    <% if @post.tags.any? %>
-      <div class="flex flex-wrap gap-2 border-t ds-border-muted pt-4">
-        <% @post.tags.each do |tag| %>
-          <%= link_to "##{tag}", posts_path(tag: tag), class: "tap-target ds-badge-info ds-hover-muted" %>
-        <% end %>
-      </div>
-    <% end %>
-  </section>
-
-  <section class="ds-section-card hidden space-y-3 sm:block">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <h2 class="ds-heading-sm ds-text-strong"><%= t("posts.show.actions.title") %></h2>
-      <p class="ds-text-meta"><%= t("posts.show.actions.lead") %></p>
-    </div>
-
-    <div class="grid gap-3 md:grid-cols-3">
-      <section class="ds-action-layer">
-        <p class="ds-action-layer-title"><%= t("posts.show.layer_read") %></p>
-        <div class="flex flex-wrap items-center gap-2">
-          <% if @back_to_index_path.present? %>
-            <%= link_to @back_to_index_path, class: "tap-target cta-tertiary cta-compact" do %>
-              <%= ui_icon(:arrow_uturn_left, class_name: "h-4 w-4") %>
-              <span><%= t("posts.show.back_to_results") %></span>
-            <% end %>
-          <% end %>
-          <a href="#post-overview" class="tap-target cta-tertiary cta-compact"><%= t("posts.show.jump_to_content") %></a>
-        </div>
-      </section>
-
-      <section class="ds-action-layer relative" data-desktop-post-actions-root>
-        <p class="ds-action-layer-title"><%= t("posts.show.layer_react") %></p>
-        <div class="flex flex-wrap items-center gap-2">
-          <%= button_to like_post_path(@post), method: :post, class: "tap-target cta-primary ds-cta-experiment", data: { variant: "control", ga_event: "post_detail_primary_cta_click", ga_category: "post_detail", ga_label: "like" } do %>
-            <span class="inline-flex items-center gap-1.5"><%= ui_icon(:heart, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.like") %></span></span>
-          <% end %>
-
-          <button type="button" data-desktop-post-actions-toggle aria-haspopup="menu" aria-expanded="false" aria-controls="desktop-post-actions-menu" class="tap-target cta-secondary" data-ga-event="post_detail_secondary_cta_click" data-ga-category="post_detail" data-ga-label="share_menu_toggle">
-            <span class="inline-flex items-center gap-1.5"><%= ui_icon(:ellipsis_horizontal, class_name: "h-4 w-4") %><span><%= t("posts.show.more_actions") %></span></span>
-          </button>
-        </div>
-
-        <div id="desktop-post-actions-menu" role="menu" data-desktop-post-actions-menu class="absolute left-0 top-full z-20 mt-2 hidden min-w-64 ds-popover-surface ds-motion-popover">
-          <div class="grid gap-1">
-            <button type="button" role="menuitem" data-desktop-actions-menu-item data-copy-url="<%= share_url %>" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ds-text-weak ds-hover-muted"><%= ui_icon(:share, class_name: "h-4 w-4") %><span data-copy-label><%= t("posts.show.actions.copy_url") %></span></button>
-            <button type="button" role="menuitem" data-desktop-actions-menu-item data-native-share-url="<%= share_url %>" data-native-share-text="<%= share_text %>" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ds-text-weak ds-hover-muted"><%= ui_icon(:share, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.share") %></span></button>
-            <%= link_to x_share_url(@post), target: "_blank", rel: "noopener", role: "menuitem", class: "tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ds-text-weak ds-hover-muted", data: { desktop_actions_menu_item: true } do %><%= ui_icon(:share, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.share_x") %></span><% end %>
-            <%= link_to threads_share_url(@post), target: "_blank", rel: "noopener", role: "menuitem", class: "tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ds-text-weak ds-hover-muted", data: { desktop_actions_menu_item: true } do %><%= ui_icon(:share, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.share_threads") %></span><% end %>
-          </div>
-        </div>
-      </section>
-
-      <section class="ds-action-layer">
-        <p class="ds-action-layer-title"><%= t("posts.show.layer_report") %></p>
-        <% unless post_owner?(@post) %>
-          <button type="button" data-open-report-modal="report-modal-<%= @post.id %>" data-mobile-risk-target="report" class="tap-target cta-warning cta-compact justify-start" data-ga-event="post_detail_report_cta_click" data-ga-category="post_detail" data-ga-label="desktop_report_layer">
-            <%= ui_icon(:flag, class_name: "h-4 w-4") %>
-            <span><%= t("posts.show.actions.report") %></span>
-          </button>
-          <p class="mt-2 ds-text-muted"><%= t("reports.trust_note") %></p>
-        <% else %>
-          <p class="ds-text-muted"><%= t("posts.show.report_owner_hint") %></p>
-        <% end %>
-      </section>
-    </div>
-  </section>
-  <section id="post-overview" class="ds-section-card space-y-4 ds-anchor-offset">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <h2 class="ds-heading-lg ds-text-strong"><%= t("posts.show.related_items") %></h2>
-      <span class="inline-flex items-center gap-1 ds-text-meta ds-text-weak"><%= ui_icon(:heart, class_name: "h-4 w-4") %><span><%= t("metrics.likes") %>: <%= localized_number(@post.likes_count) %></span></span>
-    </div>
-
-    <% if @post.items.any? %>
-      <div class="space-y-3">
-        <% @post.items.each do |item| %>
-          <% fact_map = related_item_facts(item).index_by { |fact| fact[:key] } %>
-          <article class="rounded-lg border ds-border-subtle ds-surface-muted p-3 sm:p-4">
-            <div class="grid gap-3 sm:grid-cols-[88px_minmax(0,1fr)] sm:items-start">
-              <div class="aspect-square rounded-md border ds-border-subtle ds-surface-base ds-text-muted">
-                <div class="flex h-full items-center justify-center"><div class="text-center"><%= ui_icon(:information_circle, class_name: "mx-auto h-5 w-5") %><p class="mt-1 text-[10px] font-medium"><%= t("posts.show.item_preview") %></p></div></div>
-              </div>
-              <div class="space-y-3">
-                <h3 class="ds-heading-sm ds-break-words ds-text-strong"><%= item.name %></h3>
-                <dl class="grid gap-2 sm:grid-cols-2">
-                  <% [ :brand, :category, :price, :source ].each do |key| %>
-                    <div class="rounded-md border ds-border-subtle ds-surface-base px-2.5 py-2">
-                      <dt class="ds-text-meta font-semibold ds-text-weak"><%= related_item_label(key) %></dt>
-                      <dd class="mt-0.5 text-sm ds-text-support ds-break-words"><%= fact_map[key]&.dig(:value).presence || (key == :price ? t("posts.show.item_price_unknown") : "-") %></dd>
-                    </div>
-                  <% end %>
-                </dl>
-                <div class="flex flex-wrap items-center gap-2">
-                  <% if item.affiliate_url.present? %>
-                    <%= link_to t("posts.show.open_product_page"), item.affiliate_url, class: "tap-target cta-secondary cta-compact", target: "_blank", rel: "nofollow sponsored noopener" %>
-                  <% else %>
-                    <span class="ds-text-muted"><%= t("posts.show.item_link_missing") %></span>
-                  <% end %>
-                </div>
-              </div>
+    <header class="space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex flex-wrap items-center gap-2 ds-text-meta ds-text-weak">
+                <%= timestamp_tag(@post.created_at, style: :date, include_relative: true) %>
+                <% if @post.category.present? %><span class="ds-badge-inactive"><%= @post.category %></span><% end %>
+                <% if @post.theme.present? %><span class="ds-badge-info"><%= @post.theme %></span><% end %>
             </div>
-          </article>
+            <% if @back_to_index_path.present? %>
+            <%= link_to @back_to_index_path, class: "tap-target cta-secondary cta-compact", data: { mobile_risk_target: "back", ga_event: "post_detail_back_click", ga_category: "post_detail", ga_label: "back_to_results" } do %>
+            <%= ui_icon(:arrow_uturn_left, class_name: "h-4 w-4") %>
+            <span><%= t("posts.show.back_to_results") %></span>
+            <% end %>
+            <% end %>
+        </div>
+
+        <div class="space-y-3">
+            <h1 class="ds-heading-xl ds-break-words ds-text-strong"><%= @post.title %></h1>
+            <p class="ds-text-support">
+                <%= t("posts.show.posted_by") %>
+                <%= link_to @post.user.name, user_path(@post.user), class: "font-medium ds-link-primary" %>
+            </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+            <span class="ds-badge-info"><%= t("posts.show.profile_completion", percent: @author_trust[:completion]) %></span>
+            <span class="ds-badge-info"><%= t("posts.show.author_posts", count: localized_number(@author_trust[:published_posts_count])) %></span>
+            <% if @author_trust[:last_updated_at].present? %>
+            <span class="ds-badge-info"><%= t("posts.show.author_last_updated", date: formatted_date(@author_trust[:last_updated_at])) %></span>
+            <% end %>
+            <button type="button" class="tap-target cta-tertiary cta-compact" data-favorite-toggle data-post-id="<%= @post.id %>" data-post-title="<%= @post.title %>" data-post-url="<%= share_url %>" aria-pressed="false">
+                <span data-favorite-label><%= t("posts.show.save_post") %></span>
+            </button>
+        </div>
+    </header>
+
+    <div class="ds-media-frame ds-media-frame-main ds-media-skeleton" data-media-skeleton data-image-shell>
+        <%= optimized_post_image_tag(@post, variant: :main, class: "h-full w-full object-cover", data: { fallback_src: asset_path(ApplicationHelper::FALLBACK_POST_IMAGE) }) %>
+        <div class="ds-image-fallback hidden" data-image-fallback>
+            <p><%= t("images.fallback_text") %></p>
+            <button type="button" data-image-retry><%= t("images.retry") %></button>
+        </div>
+    </div>
+
+    <section id="post-overview" class="ds-section-card space-y-4 ds-anchor-offset">
+        <h2 class="ds-heading-lg ds-text-strong"><%= t("posts.show.overview_heading") %></h2>
+        <% if long_read %>
+        <div class="rounded-lg border ds-border-subtle ds-surface-muted p-3">
+            <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("posts.show.reading_toc") %></p>
+            <ol class="mt-2 list-decimal space-y-1 pl-5 text-sm ds-text-weak">
+                <% reading_sections_data.each do |section| %>
+                <li><a href="##{section[:id]}" class="ds-link-underlined ds-hover-link"><%= section[:title] %></a></li>
+                <% end %>
+            </ol>
+        </div>
+        <details class="rounded-lg border ds-border-subtle ds-surface-base p-3">
+            <summary class="cursor-pointer text-sm font-semibold ds-text-strong"><%= t("posts.show.expand_full_text") %></summary>
+            <div class="mt-3 space-y-4">
+                <% reading_sections_data.each do |section| %>
+                <section id="<%= section[:id] %>" class="space-y-2">
+                    <h3 class="ds-heading-sm ds-text-strong"><%= section[:title] %></h3>
+                    <p class="ds-text-body ds-reading-measure whitespace-pre-wrap ds-break-words"><%= section[:body] %></p>
+                </section>
+                <% end %>
+            </div>
+        </details>
+        <% else %>
+        <p class="ds-text-body ds-reading-measure whitespace-pre-wrap ds-break-words"><%= @post.description %></p>
         <% end %>
-      </div>
-    <% else %>
-      <p class="ds-text-support"><%= t("posts.show.no_related_items") %></p>
-      <% if post_owner?(@post) %>
+        <% if @post.tags.any? %>
+        <div class="flex flex-wrap gap-2 border-t ds-border-muted pt-4">
+            <% @post.tags.each do |tag| %>
+            <%= link_to "##{tag}", posts_path(tag: tag), class: "tap-target ds-badge-info ds-hover-muted" %>
+            <% end %>
+        </div>
+        <% end %>
+    </section>
+
+    <section class="ds-section-card hidden space-y-3 sm:block">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <h2 class="ds-heading-sm ds-text-strong"><%= t("posts.show.actions.title") %></h2>
+            <p class="ds-text-meta"><%= t("posts.show.actions.lead") %></p>
+        </div>
+
+        <div class="grid gap-3 md:grid-cols-3">
+            <section class="rounded-lg border ds-border-subtle ds-surface-base p-3">
+                <p class="ds-action-layer-title"><%= t("posts.show.layer_read") %></p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <% if @back_to_index_path.present? %>
+                    <%= link_to @back_to_index_path, class: "tap-target cta-tertiary cta-compact" do %>
+                    <%= ui_icon(:arrow_uturn_left, class_name: "h-4 w-4") %>
+                    <span><%= t("posts.show.back_to_results") %></span>
+                    <% end %>
+                    <% end %>
+                    <a href="#post-overview" class="tap-target cta-tertiary cta-compact"><%= t("posts.show.jump_to_content") %></a>
+                </div>
+            </section>
+
+            <section class="rounded-lg border ds-border-subtle ds-surface-base p-3 relative" data-desktop-post-actions-root>
+                <p class="ds-action-layer-title"><%= t("posts.show.layer_react") %></p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <%= button_to like_post_path(@post), method: :post, class: "tap-target cta-primary ds-cta-experiment", data: { variant: "control", ga_event: "post_detail_primary_cta_click", ga_category: "post_detail", ga_label: "like" } do %>
+                    <span class="inline-flex items-center gap-1.5"><%= ui_icon(:heart, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.like") %></span></span>
+                    <% end %>
+
+                    <button type="button" data-desktop-post-actions-toggle aria-haspopup="menu" aria-expanded="false" aria-controls="desktop-post-actions-menu" class="tap-target cta-secondary" data-ga-event="post_detail_secondary_cta_click" data-ga-category="post_detail" data-ga-label="share_menu_toggle">
+                        <span class="inline-flex items-center gap-1.5"><%= ui_icon(:ellipsis_horizontal, class_name: "h-4 w-4") %><span><%= t("posts.show.more_actions") %></span></span>
+                    </button>
+                </div>
+
+                <div id="desktop-post-actions-menu" role="menu" data-desktop-post-actions-menu class="absolute left-0 top-full z-20 mt-2 hidden min-w-64 ds-popover-surface ds-motion-popover">
+                    <div class="grid gap-1">
+                        <button type="button" role="menuitem" data-desktop-actions-menu-item data-copy-url="<%= share_url %>" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ds-text-weak ds-hover-muted"><%= ui_icon(:share, class_name: "h-4 w-4") %><span data-copy-label><%= t("posts.show.actions.copy_url") %></span></button>
+                        <button type="button" role="menuitem" data-desktop-actions-menu-item data-native-share-url="<%= share_url %>" data-native-share-text="<%= share_text %>" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ds-text-weak ds-hover-muted"><%= ui_icon(:share, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.share") %></span></button>
+                        <%= link_to x_share_url(@post), target: "_blank", rel: "noopener", role: "menuitem", class: "tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ds-text-weak ds-hover-muted", data: { desktop_actions_menu_item: true } do %><%= ui_icon(:share, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.share_x") %></span><% end %>
+                        <%= link_to threads_share_url(@post), target: "_blank", rel: "noopener", role: "menuitem", class: "tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ds-text-weak ds-hover-muted", data: { desktop_actions_menu_item: true } do %><%= ui_icon(:share, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.share_threads") %></span><% end %>
+                    </div>
+                </div>
+            </section>
+
+            <section class="rounded-lg border ds-border-subtle ds-surface-base p-3">
+                <p class="ds-action-layer-title"><%= t("posts.show.layer_report") %></p>
+                <% unless post_owner?(@post) %>
+                <button type="button" data-open-report-modal="report-modal-<%= @post.id %>" data-mobile-risk-target="report" class="tap-target cta-warning cta-compact justify-start" data-ga-event="post_detail_report_cta_click" data-ga-category="post_detail" data-ga-label="desktop_report_layer">
+                    <%= ui_icon(:flag, class_name: "h-4 w-4") %>
+                    <span><%= t("posts.show.actions.report") %></span>
+                </button>
+                <p class="mt-2 ds-text-muted"><%= t("reports.trust_note") %></p>
+                <% else %>
+                <p class="ds-text-muted"><%= t("posts.show.report_owner_hint") %></p>
+                <% end %>
+            </section>
+        </div>
+    </section>
+
+    <section class="ds-section-card space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <h2 class="ds-heading-lg ds-text-strong"><%= t("posts.show.related_items") %></h2>
+            <span class="inline-flex items-center gap-1 ds-text-meta ds-text-weak"><%= ui_icon(:heart, class_name: "h-4 w-4") %><span><%= t("metrics.likes") %>: <%= localized_number(@post.likes_count) %></span></span>
+        </div>
+
+        <% if @post.items.any? %>
+        <div class="space-y-3">
+            <% @post.items.each do |item| %>
+            <% fact_map = related_item_facts(item).index_by { |fact| fact[:key] } %>
+            <article class="rounded-lg border ds-border-subtle ds-surface-muted p-3 sm:p-4">
+                <div class="grid gap-3 sm:grid-cols-[88px_minmax(0,1fr)] sm:items-start">
+                    <div class="aspect-square rounded-md border ds-border-subtle ds-surface-base ds-text-muted">
+                        <div class="flex h-full items-center justify-center">
+                            <div class="text-center">
+                                <%= ui_icon(:information_circle, class_name: "mx-auto h-5 w-5") %>
+                                <p class="mt-1 text-[10px] font-medium"><%= t("posts.show.item_preview") %></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <h3 class="ds-heading-sm ds-break-words ds-text-strong"><%= item.name %></h3>
+                        <dl class="grid gap-2 sm:grid-cols-2">
+                            <% [ :brand, :category, :price, :source ].each do |key| %>
+                            <div class="rounded-md border ds-border-subtle ds-surface-base px-2.5 py-2">
+                                <dt class="ds-text-meta font-semibold ds-text-weak"><%= related_item_label(key) %></dt>
+                                <dd class="mt-0.5 text-sm ds-text-support ds-break-words"><%= fact_map[key]&.dig(:value).presence || (key == :price ? t("posts.show.item_price_unknown") : "-") %></dd>
+                            </div>
+                            <% end %>
+                        </dl>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <% if item.affiliate_url.present? %>
+                            <%= link_to t("posts.show.open_product_page"), item.affiliate_url, class: "tap-target cta-secondary cta-compact", target: "_blank", rel: "nofollow sponsored noopener" %>
+                            <% else %>
+                            <span class="ds-text-muted"><%= t("posts.show.item_link_missing") %></span>
+                            <% end %>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <% end %>
+        </div>
+        <% else %>
+        <p class="ds-text-support"><%= t("posts.show.no_related_items") %></p>
+        <% if post_owner?(@post) %>
         <p class="ds-text-support"><%= t("posts.show.related_items_owner_hint") %></p>
         <%= link_to edit_post_path(@post), class: "inline-flex tap-target cta-secondary cta-compact" do %><%= ui_icon(:pencil_square, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.edit") %></span><% end %>
-      <% end %>
-    <% end %>
-  </section>
+        <% end %>
+        <% end %>
+    </section>
 
-  <% if @related_posts.any? %>
+    <% if @related_posts.any? %>
     <% related_reason_label = case @related_posts_reason
     when "tag_overlap"
       t("posts.show.related_reason_tags")
@@ -195,466 +202,512 @@
       t("posts.show.related_reason_popular")
     end %>
     <section class="ds-section-card space-y-4">
-      <div class="flex flex-wrap items-start justify-between gap-2">
-        <h2 class="ds-heading-md ds-text-strong"><%= t("posts.show.related_posts") %></h2>
-        <p class="ds-text-muted"><%= related_reason_label %></p>
-      </div>
-      <div class="grid gap-3 sm:grid-cols-2">
-        <% @related_posts.each do |entry| %>
-          <% related_post = entry[:candidate] %>
-          <% matched_tags = Array(entry[:overlap]) %>
-          <% related_url = post_path(related_post, from: request.fullpath) %>
-          <article class="rounded-lg border ds-border-subtle ds-surface-muted p-3">
-            <h3 class="ds-heading-sm ds-line-clamp-2 ds-break-words">
-              <%= link_to related_post.title, related_url, class: "ds-link-underlined ds-hover-link", data: { ga_event: "related_post_click", ga_category: "post_detail", ga_label: @related_posts_reason } %>
-            </h3>
-            <p class="mt-1 ds-line-clamp-2 ds-text-support"><%= truncate(related_post.description, length: 85) %></p>
-            <div class="mt-2 flex flex-wrap items-center gap-1.5">
-              <% matched_tags.each do |tag| %>
-                <span class="ds-badge-info">#<%= tag %></span>
-              <% end %>
-              <% if matched_tags.empty? && related_post.category.present? %>
-                <span class="ds-badge-inactive"><%= related_post.category %></span>
-              <% end %>
-            </div>
-            <p class="mt-2 ds-text-meta"><%= timestamp_tag(related_post.created_at, style: :date) %></p>
-          </article>
-        <% end %>
-      </div>
+        <div class="flex flex-wrap items-start justify-between gap-2">
+            <h2 class="ds-heading-md ds-text-strong"><%= t("posts.show.related_posts") %></h2>
+            <p class="ds-text-muted"><%= related_reason_label %></p>
+        </div>
+        <div class="grid gap-3 sm:grid-cols-2">
+            <% @related_posts.each do |entry| %>
+            <% related_post = entry[:candidate] %>
+            <% matched_tags = Array(entry[:overlap]) %>
+            <% related_url = post_path(related_post, from: request.fullpath) %>
+            <article class="rounded-lg border ds-border-subtle ds-surface-muted p-3">
+                <h3 class="ds-heading-sm ds-line-clamp-2 ds-break-words">
+                    <%= link_to related_post.title, related_url, class: "ds-link-underlined ds-hover-link", data: { ga_event: "related_post_click", ga_category: "post_detail", ga_label: @related_posts_reason } %>
+                </h3>
+                <div class="mt-2 flex flex-wrap items-center gap-1.5">
+                    <% matched_tags.each do |tag| %>
+                    <span class="ds-badge-info">#<%= tag %></span>
+                    <% end %>
+                    <% if matched_tags.empty? && related_post.category.present? %>
+                    <span class="ds-badge-inactive"><%= related_post.category %></span>
+                    <% end %>
+                </div>
+                <p class="mt-2 ds-text-meta"><%= timestamp_tag(related_post.created_at, style: :date) %></p>
+            </article>
+            <% end %>
+        </div>
     </section>
-  <% end %>
+    <% end %>
 
-  <% if post_owner?(@post) %>
-    <section class="ds-card space-y-4 p-4">
-      <h2 class="ds-heading-sm ds-text-strong"><%= t("posts.show.owner_actions") %></h2>
-      <div class="flex flex-wrap items-center gap-2">
-        <%= link_to edit_post_path(@post), class: "tap-target cta-secondary" do %><%= ui_icon(:pencil_square, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.edit") %></span><% end %>
-        <%= link_to notifications_post_path(@post), class: "tap-target cta-secondary" do %><%= ui_icon(:bell, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.notifications", count: localized_number(@unread_notifications_count)) %></span><% end %>
-      </div>
-      <div class="border-t ds-border-muted pt-3">
-        <p class="ds-text-meta ds-text-danger font-semibold"><%= t("posts.show.danger_zone") %></p>
-        <p class="mt-1 ds-text-muted ds-text-danger"><%= t("posts.show.danger_zone_lead") %></p>
-        <%= button_to post_path(@post), method: :delete, form: { class: "mt-2 inline-block" }, data: { confirm_action: true, confirm_title: t("posts.show.actions.delete_confirm"), confirm_message: t("ui.critical_delete_message"), confirm_label: t("posts.show.actions.delete"), confirm_level: "danger" }, class: "tap-target cta-danger" do %><%= ui_icon(:trash, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.delete") %></span><% end %>
-      </div>
+    <% if post_owner?(@post) %>
+    <section class="ds-section-card space-y-4">
+        <h2 class="ds-heading-sm ds-text-strong"><%= t("posts.show.owner_actions") %></h2>
+        <div class="flex flex-wrap items-center gap-2">
+            <%= link_to edit_post_path(@post), class: "tap-target cta-secondary" do %><%= ui_icon(:pencil_square, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.edit") %></span><% end %>
+            <%= link_to notifications_post_path(@post), class: "tap-target cta-secondary" do %><%= ui_icon(:bell, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.notifications", count: localized_number(@unread_notifications_count)) %></span><% end %>
+        </div>
+        <div class="border-t ds-border-muted pt-3">
+            <p class="ds-text-meta ds-text-danger font-semibold"><%= t("posts.show.danger_zone") %></p>
+            <p class="mt-1 ds-text-muted ds-text-danger"><%= t("posts.show.danger_zone_lead") %></p>
+            <%= button_to post_path(@post), method: :delete, form: { class: "mt-2 inline-block" }, data: { confirm_action: true, confirm_title: t("posts.show.actions.delete_confirm"), confirm_message: t("ui.critical_delete_message"), confirm_label: t("posts.show.actions.delete"), confirm_level: "danger" }, class: "tap-target cta-danger" do %><%= ui_icon(:trash, class_name: "h-4 w-4") %><span><%= t("posts.show.actions.delete") %></span><% end %>
+        </div>
     </section>
-  <% end %>
+    <% end %>
 
-  <% unless post_owner?(@post) %>
+    <% unless post_owner?(@post) %>
     <dialog id="report-modal-<%= @post.id %>" data-report-modal class="ds-dialog-surface w-full max-w-md rounded-xl border ds-border-subtle p-0 shadow-lg">
-      <div class="border-b ds-border-subtle px-4 py-3"><h2 class="text-base font-semibold ds-text-strong"><%= t("posts.show.report.title") %></h2><p class="mt-1 text-xs ds-text-weak"><%= t("posts.show.report.description") %></p></div>
-      <%= form_with model: [@post, @report], class: "space-y-form px-4 py-4", data: { ui_form: true, form_analytics_context: "report_form", loading_label: t("ui.processing"), disabled_reason_prefix: t("ui.disabled_reason"), disabled_submit_notice: t("ui.complete_required"), leave_guard_message: t("ui.leave_guard_report"), critical_form: true, critical_title: t("posts.show.report.title"), critical_message: t("ui.critical_report_message"), critical_confirm: t("posts.show.report.submit"), critical_level: "warning" } do |f| %>
+        <div class="border-b ds-border-subtle px-4 py-3">
+            <h2 class="text-base font-semibold ds-text-strong"><%= t("posts.show.report.title") %></h2>
+            <p class="mt-1 text-xs ds-text-weak"><%= t("posts.show.report.description") %></p>
+        </div>
+        <%= form_with model: [@post, @report], class: "space-y-form px-4 py-4", data: { ui_form: true, form_analytics_context: "report_form", loading_label: t("ui.processing"), disabled_reason_prefix: t("ui.disabled_reason"), disabled_submit_notice: t("ui.complete_required"), leave_guard_message: t("ui.leave_guard_report"), critical_form: true, critical_title: t("posts.show.report.title"), critical_message: t("ui.critical_report_message"), critical_confirm: t("posts.show.report.submit"), critical_level: "warning" } do |f| %>
         <% if owned_users.any? %><div><%= f.label :reporter_user_id, t("posts.show.report.report_as_profile"), class: "mb-1 block text-sm font-medium" %><%= f.collection_select :reporter_user_id, owned_users, :id, :name, { include_blank: t("posts.show.report.anonymous") }, class: "ds-form-control", data: { modal_initial_focus: true } %></div><% end %>
-        <div><%= f.label :reason, t("posts.show.report.reason"), class: "mb-1 block text-sm font-medium" %><%= f.select :reason, options_for_select(Report.reason_options), {}, class: "ds-form-control", data: { modal_initial_focus: owned_users.any? ? nil : true } %><p class="ds-field-guide"><%= t("reports.reason_guide") %></p></div>
-        <div><%= f.label :details, t("posts.show.report.details"), class: "mb-1 block text-sm font-medium" %><%= f.text_area :details, rows: 4, maxlength: 1000, class: "ds-form-control", placeholder: t("posts.show.report.details_placeholder"), data: { char_count_max: 1000, char_count_target: "report_details_counter" }, aria: { describedby: "report_details_guide report_details_counter" } %><p id="report_details_guide" class="ds-field-guide"><%= t("reports.details_guide") %></p><p id="report_details_counter" class="ds-char-counter" aria-live="polite"></p></div>
+        <div><%= f.label :reason, t("posts.show.report.reason"), class: "mb-1 block text-sm font-medium" %><%= f.select :reason, options_for_select(Report.reason_options), {}, class: "ds-form-control", data: { modal_initial_focus: owned_users.any? ? nil : true } %><p class="ds-field-guide"><%= t("reports.reason_guide") %></p>
+        </div>
+        <div><%= f.label :details, t("posts.show.report.details"), class: "mb-1 block text-sm font-medium" %><%= f.text_area :details, rows: 4, maxlength: 1000, class: "ds-form-control", placeholder: t("posts.show.report.details_placeholder"), data: { char_count_max: 1000, char_count_target: "report_details_counter" }, aria: { describedby: "report_details_guide report_details_counter" } %><p id="report_details_guide" class="ds-field-guide"><%= t("reports.details_guide") %></p>
+            <p id="report_details_counter" class="ds-char-counter" aria-live="polite"></p>
+        </div>
         <p class="ds-trust-note"><%= t("reports.trust_note") %></p>
         <%= render "shared/policy_inline", context: "report_form" %>
         <p class="ds-text-muted">
-          <%= t("posts.show.report.policy_context") %>
-          <%= link_to t("footer.terms"), terms_path, class: "ds-link-underlined ds-hover-link" %>
-          /
-          <%= link_to t("footer.privacy_policy"), privacy_policy_path, class: "ds-link-underlined ds-hover-link" %>
+            <%= t("posts.show.report.policy_context") %>
+            <%= link_to t("footer.terms"), terms_path, class: "ds-link-underlined ds-hover-link" %>
+            /
+            <%= link_to t("footer.privacy_policy"), privacy_policy_path, class: "ds-link-underlined ds-hover-link" %>
         </p>
         <div class="flex justify-end gap-2 pt-2"><button type="button" data-close-report-modal="report-modal-<%= @post.id %>" class="tap-target cta-tertiary"><%= t("posts.show.report.cancel") %></button><%= f.button type: :submit, class: "tap-target cta-warning" do %><span data-submit-label><%= t("posts.show.report.submit") %></span><% end %></div>
         <p class="ds-disabled-reason" data-disabled-reason aria-live="polite"></p>
-      <% end %>
+        <% end %>
     </dialog>
-  <% end %>
+    <% end %>
 
-  <div class="mobile-sticky-bar ds-motion-slide sm:hidden" data-mobile-actions-root>
-    <div class="mx-auto w-full max-w-6xl px-4 pt-2">
-      <div class="relative pb-0.5">
-        <div class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-1.5">
-          <%= button_to like_post_path(@post), method: :post, form: { class: "w-full" }, class: "tap-target cta-primary w-full justify-center ds-cta-experiment", data: { variant: "control" } do %>
-            <span class="inline-flex items-center justify-center gap-1.5">
-              <%= ui_icon(:heart, class_name: "h-4 w-4") %>
-              <span><%= t("posts.show.actions.like") %></span>
-            </span>
-          <% end %>
-          <button type="button" data-mobile-actions-toggle data-mobile-risk-target="menu" aria-haspopup="menu" aria-expanded="false" aria-controls="mobile-post-actions-menu" class="ds-icon-button ds-text-weak ds-hover-muted ds-hover-link">
-            <%= ui_icon(:ellipsis_horizontal, class_name: "h-5 w-5") %>
-            <span class="sr-only"><%= t("posts.show.mobile_more_label") %></span>
-          </button>
-        </div>
-        <div id="mobile-post-actions-menu" role="menu" data-mobile-actions-menu class="absolute inset-x-0 bottom-full z-20 mb-2 hidden ds-popover-surface ds-motion-popover ds-surface-overlay">
-          <div class="grid gap-2">
-            <section aria-label="<%= t('posts.show.mobile_share_section') %>">
-              <p class="px-2 text-[11px] font-semibold uppercase tracking-wide ds-text-weak"><%= t("posts.show.mobile_share_section") %></p>
-              <div class="mt-1 grid gap-1">
-                <button type="button" role="menuitem" data-mobile-menu-action data-copy-url="<%= share_url %>" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ds-text-weak ds-hover-muted">
-                  <%= ui_icon(:share, class_name: "h-4 w-4") %>
-                  <span data-copy-label><%= t("posts.show.actions.copy_url") %></span>
-                </button>
-                <button type="button" role="menuitem" data-mobile-menu-action data-native-share-url="<%= share_url %>" data-native-share-text="<%= share_text %>" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ds-text-weak ds-hover-muted">
-                  <%= ui_icon(:share, class_name: "h-4 w-4") %>
-                  <span><%= t("posts.show.actions.share") %></span>
-                </button>
-              </div>
-            </section>
-            <% unless post_owner?(@post) %>
-              <section class="border-t ds-border-subtle pt-2" aria-label="<%= t('posts.show.mobile_report_section') %>">
-                <p class="px-2 text-[11px] font-semibold uppercase tracking-wide ds-text-warning"><%= t("posts.show.mobile_report_section") %></p>
-                <button type="button" role="menuitem" data-mobile-report-intent data-mobile-risk-target="report" class="tap-target cta-warning cta-compact justify-start" data-ga-event="post_detail_report_cta_click" data-ga-category="post_detail" data-ga-label="mobile_report_layer">
-                  <%= ui_icon(:flag, class_name: "h-4 w-4") %>
-                  <span><%= t("posts.show.actions.report") %></span>
-                </button>
-                <div class="mt-2 hidden rounded-lg border ds-tone-warning p-2.5" data-mobile-report-confirm>
-                  <p class="text-xs font-medium"><%= t("posts.show.report.intent_confirm") %></p>
-                  <div class="mt-2 flex gap-2">
-                    <button type="button" role="menuitem" data-mobile-menu-action data-open-report-modal="report-modal-<%= @post.id %>" class="tap-target cta-warning cta-compact"><%= t("posts.show.report.open_form") %></button>
-                    <button type="button" role="menuitem" data-mobile-report-cancel class="tap-target cta-tertiary cta-compact"><%= t("ui.cancel") %></button>
-                  </div>
+    <div class="mobile-sticky-bar ds-motion-slide sm:hidden" data-mobile-actions-root>
+        <div class="mx-auto w-full max-w-6xl px-4 pt-2">
+            <div class="relative pb-0.5">
+                <div class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-1.5">
+                    <%= button_to like_post_path(@post), method: :post, form: { class: "w-full" }, class: "tap-target cta-secondary w-full justify-center ds-cta-experiment", data: { variant: "control" } do %>
+                    <span class="inline-flex items-center justify-center gap-1.5">
+                        <%= ui_icon(:heart, class_name: "h-4 w-4") %>
+                        <span><%= t("posts.show.actions.like") %></span>
+                    </span>
+                    <% end %>
+                    <button type="button" data-mobile-actions-toggle data-mobile-risk-target="menu" aria-haspopup="menu" aria-expanded="false" aria-controls="mobile-post-actions-menu" class="ds-icon-button ds-text-weak ds-hover-muted ds-hover-link">
+                        <%= ui_icon(:ellipsis_horizontal, class_name: "h-5 w-5") %>
+                        <span class="sr-only"><%= t("posts.show.mobile_more_label") %></span>
+                    </button>
                 </div>
-              </section>
-            <% end %>
-          </div>
+                <div id="mobile-post-actions-menu" role="menu" data-mobile-actions-menu class="absolute inset-x-0 bottom-full z-20 mb-2 hidden ds-popover-surface ds-motion-popover ds-surface-overlay">
+                    <div class="grid gap-2">
+                        <section aria-label="<%= t('posts.show.mobile_share_section') %>">
+                            <p class="px-2 text-[11px] font-semibold uppercase tracking-wide ds-text-weak"><%= t("posts.show.mobile_share_section") %></p>
+                            <div class="mt-1 grid gap-1">
+                                <button type="button" role="menuitem" data-mobile-menu-action data-copy-url="<%= share_url %>" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ds-text-weak ds-hover-muted">
+                                    <%= ui_icon(:share, class_name: "h-4 w-4") %>
+                                    <span data-copy-label><%= t("posts.show.actions.copy_url") %></span>
+                                </button>
+                                <button type="button" role="menuitem" data-mobile-menu-action data-native-share-url="<%= share_url %>" data-native-share-text="<%= share_text %>" class="tap-target inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ds-text-weak ds-hover-muted">
+                                    <%= ui_icon(:share, class_name: "h-4 w-4") %>
+                                    <span><%= t("posts.show.actions.share") %></span>
+                                </button>
+                            </div>
+                        </section>
+                        <% unless post_owner?(@post) %>
+                        <section class="border-t ds-border-subtle pt-2" aria-label="<%= t('posts.show.mobile_report_section') %>">
+                            <p class="px-2 text-[11px] font-semibold uppercase tracking-wide ds-text-warning"><%= t("posts.show.mobile_report_section") %></p>
+                            <button type="button" role="menuitem" data-mobile-report-intent data-mobile-risk-target="report" class="tap-target cta-warning cta-compact justify-start" data-ga-event="post_detail_report_cta_click" data-ga-category="post_detail" data-ga-label="mobile_report_layer">
+                                <%= ui_icon(:flag, class_name: "h-4 w-4") %>
+                                <span><%= t("posts.show.actions.report") %></span>
+                            </button>
+                            <div class="mt-2 hidden rounded-lg border ds-tone-warning p-2.5" data-mobile-report-confirm>
+                                <p class="text-xs font-medium"><%= t("posts.show.report.intent_confirm") %></p>
+                                <div class="mt-2 flex gap-2">
+                                    <button type="button" role="menuitem" data-mobile-menu-action data-open-report-modal="report-modal-<%= @post.id %>" class="tap-target cta-warning cta-compact"><%= t("posts.show.report.open_form") %></button>
+                                    <button type="button" role="menuitem" data-mobile-report-cancel class="tap-target cta-tertiary cta-compact"><%= t("ui.cancel") %></button>
+                                </div>
+                            </div>
+                        </section>
+                        <% end %>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 
-  <div class="space-y-2"><p class="ad-slot-divider"><%= t("ads.sponsored_placement") %></p><%= render "shared/ad_slot", slot: ENV["ADSENSE_SLOT_POST_BODY"] %></div>
-  <div class="space-y-2"><p class="ad-slot-divider"><%= t("ads.sponsored_placement") %></p><%= render "shared/ad_slot", slot: ENV["ADSENSE_SLOT_POST_FOOTER"] %></div>
-  <p class="ds-text-muted"><%= t("posts.show.ugc_notice") %></p>
+    <div class="space-y-2">
+        <p class="ad-slot-divider"><%= t("ads.sponsored_placement") %></p><%= render "shared/ad_slot", slot: ENV["ADSENSE_SLOT_POST_BODY"] %>
+    </div>
+    <div class="space-y-2">
+        <p class="ad-slot-divider"><%= t("ads.sponsored_placement") %></p><%= render "shared/ad_slot", slot: ENV["ADSENSE_SLOT_POST_FOOTER"] %>
+    </div>
+    <p class="ds-text-muted"><%= t("posts.show.ugc_notice") %></p>
 </article>
 
 <section class="hidden" data-page-skeleton aria-hidden="true"><%= render "shared/screen_skeleton", variant: :detail %></section>
 
 <script>
-  if (!window.__postShowUiBindingInstalled) {
-    window.__postShowUiBindingInstalled = true;
-    const menuOpenMessage = "<%= j(t('navigation.menu_opened')) %>";
-    const menuCloseMessage = "<%= j(t('navigation.menu_closed')) %>";
-    const reportConfirmOpenMessage = "<%= j(t('posts.show.report.intent_opened_notice')) %>";
-    const reportConfirmCloseMessage = "<%= j(t('posts.show.report.intent_closed_notice')) %>";
-    const favoriteSavedMessage = "<%= j(t('posts.show.favorite_saved_notice')) %>";
-    const favoriteRemovedMessage = "<%= j(t('posts.show.favorite_removed_notice')) %>";
-    const FAVORITES_KEY = "post_favorites";
-    const RECENTLY_VIEWED_KEY = "post_recently_viewed";
-    let lastModalTrigger = null;
-    let mobileMenuOpenedAt = 0;
-    let mobileMenuActionTaken = false;
-    let reportModalOpenedAt = 0;
-    let reportModalSubmitted = false;
-    let lastRiskTap = { target: null, at: 0 };
+    if (!window.__postShowUiBindingInstalled) {
+        window.__postShowUiBindingInstalled = true;
+        const menuOpenMessage = "<%= j(t('navigation.menu_opened')) %>";
+        const menuCloseMessage = "<%= j(t('navigation.menu_closed')) %>";
+        const reportConfirmOpenMessage = "<%= j(t('posts.show.report.intent_opened_notice')) %>";
+        const reportConfirmCloseMessage = "<%= j(t('posts.show.report.intent_closed_notice')) %>";
+        const favoriteSavedMessage = "<%= j(t('posts.show.favorite_saved_notice')) %>";
+        const favoriteRemovedMessage = "<%= j(t('posts.show.favorite_removed_notice')) %>";
+        const FAVORITES_KEY = "post_favorites";
+        const RECENTLY_VIEWED_KEY = "post_recently_viewed";
+        let lastModalTrigger = null;
+        let mobileMenuOpenedAt = 0;
+        let mobileMenuActionTaken = false;
+        let reportModalOpenedAt = 0;
+        let reportModalSubmitted = false;
+        let lastRiskTap = {
+            target: null,
+            at: 0
+        };
 
-    const readJson = (key, fallback = []) => {
-      try {
-        const raw = localStorage.getItem(key);
-        if (!raw) return fallback;
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) || typeof parsed === "object" ? parsed : fallback;
-      } catch (_) {
-        return fallback;
-      }
-    };
+        const readJson = (key, fallback = []) => {
+            try {
+                const raw = localStorage.getItem(key);
+                if (!raw) return fallback;
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) || typeof parsed === "object" ? parsed : fallback;
+            } catch (_) {
+                return fallback;
+            }
+        };
 
-    const writeJson = (key, value) => {
-      try {
-        localStorage.setItem(key, JSON.stringify(value));
-      } catch (_) {}
-    };
+        const writeJson = (key, value) => {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+            } catch (_) {}
+        };
 
-    const markLoadedMedia = (scope = document) => {
-      scope.querySelectorAll("[data-media-skeleton]").forEach((frame) => {
-        const image = frame.querySelector("img");
-        if (!image || image.complete) {
-          frame.classList.add("ds-media-loaded");
-          return;
-        }
-        image.addEventListener("load", () => frame.classList.add("ds-media-loaded"), { once: true });
-        image.addEventListener("error", () => frame.classList.add("ds-media-loaded"), { once: true });
-      });
-    };
-
-    const syncFavoriteButtons = () => {
-      const favorites = Array.isArray(readJson(FAVORITES_KEY, [])) ? readJson(FAVORITES_KEY, []) : [];
-      document.querySelectorAll("[data-favorite-toggle]").forEach((button) => {
-        const id = String(button.dataset.postId || "");
-        const saved = favorites.some((item) => String(item.id) === id);
-        button.setAttribute("aria-pressed", String(saved));
-        const label = button.querySelector("[data-favorite-label]");
-        if (label) label.textContent = saved ? "<%= j(t('posts.show.saved_post')) %>" : "<%= j(t('posts.show.save_post')) %>";
-        button.classList.toggle("font-semibold", saved);
-        button.classList.toggle("ds-text-link", saved);
-      });
-    };
-
-    const storeRecentlyViewed = () => {
-      const id = "<%= @post.id %>";
-      const title = "<%= j(@post.title) %>";
-      const url = "<%= j(post_path(@post, from: @back_to_index_path || request.fullpath)) %>";
-      const current = readJson(RECENTLY_VIEWED_KEY, []);
-      const next = [ { id, title, url, viewedAt: Date.now() }, ...current.filter((item) => String(item.id) !== id) ].slice(0, 12);
-      writeJson(RECENTLY_VIEWED_KEY, next);
-    };
-
-    const closeMenu = (menuSelector, toggleSelector, notify = false) => {
-      const menu = document.querySelector(menuSelector);
-      const toggle = document.querySelector(toggleSelector);
-      if (!menu || menu.classList.contains("hidden")) return;
-      menu.classList.add("hidden");
-      if (toggle) toggle.setAttribute("aria-expanded", "false");
-      if (notify && typeof window.dsNotify === "function") window.dsNotify(menuCloseMessage, "info");
-      resetMobileReportIntent();
-    };
-
-    const announceLive = (message, level = "info") => {
-      if (!message) return;
-      if (typeof window.dsAnnounce === "function") {
-        window.dsAnnounce(message);
-      } else if (typeof window.dsNotify === "function") {
-        window.dsNotify(message, level);
-      }
-    };
-
-    const resetMobileReportIntent = () => {
-      const confirmPanel = document.querySelector("[data-mobile-report-confirm]");
-      const intentButton = document.querySelector("[data-mobile-report-intent]");
-      if (confirmPanel) confirmPanel.classList.add("hidden");
-      if (intentButton) intentButton.classList.remove("hidden");
-    };
-
-    const reportMobileMisTap = (reason) => {
-      if (typeof window.gtag !== "function") return;
-      const elapsed = Date.now() - mobileMenuOpenedAt;
-      if (mobileMenuOpenedAt <= 0 || elapsed > 650 || mobileMenuActionTaken) return;
-      window.gtag("event", "mobile_mistap_estimate", {
-        event_category: "post_detail",
-        event_label: `mobile_actions_menu_${reason}`,
-        elapsed_ms: elapsed
-      });
-    };
-
-    const isMobileViewport = () => window.matchMedia("(max-width: 640px)").matches;
-
-    const trackRiskTap = (target) => {
-      if (!target || !isMobileViewport() || typeof window.gtag !== "function") return;
-      window.gtag("event", "mobile_risk_tap", {
-        event_category: "post_detail",
-        event_label: `risk_target_${target}`
-      });
-
-      const elapsed = Date.now() - Number(lastRiskTap.at || 0);
-      if (lastRiskTap.target && lastRiskTap.target !== target && elapsed > 0 && elapsed <= 550) {
-        window.gtag("event", "mobile_mistap_estimate", {
-          event_category: "post_detail",
-          event_label: `near_target_switch_${lastRiskTap.target}_to_${target}`,
-          area: "menu_back_report_cluster",
-          elapsed_ms: elapsed
-        });
-      }
-      lastRiskTap = { target, at: Date.now() };
-    };
-
-    const openModal = (trigger, modalId) => {
-      const dialog = document.getElementById(modalId);
-      if (!dialog || typeof dialog.showModal !== "function") return;
-      lastModalTrigger = trigger;
-      dialog.showModal();
-      reportModalOpenedAt = Date.now();
-      reportModalSubmitted = false;
-      const focusTarget = dialog.querySelector("[data-modal-initial-focus]") || dialog.querySelector("input, select, textarea, button");
-      if (focusTarget) window.setTimeout(() => focusTarget.focus(), 0);
-    };
-
-    const closeModal = (dialog) => {
-      if (!dialog || typeof dialog.close !== "function") return;
-      dialog.close();
-      if (lastModalTrigger && typeof lastModalTrigger.focus === "function") {
-        window.setTimeout(() => lastModalTrigger.focus(), 0);
-      }
-    };
-
-    const runNativeShare = (button) => {
-      const url = button?.getAttribute("data-native-share-url");
-      const text = button?.getAttribute("data-native-share-text");
-      if (!url) return;
-      if (navigator.share) {
-        navigator.share({ text, url }).catch(() => navigator.clipboard.writeText(url).catch(() => {}));
-      } else {
-        navigator.clipboard.writeText(url).catch(() => {});
-      }
-    };
-
-    const keyboardOpen = () => window.visualViewport ? (window.innerHeight - window.visualViewport.height) > 130 : false;
-
-    const syncMobileActionBar = () => {
-      const root = document.querySelector("[data-mobile-actions-root]");
-      const menu = document.querySelector("[data-mobile-actions-menu]");
-      const modal = document.querySelector("[data-report-modal][open]");
-      if (!root) return;
-      const shouldHide = keyboardOpen() || Boolean(modal);
-      const menuOpen = menu && !menu.classList.contains("hidden");
-      root.classList.toggle("translate-y-full", shouldHide);
-      root.classList.toggle("opacity-0", shouldHide);
-      root.classList.toggle("pointer-events-none", shouldHide && !menuOpen);
-    };
-
-    document.querySelectorAll("[data-report-modal]").forEach((dialog) => {
-      dialog.addEventListener("click", (event) => {
-        if (event.target === dialog) closeModal(dialog);
-      });
-      dialog.addEventListener("close", () => {
-        if (isMobileViewport() && !reportModalSubmitted && reportModalOpenedAt > 0 && typeof window.gtag === "function") {
-          const elapsed = Date.now() - reportModalOpenedAt;
-          if (elapsed <= 900) {
-            window.gtag("event", "mobile_mistap_estimate", {
-              event_category: "post_detail",
-              event_label: "report_quick_dismiss",
-              area: "menu_back_report_cluster",
-              elapsed_ms: elapsed
+        const markLoadedMedia = (scope = document) => {
+            scope.querySelectorAll("[data-media-skeleton]").forEach((frame) => {
+                const image = frame.querySelector("img");
+                if (!image || image.complete) {
+                    frame.classList.add("ds-media-loaded");
+                    return;
+                }
+                image.addEventListener("load", () => frame.classList.add("ds-media-loaded"), {
+                    once: true
+                });
+                image.addEventListener("error", () => frame.classList.add("ds-media-loaded"), {
+                    once: true
+                });
             });
-          }
+        };
+
+        const syncFavoriteButtons = () => {
+            const favorites = Array.isArray(readJson(FAVORITES_KEY, [])) ? readJson(FAVORITES_KEY, []) : [];
+            document.querySelectorAll("[data-favorite-toggle]").forEach((button) => {
+                const id = String(button.dataset.postId || "");
+                const saved = favorites.some((item) => String(item.id) === id);
+                button.setAttribute("aria-pressed", String(saved));
+                const label = button.querySelector("[data-favorite-label]");
+                if (label) label.textContent = saved ? "<%= j(t('posts.show.saved_post')) %>" : "<%= j(t('posts.show.save_post')) %>";
+                button.classList.toggle("font-semibold", saved);
+                button.classList.toggle("ds-text-link", saved);
+            });
+        };
+
+        const storeRecentlyViewed = () => {
+            const id = "<%= @post.id %>";
+            const title = "<%= j(@post.title) %>";
+            const url = "<%= j(post_path(@post, from: @back_to_index_path || request.fullpath)) %>";
+            const current = readJson(RECENTLY_VIEWED_KEY, []);
+            const next = [{
+                id,
+                title,
+                url,
+                viewedAt: Date.now()
+            }, ...current.filter((item) => String(item.id) !== id)].slice(0, 12);
+            writeJson(RECENTLY_VIEWED_KEY, next);
+        };
+
+        const closeMenu = (menuSelector, toggleSelector, notify = false) => {
+            const menu = document.querySelector(menuSelector);
+            const toggle = document.querySelector(toggleSelector);
+            if (!menu || menu.classList.contains("hidden")) return;
+            menu.classList.add("hidden");
+            if (toggle) toggle.setAttribute("aria-expanded", "false");
+            if (notify && typeof window.dsNotify === "function") window.dsNotify(menuCloseMessage, "info");
+            resetMobileReportIntent();
+        };
+
+        const announceLive = (message, level = "info") => {
+            if (!message) return;
+            if (typeof window.dsAnnounce === "function") {
+                window.dsAnnounce(message);
+            } else if (typeof window.dsNotify === "function") {
+                window.dsNotify(message, level);
+            }
+        };
+
+        const resetMobileReportIntent = () => {
+            const confirmPanel = document.querySelector("[data-mobile-report-confirm]");
+            const intentButton = document.querySelector("[data-mobile-report-intent]");
+            if (confirmPanel) confirmPanel.classList.add("hidden");
+            if (intentButton) intentButton.classList.remove("hidden");
+        };
+
+        const reportMobileMisTap = (reason) => {
+            if (typeof window.gtag !== "function") return;
+            const elapsed = Date.now() - mobileMenuOpenedAt;
+            if (mobileMenuOpenedAt <= 0 || elapsed > 650 || mobileMenuActionTaken) return;
+            window.gtag("event", "mobile_mistap_estimate", {
+                event_category: "post_detail",
+                event_label: `mobile_actions_menu_${reason}`,
+                elapsed_ms: elapsed
+            });
+        };
+
+        const isMobileViewport = () => window.matchMedia("(max-width: 640px)").matches;
+
+        const trackRiskTap = (target) => {
+            if (!target || !isMobileViewport() || typeof window.gtag !== "function") return;
+            window.gtag("event", "mobile_risk_tap", {
+                event_category: "post_detail",
+                event_label: `risk_target_${target}`
+            });
+
+            const elapsed = Date.now() - Number(lastRiskTap.at || 0);
+            if (lastRiskTap.target && lastRiskTap.target !== target && elapsed > 0 && elapsed <= 550) {
+                window.gtag("event", "mobile_mistap_estimate", {
+                    event_category: "post_detail",
+                    event_label: `near_target_switch_${lastRiskTap.target}_to_${target}`,
+                    area: "menu_back_report_cluster",
+                    elapsed_ms: elapsed
+                });
+            }
+            lastRiskTap = {
+                target,
+                at: Date.now()
+            };
+        };
+
+        const openModal = (trigger, modalId) => {
+            const dialog = document.getElementById(modalId);
+            if (!dialog || typeof dialog.showModal !== "function") return;
+            lastModalTrigger = trigger;
+            dialog.showModal();
+            reportModalOpenedAt = Date.now();
+            reportModalSubmitted = false;
+            const focusTarget = dialog.querySelector("[data-modal-initial-focus]") || dialog.querySelector("input, select, textarea, button");
+            if (focusTarget) window.setTimeout(() => focusTarget.focus(), 0);
+        };
+
+        const closeModal = (dialog) => {
+            if (!dialog || typeof dialog.close !== "function") return;
+            dialog.close();
+            if (lastModalTrigger && typeof lastModalTrigger.focus === "function") {
+                window.setTimeout(() => lastModalTrigger.focus(), 0);
+            }
+        };
+
+        const runNativeShare = (button) => {
+            const url = button?.getAttribute("data-native-share-url");
+            const text = button?.getAttribute("data-native-share-text");
+            if (!url) return;
+            if (navigator.share) {
+                navigator.share({
+                    text,
+                    url
+                }).catch(() => navigator.clipboard.writeText(url).catch(() => {}));
+            } else {
+                navigator.clipboard.writeText(url).catch(() => {});
+            }
+        };
+
+        const keyboardOpen = () => window.visualViewport ? (window.innerHeight - window.visualViewport.height) > 130 : false;
+
+        const syncMobileActionBar = () => {
+            const root = document.querySelector("[data-mobile-actions-root]");
+            const menu = document.querySelector("[data-mobile-actions-menu]");
+            const modal = document.querySelector("[data-report-modal][open]");
+            if (!root) return;
+            const shouldHide = keyboardOpen() || Boolean(modal);
+            const menuOpen = menu && !menu.classList.contains("hidden");
+            root.classList.toggle("translate-y-full", shouldHide);
+            root.classList.toggle("opacity-0", shouldHide);
+            root.classList.toggle("pointer-events-none", shouldHide && !menuOpen);
+        };
+
+        document.querySelectorAll("[data-report-modal]").forEach((dialog) => {
+            dialog.addEventListener("click", (event) => {
+                if (event.target === dialog) closeModal(dialog);
+            });
+            dialog.addEventListener("close", () => {
+                if (isMobileViewport() && !reportModalSubmitted && reportModalOpenedAt > 0 && typeof window.gtag === "function") {
+                    const elapsed = Date.now() - reportModalOpenedAt;
+                    if (elapsed <= 900) {
+                        window.gtag("event", "mobile_mistap_estimate", {
+                            event_category: "post_detail",
+                            event_label: "report_quick_dismiss",
+                            area: "menu_back_report_cluster",
+                            elapsed_ms: elapsed
+                        });
+                    }
+                }
+                reportModalOpenedAt = 0;
+                reportModalSubmitted = false;
+                syncMobileActionBar();
+            });
+        });
+
+        document.addEventListener("submit", (event) => {
+            const reportForm = event.target.closest("[data-report-modal] form");
+            if (!reportForm) return;
+            reportModalSubmitted = true;
+        });
+
+        document.addEventListener("click", (event) => {
+            const riskTargetNode = event.target.closest("[data-mobile-risk-target]");
+            if (riskTargetNode) {
+                trackRiskTap(riskTargetNode.dataset.mobileRiskTarget);
+            }
+
+            const reportIntentButton = event.target.closest("[data-mobile-report-intent]");
+            if (reportIntentButton) {
+                const confirmPanel = document.querySelector("[data-mobile-report-confirm]");
+                if (!confirmPanel) return;
+                reportIntentButton.classList.add("hidden");
+                confirmPanel.classList.remove("hidden");
+                announceLive(reportConfirmOpenMessage);
+                return;
+            }
+
+            const reportCancelButton = event.target.closest("[data-mobile-report-cancel]");
+            if (reportCancelButton) {
+                resetMobileReportIntent();
+                announceLive(reportConfirmCloseMessage);
+                return;
+            }
+
+            const favoriteButton = event.target.closest("[data-favorite-toggle]");
+            if (favoriteButton) {
+                event.preventDefault();
+                const id = String(favoriteButton.dataset.postId || "");
+                const title = favoriteButton.dataset.postTitle || "";
+                const url = favoriteButton.dataset.postUrl || "";
+                if (id && title && url) {
+                    const current = Array.isArray(readJson(FAVORITES_KEY, [])) ? readJson(FAVORITES_KEY, []) : [];
+                    const exists = current.some((item) => String(item.id) === id);
+                    const next = exists ? current.filter((item) => String(item.id) !== id) : [{
+                        id,
+                        title,
+                        url,
+                        savedAt: Date.now()
+                    }, ...current].slice(0, 50);
+                    writeJson(FAVORITES_KEY, next);
+                    syncFavoriteButtons();
+                    announceLive(exists ? favoriteRemovedMessage : favoriteSavedMessage, exists ? "info" : "success");
+                }
+                return;
+            }
+
+            const openButton = event.target.closest("[data-open-report-modal]");
+            if (openButton) {
+                mobileMenuActionTaken = true;
+                openModal(openButton, openButton.getAttribute("data-open-report-modal"));
+                closeMenu("[data-mobile-actions-menu]", "[data-mobile-actions-toggle]", true);
+                closeMenu("[data-desktop-post-actions-menu]", "[data-desktop-post-actions-toggle]");
+                syncMobileActionBar();
+                return;
+            }
+
+            const closeButton = event.target.closest("[data-close-report-modal]");
+            if (closeButton) {
+                closeModal(document.getElementById(closeButton.getAttribute("data-close-report-modal")));
+                return;
+            }
+
+            const desktopToggle = event.target.closest("[data-desktop-post-actions-toggle]");
+            if (desktopToggle) {
+                const menu = document.querySelector("[data-desktop-post-actions-menu]");
+                if (!menu) return;
+                const expanded = desktopToggle.getAttribute("aria-expanded") == "true";
+                menu.classList.toggle("hidden", expanded);
+                desktopToggle.setAttribute("aria-expanded", String(!expanded));
+                return;
+            }
+
+            const desktopAction = event.target.closest("[data-desktop-actions-menu-item]");
+            if (desktopAction) {
+                runNativeShare(desktopAction.closest("[data-native-share-url]") || desktopAction);
+                closeMenu("[data-desktop-post-actions-menu]", "[data-desktop-post-actions-toggle]");
+                return;
+            }
+
+            const mobileToggle = event.target.closest("[data-mobile-actions-toggle]");
+            if (mobileToggle) {
+                const menu = document.querySelector("[data-mobile-actions-menu]");
+                if (!menu) return;
+                const expanded = mobileToggle.getAttribute("aria-expanded") == "true";
+                if (!expanded) {
+                    mobileMenuOpenedAt = Date.now();
+                    mobileMenuActionTaken = false;
+                    resetMobileReportIntent();
+                } else {
+                    reportMobileMisTap("toggle_close");
+                    mobileMenuOpenedAt = 0;
+                }
+                menu.classList.toggle("hidden", expanded);
+                mobileToggle.setAttribute("aria-expanded", String(!expanded));
+                if (!expanded && typeof window.dsNotify === "function") window.dsNotify(menuOpenMessage, "info");
+                if (expanded && typeof window.dsNotify === "function") window.dsNotify(menuCloseMessage, "info");
+                syncMobileActionBar();
+                return;
+            }
+
+            const shareButton = event.target.closest("[data-native-share-url]");
+            if (shareButton) runNativeShare(shareButton);
+
+            const mobileMenuAction = event.target.closest("[data-mobile-menu-action]");
+            if (mobileMenuAction) {
+                mobileMenuActionTaken = true;
+                closeMenu("[data-mobile-actions-menu]", "[data-mobile-actions-toggle]", true);
+                mobileMenuOpenedAt = 0;
+                return;
+            }
+
+            const mobileMenu = document.querySelector("[data-mobile-actions-menu]");
+            if (mobileMenu && !mobileMenu.classList.contains("hidden") && !event.target.closest("[data-mobile-actions-menu]") && !event.target.closest("[data-mobile-actions-toggle]")) {
+                reportMobileMisTap("outside_tap");
+                closeMenu("[data-mobile-actions-menu]", "[data-mobile-actions-toggle]", true);
+                mobileMenuOpenedAt = 0;
+            }
+
+            const desktopMenu = document.querySelector("[data-desktop-post-actions-menu]");
+            if (desktopMenu && !desktopMenu.classList.contains("hidden") && !event.target.closest("[data-desktop-post-actions-root]")) {
+                closeMenu("[data-desktop-post-actions-menu]", "[data-desktop-post-actions-toggle]");
+            }
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key !== "Escape") return;
+            closeMenu("[data-mobile-actions-menu]", "[data-mobile-actions-toggle]", true);
+            closeMenu("[data-desktop-post-actions-menu]", "[data-desktop-post-actions-toggle]");
+            const activeDialog = document.querySelector("[data-report-modal][open]");
+            if (activeDialog) closeModal(activeDialog);
+        });
+
+        document.addEventListener("focusin", syncMobileActionBar, true);
+        document.addEventListener("focusout", () => window.setTimeout(syncMobileActionBar, 0), true);
+        window.addEventListener("resize", syncMobileActionBar);
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener("resize", syncMobileActionBar);
+            window.visualViewport.addEventListener("scroll", syncMobileActionBar);
         }
-        reportModalOpenedAt = 0;
-        reportModalSubmitted = false;
-        syncMobileActionBar();
-      });
-    });
 
-    document.addEventListener("submit", (event) => {
-      const reportForm = event.target.closest("[data-report-modal] form");
-      if (!reportForm) return;
-      reportModalSubmitted = true;
-    });
-
-    document.addEventListener("click", (event) => {
-      const riskTargetNode = event.target.closest("[data-mobile-risk-target]");
-      if (riskTargetNode) {
-        trackRiskTap(riskTargetNode.dataset.mobileRiskTarget);
-      }
-
-      const reportIntentButton = event.target.closest("[data-mobile-report-intent]");
-      if (reportIntentButton) {
-        const confirmPanel = document.querySelector("[data-mobile-report-confirm]");
-        if (!confirmPanel) return;
-        reportIntentButton.classList.add("hidden");
-        confirmPanel.classList.remove("hidden");
-        announceLive(reportConfirmOpenMessage);
-        return;
-      }
-
-      const reportCancelButton = event.target.closest("[data-mobile-report-cancel]");
-      if (reportCancelButton) {
-        resetMobileReportIntent();
-        announceLive(reportConfirmCloseMessage);
-        return;
-      }
-
-      const favoriteButton = event.target.closest("[data-favorite-toggle]");
-      if (favoriteButton) {
-        event.preventDefault();
-        const id = String(favoriteButton.dataset.postId || "");
-        const title = favoriteButton.dataset.postTitle || "";
-        const url = favoriteButton.dataset.postUrl || "";
-        if (id && title && url) {
-          const current = Array.isArray(readJson(FAVORITES_KEY, [])) ? readJson(FAVORITES_KEY, []) : [];
-          const exists = current.some((item) => String(item.id) === id);
-          const next = exists ? current.filter((item) => String(item.id) !== id) : [ { id, title, url, savedAt: Date.now() }, ...current ].slice(0, 50);
-          writeJson(FAVORITES_KEY, next);
-          syncFavoriteButtons();
-          announceLive(exists ? favoriteRemovedMessage : favoriteSavedMessage, exists ? "info" : "success");
-        }
-        return;
-      }
-
-      const openButton = event.target.closest("[data-open-report-modal]");
-      if (openButton) {
-        mobileMenuActionTaken = true;
-        openModal(openButton, openButton.getAttribute("data-open-report-modal"));
-        closeMenu("[data-mobile-actions-menu]", "[data-mobile-actions-toggle]", true);
-        closeMenu("[data-desktop-post-actions-menu]", "[data-desktop-post-actions-toggle]");
-        syncMobileActionBar();
-        return;
-      }
-
-      const closeButton = event.target.closest("[data-close-report-modal]");
-      if (closeButton) {
-        closeModal(document.getElementById(closeButton.getAttribute("data-close-report-modal")));
-        return;
-      }
-
-      const desktopToggle = event.target.closest("[data-desktop-post-actions-toggle]");
-      if (desktopToggle) {
-        const menu = document.querySelector("[data-desktop-post-actions-menu]");
-        if (!menu) return;
-        const expanded = desktopToggle.getAttribute("aria-expanded") == "true";
-        menu.classList.toggle("hidden", expanded);
-        desktopToggle.setAttribute("aria-expanded", String(!expanded));
-        return;
-      }
-
-      const desktopAction = event.target.closest("[data-desktop-actions-menu-item]");
-      if (desktopAction) {
-        runNativeShare(desktopAction.closest("[data-native-share-url]") || desktopAction);
-        closeMenu("[data-desktop-post-actions-menu]", "[data-desktop-post-actions-toggle]");
-        return;
-      }
-
-      const mobileToggle = event.target.closest("[data-mobile-actions-toggle]");
-      if (mobileToggle) {
-        const menu = document.querySelector("[data-mobile-actions-menu]");
-        if (!menu) return;
-        const expanded = mobileToggle.getAttribute("aria-expanded") == "true";
-        if (!expanded) {
-          mobileMenuOpenedAt = Date.now();
-          mobileMenuActionTaken = false;
-          resetMobileReportIntent();
-        } else {
-          reportMobileMisTap("toggle_close");
-          mobileMenuOpenedAt = 0;
-        }
-        menu.classList.toggle("hidden", expanded);
-        mobileToggle.setAttribute("aria-expanded", String(!expanded));
-        if (!expanded && typeof window.dsNotify === "function") window.dsNotify(menuOpenMessage, "info");
-        if (expanded && typeof window.dsNotify === "function") window.dsNotify(menuCloseMessage, "info");
-        syncMobileActionBar();
-        return;
-      }
-
-      const shareButton = event.target.closest("[data-native-share-url]");
-      if (shareButton) runNativeShare(shareButton);
-
-      const mobileMenuAction = event.target.closest("[data-mobile-menu-action]");
-      if (mobileMenuAction) {
-        mobileMenuActionTaken = true;
-        closeMenu("[data-mobile-actions-menu]", "[data-mobile-actions-toggle]", true);
-        mobileMenuOpenedAt = 0;
-        return;
-      }
-
-      const mobileMenu = document.querySelector("[data-mobile-actions-menu]");
-      if (mobileMenu && !mobileMenu.classList.contains("hidden") && !event.target.closest("[data-mobile-actions-menu]") && !event.target.closest("[data-mobile-actions-toggle]")) {
-        reportMobileMisTap("outside_tap");
-        closeMenu("[data-mobile-actions-menu]", "[data-mobile-actions-toggle]", true);
-        mobileMenuOpenedAt = 0;
-      }
-
-      const desktopMenu = document.querySelector("[data-desktop-post-actions-menu]");
-      if (desktopMenu && !desktopMenu.classList.contains("hidden") && !event.target.closest("[data-desktop-post-actions-root]")) {
-        closeMenu("[data-desktop-post-actions-menu]", "[data-desktop-post-actions-toggle]");
-      }
-    });
-
-    document.addEventListener("keydown", (event) => {
-      if (event.key !== "Escape") return;
-      closeMenu("[data-mobile-actions-menu]", "[data-mobile-actions-toggle]", true);
-      closeMenu("[data-desktop-post-actions-menu]", "[data-desktop-post-actions-toggle]");
-      const activeDialog = document.querySelector("[data-report-modal][open]");
-      if (activeDialog) closeModal(activeDialog);
-    });
-
-    document.addEventListener("focusin", syncMobileActionBar, true);
-    document.addEventListener("focusout", () => window.setTimeout(syncMobileActionBar, 0), true);
-    window.addEventListener("resize", syncMobileActionBar);
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener("resize", syncMobileActionBar);
-      window.visualViewport.addEventListener("scroll", syncMobileActionBar);
+        document.addEventListener("turbo:load", () => {
+            markLoadedMedia();
+            syncMobileActionBar();
+            syncFavoriteButtons();
+            storeRecentlyViewed();
+        });
+        document.addEventListener("DOMContentLoaded", () => {
+            markLoadedMedia();
+            syncMobileActionBar();
+            syncFavoriteButtons();
+            storeRecentlyViewed();
+        });
+        window.setTimeout(() => {
+            markLoadedMedia();
+            syncMobileActionBar();
+            syncFavoriteButtons();
+            storeRecentlyViewed();
+        }, 0);
     }
-
-    document.addEventListener("turbo:load", () => { markLoadedMedia(); syncMobileActionBar(); syncFavoriteButtons(); storeRecentlyViewed(); });
-    document.addEventListener("DOMContentLoaded", () => { markLoadedMedia(); syncMobileActionBar(); syncFavoriteButtons(); storeRecentlyViewed(); });
-    window.setTimeout(() => { markLoadedMedia(); syncMobileActionBar(); syncFavoriteButtons(); storeRecentlyViewed(); }, 0);
-  }
 </script>
-

@@ -1,25 +1,27 @@
 module ApplicationHelper
   POST_IMAGE_VARIANTS = {
     thumbnail: {
-      resize_to_fill: [ 640, 360 ],
+      resize_to_fill: [640, 360],
       format: :webp
     },
     main: {
-      resize_to_limit: [ 1600, 1600 ],
+      resize_to_limit: [1600, 1600],
       format: :webp
     },
     og: {
-      resize_to_fill: [ 1200, 630 ],
+      resize_to_fill: [1200, 630],
       format: :jpg
     }
   }.freeze
+
   POST_IMAGE_DIMENSIONS = {
-    thumbnail: [ 640, 360 ],
-    main: [ 1200, 750 ],
-    og: [ 1200, 630 ]
+    thumbnail: [640, 360],
+    main: [1200, 750],
+    og: [1200, 630]
   }.freeze
 
   FALLBACK_POST_IMAGE = "default-desk.svg"
+
   FLASH_VISUALS = {
     "notice" => {
       level: :success,
@@ -39,25 +41,26 @@ module ApplicationHelper
   }.freeze
 
   ITEM_BRAND_PATTERNS = {
-    "Apple" => [ /\bapple\b/i, /\bmacbook\b/i, /\bipad\b/i, /\biphone\b/i ],
-    "Logitech" => [ /\blogitech\b/i, /\blogi\b/i ],
-    "Razer" => [ /\brazer\b/i ],
-    "SteelSeries" => [ /\bsteelseries\b/i ],
-    "Dell" => [ /\bdell\b/i ],
-    "LG" => [ /\blg\b/i ],
-    "Samsung" => [ /\bsamsung\b/i ],
-    "BenQ" => [ /\bbenq\b/i ],
-    "Sony" => [ /\bsony\b/i ],
-    "Bose" => [ /\bbose\b/i ],
-    "Audio-Technica" => [ /\baudio[- ]?technica\b/i ],
-    "Sennheiser" => [ /\bsennheiser\b/i ],
-    "Anker" => [ /\banker\b/i, /\bpowerconf\b/i ],
-    "IKEA" => [ /\bikea\b/i ],
-    "Herman Miller" => [ /\bherman[\s\-]?miller\b/i ],
-    "NOBLECHAIRS" => [ /\bnoblechairs\b/i ],
-    "Keychron" => [ /\bkeychron\b/i ],
-    "HHKB" => [ /\bhhkb\b/i ]
+    "Apple" => [/\bapple\b/i, /\bmacbook\b/i, /\bipad\b/i, /\biphone\b/i],
+    "Logitech" => [/\blogitech\b/i, /\blogi\b/i],
+    "Razer" => [/\brazer\b/i],
+    "SteelSeries" => [/\bsteelseries\b/i],
+    "Dell" => [/\bdell\b/i],
+    "LG" => [/\blg\b/i],
+    "Samsung" => [/\bsamsung\b/i],
+    "BenQ" => [/\bbenq\b/i],
+    "Sony" => [/\bsony\b/i],
+    "Bose" => [/\bbose\b/i],
+    "Audio-Technica" => [/\baudio[- ]?technica\b/i],
+    "Sennheiser" => [/\bsennheiser\b/i],
+    "Anker" => [/\banker\b/i, /\bpowerconf\b/i],
+    "IKEA" => [/\bikea\b/i],
+    "Herman Miller" => [/\bherman[\s\-]?miller\b/i],
+    "NOBLECHAIRS" => [/\bnoblechairs\b/i],
+    "Keychron" => [/\bkeychron\b/i],
+    "HHKB" => [/\bhhkb\b/i]
   }.freeze
+
   ITEM_HOST_BRAND_HINTS = {
     /apple\.com\z/i => "Apple",
     /logitech\./i => "Logitech",
@@ -76,19 +79,21 @@ module ApplicationHelper
     /hermanmiller\./i => "Herman Miller",
     /keychron\./i => "Keychron"
   }.freeze
+
   ITEM_CATEGORY_KEYWORDS = {
-    keyboard: [ "keyboard", "keycap", "switch", "hhkb", "keychron" ],
-    monitor: [ "monitor", "display", "ultrawide", "screen", "4k" ],
-    laptop: [ "laptop", "macbook", "thinkpad", "notebook", "surface" ],
-    desk: [ "desk", "standing desk", "table", "workstation" ],
-    chair: [ "chair", "stool", "ergonomic chair" ],
-    audio: [ "headphone", "earphone", "speaker", "mic", "microphone", "dac" ],
-    lighting: [ "lamp", "light", "led", "light bar", "lighting" ],
-    pointer: [ "mouse", "trackpad", "trackball" ],
-    camera: [ "webcam", "camera", "cam" ],
-    dock: [ "dock", "hub", "kvm", "thunderbolt" ],
-    storage: [ "ssd", "hdd", "nas", "drive" ]
+    keyboard: ["keyboard", "keycap", "switch", "hhkb", "keychron"],
+    monitor: ["monitor", "display", "ultrawide", "screen", "4k"],
+    laptop: ["laptop", "macbook", "thinkpad", "notebook", "surface"],
+    desk: ["desk", "standing desk", "table", "workstation"],
+    chair: ["chair", "stool", "ergonomic chair"],
+    audio: ["headphone", "earphone", "speaker", "mic", "microphone", "dac"],
+    lighting: ["lamp", "light", "led", "light bar", "lighting"],
+    pointer: ["mouse", "trackpad", "trackball"],
+    camera: ["webcam", "camera", "cam"],
+    dock: ["dock", "hub", "kvm", "thunderbolt"],
+    storage: ["ssd", "hdd", "nas", "drive"]
   }.freeze
+
   ITEM_GENERIC_BRAND_TOKENS = %w[desk setup monitor keyboard mouse chair table stand with for and the a an rgb].freeze
   GENERIC_POST_TAGS = %w[desk setup workspace workstation minimal home office room pc].freeze
 
@@ -160,7 +165,7 @@ module ApplicationHelper
   end
 
   def optimized_post_image_tag(post, variant: :thumbnail, **options)
-    class_names = [ options[:class] ]
+    class_names = [options[:class]]
     class_names << "ds-thumbnail-crop" if variant.to_sym == :thumbnail
     options[:class] = class_names.compact.join(" ")
 
@@ -191,16 +196,19 @@ module ApplicationHelper
   end
 
   def context_breadcrumbs
-    base = [ { label: "DeskTour Studio", href: root_path } ]
+    base = [{ label: "DeskTour Studio", href: root_path }]
+
     if controller_path.start_with?("admin/")
       admin_root = { label: t("navigation.admin"), href: admin_posts_path }
       base << admin_root
+
       case controller_path
       when "admin/posts"
         base << { label: t("navigation.admin_posts"), href: admin_posts_path }
       when "admin/reports"
         base << { label: t("navigation.admin_reports"), href: admin_reports_path }
       end
+
       return base
     end
 
@@ -209,6 +217,7 @@ module ApplicationHelper
     case controller_name
     when "posts"
       base << { label: t("posts.index.title"), href: root_path }
+
       if action_name == "show" && defined?(@post) && @post.present?
         base << { label: truncate(@post.title, length: 40), href: post_path(@post) }
       elsif action_name == "notifications" && defined?(@post) && @post.present?
@@ -226,6 +235,7 @@ module ApplicationHelper
       elsif action_name.in?(%w[new create])
         base << { label: t("users.new.heading"), href: new_user_path }
       elsif defined?(@user) && @user.present?
+        base << { label: t("users.index.heading"), href: users_path }
         base << { label: @user.name, href: user_path(@user) }
         base << { label: t("users.edit.heading"), href: edit_user_path(@user) } if action_name.in?(%w[edit update])
       end
@@ -306,13 +316,22 @@ module ApplicationHelper
     return "" if value.blank?
 
     label = style == :date ? formatted_date(value) : formatted_datetime(value)
-    aria_label = if include_relative
-      distance = distance_of_time_in_words(value, Time.current)
-      relative = I18n.exists?("time.relative_ago") ? t("time.relative_ago", distance: distance) : "#{distance} ago"
-      "#{label} (#{relative})"
-    else
-      label
-    end
+    aria_label =
+      if include_relative
+        distance = distance_of_time_in_words(value, Time.current)
+        relative =
+          if I18n.exists?("time.relative_ago")
+            t("time.relative_ago", distance: distance)
+          elsif I18n.locale.to_s == "ja"
+            "#{distance}前"
+          else
+            "#{distance} ago"
+          end
+
+        "#{label} (#{relative})"
+      else
+        label
+      end
 
     content_tag(:time, label, datetime: value.to_time.iso8601, title: aria_label, "aria-label": aria_label)
   end
@@ -336,9 +355,10 @@ module ApplicationHelper
       score += 4 if category_down.present? && (normalized.include?(category_down) || category_down.include?(normalized))
       score += 3 if query_tokens.any? { |token| normalized.include?(token) || token.include?(normalized) }
       score -= 1 if GENERIC_POST_TAGS.include?(normalized)
-      [ -score, tag ]
+      [-score, tag]
     end
   end
+
   def related_item_facts(item)
     name = item.name.to_s.strip
     url = item.affiliate_url.to_s.strip
@@ -346,6 +366,7 @@ module ApplicationHelper
     host, url_text, query_params = extract_url_info(url)
 
     facts = []
+
     brand = extract_brand(name, host: host)
     if brand.present?
       facts << { key: :brand, label: t("posts.show.item_brand"), value: brand }
@@ -367,7 +388,11 @@ module ApplicationHelper
       facts << { key: :source, label: t("posts.show.item_source"), value: host }
     end
 
-    facts.uniq { |fact| [ fact[:key], fact[:value] ] }.first(3)
+    priority = { brand: 0, category: 1, price: 2, source: 3 }
+    facts
+      .uniq { |fact| [fact[:key], fact[:value]] }
+      .sort_by { |fact| priority.fetch(fact[:key], 99) }
+      .first(3)
   end
 
   def related_item_label(key)
@@ -379,6 +404,7 @@ module ApplicationHelper
     label_key = "status_levels.#{level}"
     I18n.exists?(label_key) ? t(label_key) : level.to_s.humanize
   end
+
   def status_badge(level:, label:, icon:)
     tones = {
       success: "ds-tone-success",
@@ -389,7 +415,7 @@ module ApplicationHelper
     tone = tones.fetch(level.to_sym, tones.fetch(:info))
 
     content_tag(:span, class: "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium #{tone}") do
-      safe_join([ ui_icon(icon, class_name: "h-3.5 w-3.5"), content_tag(:span, label) ])
+      safe_join([ui_icon(icon, class_name: "h-3.5 w-3.5"), content_tag(:span, label)])
     end
   end
 
@@ -420,6 +446,7 @@ module ApplicationHelper
     summary_key = "#{context_key}.summary"
     details_key = "#{context_key}.details"
     heading_key = "#{context_key}.heading"
+
     {
       heading: I18n.exists?(heading_key) ? t(heading_key) : t("legal.inline.heading"),
       summary: I18n.exists?(summary_key) ? Array(t(summary_key)) : [],
@@ -428,21 +455,30 @@ module ApplicationHelper
   end
 
   def policy_revision_notice
-    revision_id = ENV.fetch("POLICY_REVISION_ID", "").to_s.strip
+    revision_id = ENV["POLICY_REVISION_ID"].to_s.strip
     return if revision_id.blank?
 
-    highlight_lines = ENV.fetch("POLICY_REVISION_HIGHLIGHTS", "").to_s.split("|").map(&:strip).reject(&:blank?)
+    highlight_lines = ENV["POLICY_REVISION_HIGHLIGHTS"].to_s.split("|").map(&:strip).reject(&:blank?)
+    effective_on_raw = ENV["POLICY_REVISION_EFFECTIVE_ON"].to_s.strip
+    effective_on =
+      begin
+        effective_on_raw.present? ? Date.parse(effective_on_raw) : nil
+      rescue ArgumentError
+        effective_on_raw.presence
+      end
+
     {
       id: revision_id,
-      effective_on: ENV.fetch("POLICY_REVISION_EFFECTIVE_ON", "").to_s.strip.presence,
-      summary: ENV.fetch("POLICY_REVISION_SUMMARY", "").to_s.strip.presence || t("legal.revision.default_summary"),
+      effective_on: effective_on,
+      summary: ENV["POLICY_REVISION_SUMMARY"].to_s.strip.presence || t("legal.revision.default_summary"),
       highlights: highlight_lines,
-      link: ENV.fetch("POLICY_REVISION_LINK", "").to_s.strip.presence || terms_path
+      link: ENV["POLICY_REVISION_LINK"].to_s.strip.presence || terms_path
     }
   end
 
   def ui_icon(name, class_name: "h-4 w-4")
     path_attrs = { "stroke-linecap": "round", "stroke-linejoin": "round" }
+
     paths = case name.to_sym
     when :check
       [
@@ -480,7 +516,8 @@ module ApplicationHelper
         tag.path(path_attrs.merge(d: "M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"))
       ]
     when :heart
-      [ tag.path(path_attrs.merge(d: "m21 8.25c0-2.485-2.015-4.5-4.5-4.5-1.74 0-3.248.99-4 2.438A4.484 4.484 0 0 0 8.5 3.75C6.015 3.75 4 5.765 4 8.25c0 4.025 4.5 7.5 8 10.5 3.5-3 8-6.475 8-10.5Z"))
+      [
+        tag.path(path_attrs.merge(d: "m21 8.25c0-2.485-2.015-4.5-4.5-4.5-1.74 0-3.248.99-4 2.438A4.484 4.484 0 0 0 8.5 3.75C6.015 3.75 4 5.765 4 8.25c0 4.025 4.5 7.5 8 10.5 3.5-3 8-6.475 8-10.5Z"))
       ]
     when :globe_alt
       [
@@ -540,23 +577,39 @@ module ApplicationHelper
         tag.path(d: "M6.75 3A2.25 2.25 0 0 0 4.5 5.25V21l7.5-4.5 7.5 4.5V5.25A2.25 2.25 0 0 0 17.25 3h-10.5Z", fill: "currentColor", stroke: "none")
       ]
     else
-      [ tag.path(path_attrs.merge(d: "M12 6v6m0 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z")) ]
+      [
+        tag.path(path_attrs.merge(d: "M12 6v6m0 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"))
+      ]
     end
 
-    content_tag(:svg, safe_join(paths), xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", "stroke-width": "1.8", class: class_name, "aria-hidden": "true")
+    content_tag(
+      :svg,
+      safe_join(paths),
+      xmlns: "http://www.w3.org/2000/svg",
+      fill: "none",
+      viewBox: "0 0 24 24",
+      stroke: "currentColor",
+      "stroke-width": "1.8",
+      class: class_name,
+      "aria-hidden": "true"
+    )
   end
 
   private
-  def extract_url_info(url)
-    return [ "", "", {} ] if url.blank?
 
-    uri = URI.parse(url)
+  def extract_url_info(url)
+    return ["", "", {}] if url.blank?
+
+    normalized_url = url.to_s.strip
+    normalized_url = "https://#{normalized_url}" if normalized_url.present? && normalized_url !~ /\A[a-z][a-z0-9+\-.]*:\/\//i
+
+    uri = URI.parse(normalized_url)
     host = uri.host.to_s.sub(/\Awww\./, "")
-    text = URI.decode_www_form_component([ uri.path, uri.query ].compact.join(" "))
+    text = URI.decode_www_form_component([uri.path, uri.query].compact.join(" "))
     query_params = URI.decode_www_form(uri.query.to_s).to_h.transform_keys(&:downcase)
-    [ host, text, query_params ]
+    [host, text, query_params]
   rescue URI::InvalidURIError, ArgumentError
-    [ "", "", {} ]
+    ["", "", {}]
   end
 
   def extract_brand(name, host:)
@@ -588,7 +641,7 @@ module ApplicationHelper
   end
 
   def extract_price(name:, url_text:, query_params:)
-    text = [ name, url_text ].compact.join(" ")
+    text = [name, url_text].compact.join(" ")
     return if text.blank?
 
     currency_price_patterns = [
@@ -596,6 +649,7 @@ module ApplicationHelper
       /\b(?:USD|JPY|EUR|GBP)\s?\d[\d,]*(?:\.\d{1,2})?\b/i,
       /\b\d[\d,]*(?:\.\d{1,2})?\s?(?:USD|JPY|EUR|GBP)\b/i
     ]
+
     detected = currency_price_patterns.lazy.map { |pattern| text[pattern] }.find(&:present?)
     return detected.strip if detected.present?
 
@@ -605,6 +659,7 @@ module ApplicationHelper
     currency = query_params["currency"].to_s.upcase
     currency.present? ? "#{currency} #{price_value}" : price_value
   end
+
   def variant_options(key)
     POST_IMAGE_VARIANTS.fetch(key)
   rescue KeyError
@@ -614,6 +669,7 @@ module ApplicationHelper
   def default_image_tag_options(post, variant)
     width, height = POST_IMAGE_DIMENSIONS.fetch(variant, POST_IMAGE_DIMENSIONS[:main])
     fallback_url = asset_path(FALLBACK_POST_IMAGE)
+
     base = {
       alt: post&.title.presence || t("images.desk_alt"),
       decoding: "async",

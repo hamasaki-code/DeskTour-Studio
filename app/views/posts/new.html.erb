@@ -1,22 +1,27 @@
 <% content_for :title, t("posts.new.title") %>
 <% content_for :description, t("posts.new.description") %>
 
-<section class="mx-auto w-full max-w-3xl space-y-content" data-page-content>
-    <div>
-        <h1 class="ds-heading-xl"><%= t("posts.new.heading") %></h1>
-        <p class="mt-2 ds-text-support">
+<section class="space-y-content" data-page-content>
+    <div class="space-y-3">
+        <h1 class="ds-heading-xl ds-text-strong"><%= t("posts.new.heading") %></h1>
+        <p class="ds-text-support">
             <%= t("posts.new.lead") %>
         </p>
-        <p class="mt-2 ds-text-muted">
-          <%= link_to t("navigation.onboarding"), onboarding_path, class: "ds-link-underlined ds-hover-link" %>
+        <p class="ds-text-muted">
+            <%= link_to t("navigation.onboarding"), onboarding_path, class: "ds-link-underlined ds-hover-link" %>
         </p>
     </div>
 
-    <div class="ds-card p-6">
-        <%= render "form", post: @post, owned_users: @owned_users, submit_label: t("posts.form.publish"), category_suggestions: @category_suggestions, tag_suggestions: @tag_suggestions %>
+    <div class="rounded-2xl border ds-border-subtle ds-surface-panel p-5 sm:p-6">
+        <%= render "form",
+               post: @post,
+               owned_users: @owned_users,
+               submit_label: t("posts.form.publish"),
+               category_suggestions: @category_suggestions,
+               tag_suggestions: @tag_suggestions %>
     </div>
 </section>
 
-<section class="mx-auto hidden w-full max-w-3xl" data-page-skeleton aria-hidden="true">
-  <%= render "shared/screen_skeleton", variant: :detail %>
+<section class="hidden" data-page-skeleton aria-hidden="true">
+    <%= render "shared/screen_skeleton", variant: :detail %>
 </section>

@@ -33,9 +33,9 @@
                 leave_guard_message: t("ui.leave_guard_post_form"),
                 post_create_flow: true
               } do |f| %>
-  <% if post.errors.any? %>
-    <div class="space-y-2">
-      <%= render "shared/feedback_panel",
+<% if post.errors.any? %>
+<div class="space-y-2">
+    <%= render "shared/feedback_panel",
                  level: :error,
                  title: t("posts.form.error_summary"),
                  body: t("ui.error_with_recovery"),
@@ -44,87 +44,87 @@
                    { label: t("ui.back"), href: (request.referer.presence || root_path) }
                  ] %>
 
-      <div class="rounded-lg border ds-tone-danger p-3 text-sm" role="alert" aria-live="assertive">
+    <div class="rounded-lg border ds-tone-danger p-3 text-sm" role="alert" aria-live="assertive">
         <ul class="list-disc pl-5">
-          <% if profile_error.present? %>
+            <% if profile_error.present? %>
             <li><a href="#post_user_id" class="underline"><%= profile_error %></a></li>
-          <% end %>
-          <% if title_error.present? %>
+            <% end %>
+            <% if title_error.present? %>
             <li><a href="#post_title" class="underline"><%= title_error %></a></li>
-          <% end %>
-          <% if description_error.present? %>
+            <% end %>
+            <% if description_error.present? %>
             <li><a href="#post_description" class="underline"><%= description_error %></a></li>
-          <% end %>
-          <% if image_error.present? %>
+            <% end %>
+            <% if image_error.present? %>
             <li><a href="#post_desk_image" class="underline"><%= image_error %></a></li>
-          <% end %>
-          <% if category_error.present? %>
+            <% end %>
+            <% if category_error.present? %>
             <li><a href="#post_category" class="underline"><%= category_error %></a></li>
-          <% end %>
-          <% if theme_error.present? %>
+            <% end %>
+            <% if theme_error.present? %>
             <li><a href="#post_theme" class="underline"><%= theme_error %></a></li>
-          <% end %>
-          <% if tag_list_error.present? %>
+            <% end %>
+            <% if tag_list_error.present? %>
             <li><a href="#post_tag_list" class="underline"><%= tag_list_error %></a></li>
-          <% end %>
+            <% end %>
         </ul>
-      </div>
     </div>
-  <% end %>
+</div>
+<% end %>
 
-  <section class="rounded-xl border ds-border-subtle ds-surface-muted p-4" aria-label="<%= t('posts.form.step_progress') %>">
+<section class="rounded-xl border ds-border-subtle ds-surface-muted p-4" aria-label="<%= t('posts.form.step_progress') %>">
     <div class="flex items-center justify-between gap-2">
-      <p class="ds-text-support font-semibold"><%= t("posts.form.step_progress") %></p>
-      <p class="ds-text-meta"><span data-step-progress-text>1 / 3</span></p>
+        <p class="ds-text-support font-semibold"><%= t("posts.form.step_progress") %></p>
+        <p class="ds-text-meta"><span data-step-progress-text>1 / 3</span></p>
     </div>
     <div class="mt-2 ds-progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1" data-step-progressbar>
-      <div class="ds-progress-fill" style="width: 33.34%" data-step-progress-fill></div>
+        <div class="ds-progress-fill" style="width: 33.34%" data-step-progress-fill></div>
     </div>
     <ol class="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
-      <li class="rounded-full border ds-tone-info px-2 py-1" data-step-chip="1"><%= t("posts.form.step_basic") %></li>
-      <li class="rounded-full border ds-tone-info px-2 py-1" data-step-chip="2"><%= t("posts.form.step_image") %></li>
-      <li class="rounded-full border ds-tone-info px-2 py-1" data-step-chip="3"><%= t("posts.form.step_confirm") %></li>
+        <li class="rounded-full border px-2 py-1 ds-badge-inactive" data-step-chip="1"><%= t("posts.form.step_basic") %></li>
+        <li class="rounded-full border px-2 py-1 ds-badge-inactive" data-step-chip="2"><%= t("posts.form.step_image") %></li>
+        <li class="rounded-full border px-2 py-1 ds-badge-inactive" data-step-chip="3"><%= t("posts.form.step_confirm") %></li>
     </ol>
-  </section>
+</section>
 
-  <section id="post-form-fields" class="space-y-4" data-post-step-root>
+<section id="post-form-fields" class="space-y-4" data-post-step-root>
     <section class="space-y-4 rounded-xl border ds-border-subtle ds-surface-base p-4 sm:p-5" data-post-step-panel="1">
-      <div>
-        <h2 class="ds-heading-md"><%= t("posts.form.required_section") %></h2>
-        <p class="mt-1 ds-text-support"><%= t("posts.form.required_section_lead") %></p>
-      </div>
+        <div>
+            <h2 class="ds-heading-md"><%= t("posts.form.required_section") %></h2>
+            <p class="mt-1 ds-text-support"><%= t("posts.form.required_section_lead") %></p>
+        </div>
 
-      <div class="grid gap-4 sm:grid-cols-2">
-        <% if owned_users.any? %>
-          <div class="sm:col-span-2">
-            <%= f.label :user_id, t("posts.form.profile_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
-            <%= f.collection_select :user_id, owned_users, :id, :name, {}, class: input_class.call(profile_error), aria: { invalid: profile_error.present? ? "true" : nil, describedby: "post_user_id_help post_user_id_error" } %>
-            <p id="post_user_id_help" class="ds-field-guide"><%= t("posts.form.profile_guide") %></p>
-            <% if profile_error.present? %>
-              <p id="post_user_id_error" class="ds-field-error"><%= profile_error %></p>
+        <div class="grid gap-4 sm:grid-cols-2">
+            <% if owned_users.any? %>
+            <div class="sm:col-span-2">
+                <%= f.label :user_id, t("posts.form.profile_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
+                <%= f.collection_select :user_id, owned_users, :id, :name, {}, class: input_class.call(profile_error), aria: { invalid: profile_error.present? ? "true" : nil, describedby: "post_user_id_help post_user_id_error" } %>
+                <p id="post_user_id_help" class="ds-field-guide"><%= t("posts.form.profile_guide") %></p>
+                <% if profile_error.present? %>
+                <p id="post_user_id_error" class="ds-field-error"><%= profile_error %></p>
+                <% end %>
+            </div>
             <% end %>
-          </div>
-        <% end %>
 
-        <div class="sm:col-span-2">
-          <%= f.label :title, t("posts.form.title_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
-          <%= f.text_field :title,
+            <div class="sm:col-span-2">
+                <%= f.label :title, t("posts.form.title_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
+                <%= f.text_field :title,
                            required: true,
                            maxlength: 120,
                            class: input_class.call(title_error),
                            placeholder: t("posts.form.title_placeholder"),
                            aria: { invalid: title_error.present? ? "true" : nil, describedby: "post_title_help post_title_counter post_title_error" },
                            data: { char_count_max: 120, char_count_target: "post_title_counter" } %>
-          <p id="post_title_help" class="ds-field-guide"><%= t("posts.form.title_guide") %></p>
-          <p id="post_title_counter" class="ds-char-counter" aria-live="polite"></p>
-          <% if title_error.present? %>
-            <p id="post_title_error" class="ds-field-error"><%= title_error %></p>
-          <% end %>
-        </div>
+                <p id="post_title_help" class="ds-field-guide"><%= t("posts.form.title_guide") %></p>
+                <p id="post_title_counter" class="ds-char-counter" aria-live="polite"></p>
+                <% if title_error.present? %>
+                <p id="post_title_error" class="ds-field-error"><%= title_error %></p>
+                <% end %>
+            </div>
 
-        <div class="sm:col-span-2">
-          <%= f.label :description, t("posts.form.description_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
-          <%= f.text_area :description,
+            <div class="sm:col-span-2">
+                <%= f.label :description, t("posts.form.description_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
+                <%= f.text_area :description,
                           rows: 7,
                           required: true,
                           maxlength: 2000,
@@ -132,504 +132,681 @@
                           placeholder: t("posts.form.description_placeholder"),
                           aria: { invalid: description_error.present? ? "true" : nil, describedby: "post_description_help post_description_counter post_description_error" },
                           data: { char_count_max: 2000, char_count_target: "post_description_counter" } %>
-          <p id="post_description_help" class="ds-field-guide"><%= t("posts.form.description_guide") %></p>
-          <p id="post_description_counter" class="ds-char-counter" aria-live="polite"></p>
-          <% if description_error.present? %>
-            <p id="post_description_error" class="ds-field-error"><%= description_error %></p>
-          <% end %>
+                <p id="post_description_help" class="ds-field-guide"><%= t("posts.form.description_guide") %></p>
+                <p id="post_description_counter" class="ds-char-counter" aria-live="polite"></p>
+                <% if description_error.present? %>
+                <p id="post_description_error" class="ds-field-error"><%= description_error %></p>
+                <% end %>
+            </div>
         </div>
-      </div>
 
-      <div class="flex justify-end">
-        <button type="button" class="tap-target cta-primary" data-post-step-next="1"><%= t("posts.form.next_to_image") %></button>
-      </div>
+        <div class="flex justify-end">
+            <button type="button" class="tap-target cta-primary" data-post-step-next="1"><%= t("posts.form.next_to_image") %></button>
+        </div>
     </section>
 
     <section class="hidden space-y-4 rounded-xl border ds-border-subtle ds-surface-base p-4 sm:p-5" data-post-step-panel="2">
-      <div>
-        <h2 class="ds-heading-md"><%= t("posts.form.image_section") %></h2>
-        <p class="mt-1 ds-text-support"><%= t("posts.form.image_section_lead") %></p>
-      </div>
+        <div>
+            <h2 class="ds-heading-md"><%= t("posts.form.image_section") %></h2>
+            <p class="mt-1 ds-text-support"><%= t("posts.form.image_section_lead") %></p>
+        </div>
 
-      <div>
-        <%= f.label :desk_image, t("posts.form.image_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
-        <%= f.file_field :desk_image,
+        <div class="space-y-3">
+            <%= f.label :desk_image, t("posts.form.image_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
+            <%= f.file_field :desk_image,
                          required: post.published?,
                          class: input_class.call(image_error),
                          accept: "image/jpeg,image/png,image/webp,image/gif",
                          aria: { invalid: image_error.present? ? "true" : nil, describedby: "post_image_help post_image_error post_image_upload_feedback" },
                          data: { image_upload_input: true, has_existing_image: post.desk_image.attached? } %>
-        <p id="post_image_help" class="ds-field-guide"><%= t("posts.form.image_guide") %></p>
-        <p id="post_image_upload_feedback" class="ds-field-error hidden" data-image-upload-feedback></p>
-        <% if image_error.present? %>
-          <p id="post_image_error" class="ds-field-error"><%= image_error %></p>
-        <% end %>
-        <div class="mt-2">
-          <button type="button" class="tap-target cta-tertiary cta-compact" data-image-upload-retry><%= t("images.retry") %></button>
+            <p id="post_image_help" class="ds-field-guide"><%= t("posts.form.image_guide") %></p>
+            <p id="post_image_upload_feedback" class="ds-field-error hidden" data-image-upload-feedback></p>
+            <% if image_error.present? %>
+            <p id="post_image_error" class="ds-field-error"><%= image_error %></p>
+            <% end %>
+
+            <div class="rounded-lg border ds-border-subtle ds-surface-muted p-3">
+                <p class="ds-text-meta font-semibold ds-text-weak"><%= t("posts.form.confirm_section") %></p>
+                <p class="mt-1 text-sm ds-text-support" data-review-image-state>
+                    <%= post.desk_image.attached? ? t("posts.form.image_selected_state") : t("posts.form.image_missing_state") %>
+                </p>
+            </div>
+
+            <div>
+                <button type="button" class="tap-target cta-tertiary cta-compact" data-image-upload-retry><%= t("images.retry") %></button>
+            </div>
         </div>
-      </div>
 
-      <details class="rounded-xl border ds-border-subtle ds-surface-muted p-4 sm:p-5" <%= "open" if optional_panel_open %>>
-        <summary class="cursor-pointer list-none">
-          <div>
-            <h2 class="ds-heading-md"><%= t("posts.form.optional_section") %></h2>
-            <p class="mt-1 ds-text-support"><%= t("posts.form.optional_section_lead") %></p>
-          </div>
-        </summary>
+        <details class="rounded-xl border ds-border-subtle ds-surface-muted p-4 sm:p-5" <%= "open" if optional_panel_open %>>
+            <summary class="cursor-pointer list-none">
+                <div>
+                    <h2 class="ds-heading-md"><%= t("posts.form.optional_section") %></h2>
+                    <p class="mt-1 ds-text-support"><%= t("posts.form.optional_section_lead") %></p>
+                </div>
+            </summary>
 
-        <div class="mt-4 grid gap-4 sm:grid-cols-2">
-          <div>
-            <%= f.label :category, t("posts.form.category_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
-            <%= f.text_field :category, class: input_class.call(category_error), placeholder: t("posts.form.category_placeholder"), list: "post-category-options", aria: { invalid: category_error.present? ? "true" : nil, describedby: "post_category_help post_category_error" } %>
-            <p id="post_category_help" class="ds-field-guide"><%= t("posts.form.category_guide") %></p>
-            <% if category_error.present? %>
-              <p id="post_category_error" class="ds-field-error"><%= category_error %></p>
-            <% end %>
-          </div>
+            <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                <div>
+                    <%= f.label :category, t("posts.form.category_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
+                    <%= f.text_field :category, class: input_class.call(category_error), placeholder: t("posts.form.category_placeholder"), list: "post-category-options", aria: { invalid: category_error.present? ? "true" : nil, describedby: "post_category_help post_category_error" } %>
+                    <p id="post_category_help" class="ds-field-guide"><%= t("posts.form.category_guide") %></p>
+                    <% if category_error.present? %>
+                    <p id="post_category_error" class="ds-field-error"><%= category_error %></p>
+                    <% end %>
+                </div>
 
-          <div>
-            <%= f.label :theme, t("posts.form.theme_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
-            <%= f.text_field :theme, class: input_class.call(theme_error), placeholder: t("posts.form.theme_placeholder"), aria: { invalid: theme_error.present? ? "true" : nil, describedby: "post_theme_help post_theme_error" } %>
-            <p id="post_theme_help" class="ds-field-guide"><%= t("posts.form.theme_guide") %></p>
-            <% if theme_error.present? %>
-              <p id="post_theme_error" class="ds-field-error"><%= theme_error %></p>
-            <% end %>
-          </div>
+                <div>
+                    <%= f.label :theme, t("posts.form.theme_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
+                    <%= f.text_field :theme, class: input_class.call(theme_error), placeholder: t("posts.form.theme_placeholder"), aria: { invalid: theme_error.present? ? "true" : nil, describedby: "post_theme_help post_theme_error" } %>
+                    <p id="post_theme_help" class="ds-field-guide"><%= t("posts.form.theme_guide") %></p>
+                    <% if theme_error.present? %>
+                    <p id="post_theme_error" class="ds-field-error"><%= theme_error %></p>
+                    <% end %>
+                </div>
 
-          <div class="sm:col-span-2">
-            <%= f.label :tag_list, t("posts.form.tags_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
-            <%= f.text_field :tag_list,
+                <div class="sm:col-span-2">
+                    <%= f.label :tag_list, t("posts.form.tags_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
+                    <%= f.text_field :tag_list,
                              maxlength: 220,
                              class: input_class.call(tag_list_error),
                              placeholder: t("posts.form.tags_placeholder"),
                              list: "post-tag-options",
                              aria: { invalid: tag_list_error.present? ? "true" : nil, describedby: "post_tag_list_help post_tag_list_counter post_tag_list_error" },
                              data: { char_count_max: 220, char_count_target: "post_tag_list_counter" } %>
-            <p id="post_tag_list_help" class="ds-field-guide"><%= t("posts.form.tags_guide") %></p>
-            <p id="post_tag_list_counter" class="ds-char-counter" aria-live="polite"></p>
-            <% if tag_list_error.present? %>
-              <p id="post_tag_list_error" class="ds-field-error"><%= tag_list_error %></p>
-            <% end %>
-          </div>
-        </div>
-      </details>
-
-      <details class="rounded-xl border ds-border-subtle ds-surface-muted p-4" <%= "open" if items_panel_open %>>
-        <summary class="cursor-pointer list-none text-sm font-semibold ds-text-strong"><%= t("posts.form.related_items") %></summary>
-        <div class="mt-3 space-y-4">
-          <%= f.fields_for :items do |item_fields| %>
-            <div class="grid gap-3 rounded-lg border ds-border-subtle ds-surface-base p-3 sm:grid-cols-2">
-              <div>
-                <%= item_fields.label :name, t("posts.form.item_name_label"), class: "mb-1 block text-xs font-medium ds-text-strong" %>
-                <%= item_fields.text_field :name, class: "ds-form-control", placeholder: t("posts.form.item_name_placeholder") %>
-                <p class="ds-field-guide"><%= t("posts.form.item_name_guide") %></p>
-              </div>
-              <div>
-                <%= item_fields.label :affiliate_url, t("posts.form.affiliate_url_label"), class: "mb-1 block text-xs font-medium ds-text-strong" %>
-                <%= item_fields.url_field :affiliate_url, class: "ds-form-control", placeholder: t("posts.form.affiliate_url_placeholder"), data: { url_validate: true }, aria: { describedby: "#{item_fields.field_id(:affiliate_url)}_help #{item_fields.field_id(:affiliate_url)}_error" } %>
-                <p class="ds-field-guide"><%= t("posts.form.affiliate_url_guide") %></p>
-                <p id="<%= item_fields.field_id(:affiliate_url) %>_error" class="ds-field-error hidden" data-url-field-error></p>
-              </div>
+                    <p id="post_tag_list_help" class="ds-field-guide"><%= t("posts.form.tags_guide") %></p>
+                    <p id="post_tag_list_counter" class="ds-char-counter" aria-live="polite"></p>
+                    <% if tag_list_error.present? %>
+                    <p id="post_tag_list_error" class="ds-field-error"><%= tag_list_error %></p>
+                    <% end %>
+                </div>
             </div>
-          <% end %>
-        </div>
-      </details>
+        </details>
 
-      <div class="flex flex-wrap justify-between gap-2">
-        <button type="button" class="tap-target cta-secondary" data-post-step-prev="2"><%= t("ui.back") %></button>
-        <button type="button" class="tap-target cta-primary" data-post-step-next="2"><%= t("posts.form.next_to_confirm") %></button>
-      </div>
+        <section class="rounded-xl border ds-border-subtle ds-surface-muted p-4" data-items-panel <%= "data-items-open='true'" if items_panel_open %>>
+            <div class="flex items-center justify-between gap-3">
+                <div>
+                    <h2 class="ds-heading-md"><%= t("posts.form.related_items") %></h2>
+                    <p class="mt-1 ds-text-support"><%= t("posts.form.related_items_lead", default: "Add the gear and products featured in this setup.") %></p>
+                </div>
+                <button type="button" class="tap-target cta-secondary cta-compact" data-add-item-row><%= t("posts.form.add_item", default: "Add item") %></button>
+            </div>
+
+            <div class="mt-3 space-y-4" data-items-list>
+                <%= f.fields_for :items do |item_fields| %>
+                <div class="grid gap-3 rounded-lg border ds-border-subtle ds-surface-base p-3 sm:grid-cols-2" data-item-row>
+                    <div class="sm:col-span-2 flex justify-between gap-2">
+                        <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("posts.form.item_block_label", default: "Item") %></p>
+                        <button type="button" class="tap-target cta-tertiary cta-compact" data-remove-item-row><%= t("posts.form.remove_item", default: "Remove") %></button>
+                    </div>
+
+                    <div>
+                        <%= item_fields.label :name, t("posts.form.item_name_label"), class: "mb-1 block text-xs font-medium ds-text-strong" %>
+                        <%= item_fields.text_field :name, class: "ds-form-control", placeholder: t("posts.form.item_name_placeholder") %>
+                        <p class="ds-field-guide"><%= t("posts.form.item_name_guide") %></p>
+                    </div>
+
+                    <div>
+                        <%= item_fields.label :affiliate_url, t("posts.form.affiliate_url_label"), class: "mb-1 block text-xs font-medium ds-text-strong" %>
+                        <%= item_fields.url_field :affiliate_url,
+                                          class: "ds-form-control",
+                                          placeholder: t("posts.form.affiliate_url_placeholder"),
+                                          data: { url_validate: true },
+                                          aria: { describedby: "#{item_fields.field_id(:affiliate_url)}_help #{item_fields.field_id(:affiliate_url)}_error" } %>
+                        <p id="<%= item_fields.field_id(:affiliate_url) %>_help" class="ds-field-guide"><%= t("posts.form.affiliate_url_guide") %></p>
+                        <p id="<%= item_fields.field_id(:affiliate_url) %>_error" class="ds-field-error hidden" data-url-field-error></p>
+                    </div>
+
+                    <%= item_fields.hidden_field :_destroy, value: "0", data: { itemDestroy: true } %>
+                </div>
+                <% end %>
+            </div>
+
+            <template data-item-template>
+                <div class="grid gap-3 rounded-lg border ds-border-subtle ds-surface-base p-3 sm:grid-cols-2" data-item-row>
+                    <div class="sm:col-span-2 flex justify-between gap-2">
+                        <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("posts.form.item_block_label", default: "Item") %></p>
+                        <button type="button" class="tap-target cta-tertiary cta-compact" data-remove-item-row><%= t("posts.form.remove_item", default: "Remove") %></button>
+                    </div>
+
+                    <div>
+                        <label class="mb-1 block text-xs font-medium ds-text-strong" for="post_items_attributes___INDEX___name"><%= t("posts.form.item_name_label") %></label>
+                        <input type="text" name="post[items_attributes][__INDEX__][name]" id="post_items_attributes___INDEX___name" class="ds-form-control" placeholder="<%= t("posts.form.item_name_placeholder") %>">
+                        <p class="ds-field-guide"><%= t("posts.form.item_name_guide") %></p>
+                    </div>
+
+                    <div>
+                        <label class="mb-1 block text-xs font-medium ds-text-strong" for="post_items_attributes___INDEX___affiliate_url"><%= t("posts.form.affiliate_url_label") %></label>
+                        <input type="url" name="post[items_attributes][__INDEX__][affiliate_url]" id="post_items_attributes___INDEX___affiliate_url" class="ds-form-control" placeholder="<%= t("posts.form.affiliate_url_placeholder") %>" data-url-validate="true" aria-describedby="post_items_attributes___INDEX___affiliate_url_help post_items_attributes___INDEX___affiliate_url_error">
+                        <p id="post_items_attributes___INDEX___affiliate_url_help" class="ds-field-guide"><%= t("posts.form.affiliate_url_guide") %></p>
+                        <p id="post_items_attributes___INDEX___affiliate_url_error" class="ds-field-error hidden" data-url-field-error></p>
+                    </div>
+
+                    <input type="hidden" name="post[items_attributes][__INDEX__][_destroy]" value="0" data-item-destroy="true">
+                </div>
+            </template>
+        </section>
+
+        <div class="flex flex-wrap justify-between gap-2">
+            <button type="button" class="tap-target cta-secondary" data-post-step-prev="2"><%= t("ui.back") %></button>
+            <button type="button" class="tap-target cta-primary" data-post-step-next="2"><%= t("posts.form.next_to_confirm") %></button>
+        </div>
     </section>
 
     <section class="hidden space-y-4 rounded-xl border ds-border-subtle ds-surface-base p-4 sm:p-5" data-post-step-panel="3">
-      <div>
-        <h2 class="ds-heading-md"><%= t("posts.form.confirm_section") %></h2>
-        <p class="mt-1 ds-text-support"><%= t("posts.form.confirm_section_lead") %></p>
-      </div>
-
-      <dl class="grid gap-3 sm:grid-cols-2" data-post-review>
-        <div class="rounded-lg border ds-border-subtle ds-surface-muted p-3 sm:col-span-2">
-          <dt class="ds-text-meta font-semibold ds-text-weak"><%= t("posts.form.title_label") %></dt>
-          <dd class="mt-1 text-sm ds-text-support ds-break-words" data-review-title>-</dd>
+        <div>
+            <h2 class="ds-heading-md"><%= t("posts.form.confirm_section") %></h2>
+            <p class="mt-1 ds-text-support"><%= t("posts.form.confirm_section_lead") %></p>
         </div>
-        <div class="rounded-lg border ds-border-subtle ds-surface-muted p-3 sm:col-span-2">
-          <dt class="ds-text-meta font-semibold ds-text-weak"><%= t("posts.form.description_label") %></dt>
-          <dd class="mt-1 text-sm ds-text-support ds-break-words" data-review-description>-</dd>
-        </div>
-        <div class="rounded-lg border ds-border-subtle ds-surface-muted p-3">
-          <dt class="ds-text-meta font-semibold ds-text-weak"><%= t("posts.form.category_label") %></dt>
-          <dd class="mt-1 text-sm ds-text-support ds-break-words" data-review-category>-</dd>
-        </div>
-        <div class="rounded-lg border ds-border-subtle ds-surface-muted p-3">
-          <dt class="ds-text-meta font-semibold ds-text-weak"><%= t("posts.form.theme_label") %></dt>
-          <dd class="mt-1 text-sm ds-text-support ds-break-words" data-review-theme>-</dd>
-        </div>
-      </dl>
 
-      <div class="flex flex-wrap gap-3">
-        <button type="button" class="tap-target cta-secondary" data-post-step-prev="3"><%= t("ui.back") %></button>
+        <dl class="grid gap-3 sm:grid-cols-2" data-post-review>
+            <div class="rounded-lg border ds-border-subtle ds-surface-muted p-3 sm:col-span-2">
+                <dt class="ds-text-meta font-semibold ds-text-weak"><%= t("posts.form.title_label") %></dt>
+                <dd class="mt-1 text-sm ds-text-support ds-break-words" data-review-title>-</dd>
+            </div>
+            <div class="rounded-lg border ds-border-subtle ds-surface-muted p-3 sm:col-span-2">
+                <dt class="ds-text-meta font-semibold ds-text-weak"><%= t("posts.form.description_label") %></dt>
+                <dd class="mt-1 text-sm ds-text-support ds-break-words" data-review-description>-</dd>
+            </div>
+            <div class="rounded-lg border ds-border-subtle ds-surface-muted p-3">
+                <dt class="ds-text-meta font-semibold ds-text-weak"><%= t("posts.form.category_label") %></dt>
+                <dd class="mt-1 text-sm ds-text-support ds-break-words" data-review-category>-</dd>
+            </div>
+            <div class="rounded-lg border ds-border-subtle ds-surface-muted p-3">
+                <dt class="ds-text-meta font-semibold ds-text-weak"><%= t("posts.form.theme_label") %></dt>
+                <dd class="mt-1 text-sm ds-text-support ds-break-words" data-review-theme>-</dd>
+            </div>
+            <div class="rounded-lg border ds-border-subtle ds-surface-muted p-3 sm:col-span-2">
+                <dt class="ds-text-meta font-semibold ds-text-weak"><%= t("posts.form.image_label") %></dt>
+                <dd class="mt-1 text-sm ds-text-support ds-break-words" data-review-image>-</dd>
+            </div>
+        </dl>
 
-        <%= f.button type: :submit, class: "tap-target cta-primary ds-cta-experiment", data: { variant: "control", ga_event: "post_form_submit_click", ga_category: "post_form", ga_label: "publish_primary", confirm_action: true, confirm_title: t("posts.form.confirm_submit_title"), confirm_message: t("ui.critical_submit_message"), confirm_label: submit_label, confirm_level: "warning" } do %>
-          <span class="inline-flex items-center gap-1.5">
-            <%= ui_icon(:check_circle, class_name: "h-4 w-4") %>
-            <span data-submit-label><%= submit_label %></span>
-          </span>
-        <% end %>
+        <div class="flex flex-wrap gap-3">
+            <button type="button" class="tap-target cta-secondary" data-post-step-prev="3"><%= t("ui.back") %></button>
 
-        <%= f.button type: :submit, name: "save_as_draft", value: "1", class: "tap-target cta-secondary", data: { ga_event: "post_form_submit_click", ga_category: "post_form", ga_label: "save_draft_secondary" } do %>
-          <span data-submit-label><%= t("posts.form.save_draft") %></span>
-        <% end %>
-      </div>
+            <%= f.button type: :submit, class: "tap-target cta-primary ds-cta-experiment", data: { variant: "control", ga_event: "post_form_submit_click", ga_category: "post_form", ga_label: "publish_primary", confirm_action: true, confirm_title: t("posts.form.confirm_submit_title"), confirm_message: t("ui.critical_submit_message"), confirm_label: submit_label, confirm_level: "warning" } do %>
+            <span class="inline-flex items-center gap-1.5">
+                <%= ui_icon(:check_circle, class_name: "h-4 w-4") %>
+                <span data-submit-label><%= submit_label %></span>
+            </span>
+            <% end %>
+
+            <%= f.button type: :submit, name: "save_as_draft", value: "1", class: "tap-target cta-tertiary", data: { ga_event: "post_form_submit_click", ga_category: "post_form", ga_label: "save_draft_secondary" } do %>
+            <span data-submit-label><%= t("posts.form.save_draft") %></span>
+            <% end %>
+        </div>
     </section>
-  </section>
+</section>
 
-  <% if category_suggestions.any? %>
-    <datalist id="post-category-options">
-      <% category_suggestions.each do |category| %>
-        <option value="<%= category %>"></option>
-      <% end %>
-    </datalist>
-  <% end %>
+<% if category_suggestions.any? %>
+<datalist id="post-category-options">
+    <% category_suggestions.each do |category| %>
+    <option value="<%= category %>"></option>
+    <% end %>
+</datalist>
+<% end %>
 
-  <% if tag_suggestions.any? %>
-    <datalist id="post-tag-options">
-      <% tag_suggestions.each do |tag| %>
-        <option value="<%= tag %>"></option>
-      <% end %>
-    </datalist>
-  <% end %>
+<% if tag_suggestions.any? %>
+<datalist id="post-tag-options">
+    <% tag_suggestions.each do |tag| %>
+    <option value="<%= tag %>"></option>
+    <% end %>
+</datalist>
+<% end %>
 
-  <p class="ds-text-muted">
+<p class="ds-text-muted">
     <%= t("posts.form.draft_restore_hint") %>
-  </p>
-  <div class="flex flex-wrap items-center gap-2">
+</p>
+<div class="flex flex-wrap items-center gap-2">
     <button type="button" class="tap-target cta-tertiary cta-compact" data-clear-form-draft><%= t("posts.form.clear_draft") %></button>
     <p class="ds-text-muted"><%= t("posts.form.draft_expiry_hint") %></p>
-  </div>
+</div>
 
-  <p class="ds-disabled-reason" data-disabled-reason aria-live="polite"></p>
+<p class="ds-disabled-reason" data-disabled-reason aria-live="polite"></p>
 
-  <%= render "shared/policy_inline", context: "post_form" %>
+<%= render "shared/policy_inline", context: "post_form" %>
 
-  <div class="ds-legal-links border-t ds-border-subtle pt-3">
+<div class="ds-legal-links border-t ds-border-subtle pt-3">
     <span class="ds-text-weak"><%= t("legal.quick_links") %>:</span>
     <%= link_to t("footer.terms"), terms_path %>
     <%= link_to t("footer.privacy_policy"), privacy_policy_path %>
     <%= link_to t("footer.cookie_policy"), cookie_policy_path %>
-  </div>
+</div>
 <% end %>
 
 <script>
-  if (!window.__postFormFlowInstalled) {
-    window.__postFormFlowInstalled = true;
+    if (!window.__postFormFlowInstalled) {
+        window.__postFormFlowInstalled = true;
 
-    const withPostForm = (callback) => {
-      const form = document.querySelector("form[data-post-create-flow]");
-      if (!form) return;
-      callback(form);
-    };
-
-    const focusFirstErrorField = () => {
-      withPostForm((form) => {
-        const firstInvalid = form.querySelector("[aria-invalid='true']");
-        if (!firstInvalid) return;
-        firstInvalid.focus();
-        if (typeof firstInvalid.scrollIntoView === "function") {
-          firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
-      });
-    };
-
-    const installFlow = () => {
-      withPostForm((form) => {
-        if (form.dataset.postFlowBound === "1") return;
-        form.dataset.postFlowBound = "1";
-
-        const maxUploadBytes = 8 * 1024 * 1024;
-        const allowedTypes = [ "image/jpeg", "image/png", "image/webp", "image/gif" ];
-        const steps = [ 1, 2, 3 ];
-        let currentStep = 1;
-
-        const progressText = form.querySelector("[data-step-progress-text]");
-        const progressBar = form.querySelector("[data-step-progressbar]");
-        const progressFill = form.querySelector("[data-step-progress-fill]");
-
-        const updateReview = () => {
-          const title = form.querySelector("#post_title")?.value?.trim() || "-";
-          const description = form.querySelector("#post_description")?.value?.trim() || "-";
-          const category = form.querySelector("#post_category")?.value?.trim() || "-";
-          const theme = form.querySelector("#post_theme")?.value?.trim() || "-";
-          const write = (selector, value) => {
-            const node = form.querySelector(selector);
-            if (node) node.textContent = value;
-          };
-          write("[data-review-title]", title);
-          write("[data-review-description]", description.length > 200 ? `${description.slice(0, 200)}...` : description);
-          write("[data-review-category]", category);
-          write("[data-review-theme]", theme);
+        const withPostForm = (callback) => {
+            const form = document.querySelector("form[data-post-create-flow]");
+            if (!form) return;
+            callback(form);
         };
 
-        const publishStepViewed = (step) => {
-          if (typeof window.gtag !== "function") return;
-          const labels = { 1: "start", 2: "image", 3: "confirm" };
-          window.gtag("event", "post_create_step_view", {
-            event_category: "post_form",
-            event_label: labels[step] || `step_${step}`,
-            step_number: step
-          });
-        };
-
-        const showStep = (step, opts = {}) => {
-          currentStep = step;
-          form.dataset.postCurrentStep = String(step);
-          form.querySelectorAll("[data-post-step-panel]").forEach((panel) => {
-            panel.classList.toggle("hidden", Number(panel.dataset.postStepPanel) !== step);
-          });
-          form.querySelectorAll("[data-step-chip]").forEach((chip) => {
-            const chipStep = Number(chip.dataset.stepChip);
-            chip.classList.toggle("ds-tone-info", chipStep === step);
-            chip.classList.toggle("ds-tone-success", chipStep < step);
-          });
-
-          const percent = (step / steps.length) * 100;
-          if (progressText) progressText.textContent = `${step} / ${steps.length}`;
-          if (progressFill) progressFill.style.width = `${percent}%`;
-          if (progressBar) progressBar.setAttribute("aria-valuenow", String(step));
-          updateReview();
-
-          if (!opts.silent) {
-            publishStepViewed(step);
-          }
-        };
-
-        const stepHasBlockingFields = (step) => {
-          if (step === 1) {
-            const required = [ "#post_title", "#post_description" ];
-            if (form.querySelector("#post_user_id")) required.push("#post_user_id");
-            return required.some((selector) => !(form.querySelector(selector)?.value || "").trim());
-          }
-
-          if (step === 2) {
-            const input = form.querySelector("[data-image-upload-input]");
-            if (!input || !input.required) return false;
-            const hasExisting = input.dataset.hasExistingImage === "true";
-            const hasSelectedFile = input.files && input.files.length > 0;
-            return !(hasExisting || hasSelectedFile);
-          }
-
-          return false;
-        };
-
-        const setUploadFeedback = (message = "") => {
-          const feedback = form.querySelector("[data-image-upload-feedback]");
-          const input = form.querySelector("[data-image-upload-input]");
-          if (!feedback || !input) return;
-
-          if (!message) {
-            feedback.textContent = "";
-            feedback.classList.add("hidden");
-            input.setCustomValidity("");
-            return;
-          }
-
-          feedback.textContent = message;
-          feedback.classList.remove("hidden");
-          input.setCustomValidity(message);
-          input.setAttribute("aria-invalid", "true");
-        };
-
-        const validateUpload = () => {
-          const input = form.querySelector("[data-image-upload-input]");
-          if (!input || !input.files || input.files.length === 0) {
-            setUploadFeedback("");
-            return true;
-          }
-
-          const file = input.files[0];
-          if (!allowedTypes.includes(file.type)) {
-            const message = "Cause: unsupported image format. Action: use JPEG/PNG/WEBP/GIF. Retry: choose another file.";
-            setUploadFeedback(message);
-            if (typeof window.gtag === "function") {
-              window.gtag("event", "image_upload_failure", {
-                event_category: "post_form",
-                event_label: "unsupported_format"
-              });
-            }
-            return false;
-          }
-
-          if (Number(file.size || 0) > maxUploadBytes) {
-            const message = "Cause: file exceeds 8MB. Action: compress the image. Retry: upload a smaller file.";
-            setUploadFeedback(message);
-            if (typeof window.gtag === "function") {
-              window.gtag("event", "image_upload_failure", {
-                event_category: "post_form",
-                event_label: "file_too_large",
-                file_size: Number(file.size || 0)
-              });
-            }
-            return false;
-          }
-
-          setUploadFeedback("");
-          if (typeof window.gtag === "function") {
-            window.gtag("event", "image_upload_selected", {
-              event_category: "post_form",
-              event_label: "valid_file",
-              file_size: Number(file.size || 0)
+        const focusFirstErrorField = () => {
+            withPostForm((form) => {
+                const firstInvalid = form.querySelector("[aria-invalid='true']");
+                if (!firstInvalid) return;
+                firstInvalid.focus();
+                if (typeof firstInvalid.scrollIntoView === "function") {
+                    firstInvalid.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center"
+                    });
+                }
             });
-          }
-          return true;
         };
 
-        const validateAffiliateUrlField = (field) => {
-          if (!field) return true;
-          const feedback = field.parentElement?.querySelector("[data-url-field-error]");
-          const value = String(field.value || "").trim();
+        const installFlow = () => {
+            withPostForm((form) => {
+                if (form.dataset.postFlowBound === "1") return;
+                form.dataset.postFlowBound = "1";
 
-          if (value.length === 0) {
-            field.setCustomValidity("");
-            field.removeAttribute("aria-invalid");
-            if (feedback) {
-              feedback.textContent = "";
-              feedback.classList.add("hidden");
-            }
-            return true;
-          }
+                const maxUploadBytes = 8 * 1024 * 1024;
+                const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+                const steps = [1, 2, 3];
+                let currentStep = 1;
+                let nextItemIndex = form.querySelectorAll("[data-item-row]").length;
 
-          let valid = true;
-          let message = "";
-          try {
-            const parsed = new URL(value);
-            valid = parsed.protocol === "http:" || parsed.protocol === "https:";
-            if (!valid) message = "<%= j(t('posts.form.url_protocol_error')) %>";
-          } catch (_) {
-            valid = false;
-            message = "<%= j(t('posts.form.url_format_error')) %>";
-          }
+                const progressText = form.querySelector("[data-step-progress-text]");
+                const progressBar = form.querySelector("[data-step-progressbar]");
+                const progressFill = form.querySelector("[data-step-progress-fill]");
 
-          if (!valid) {
-            field.setCustomValidity(message);
-            field.setAttribute("aria-invalid", "true");
-            if (feedback) {
-              feedback.textContent = message;
-              feedback.classList.remove("hidden");
-            }
-            return false;
-          }
+                const updateReview = () => {
+                    const title = form.querySelector("#post_title")?.value?.trim() || "-";
+                    const description = form.querySelector("#post_description")?.value?.trim() || "-";
+                    const category = form.querySelector("#post_category")?.value?.trim() || "-";
+                    const theme = form.querySelector("#post_theme")?.value?.trim() || "-";
+                    const imageInput = form.querySelector("[data-image-upload-input]");
+                    const hasExistingImage = imageInput?.dataset.hasExistingImage === "true";
+                    const hasSelectedFile = imageInput?.files && imageInput.files.length > 0;
+                    const imageState = hasSelectedFile ? imageInput.files[0].name : (hasExistingImage ? "<%= j(t('posts.form.image_selected_state')) %>" : "<%= j(t('posts.form.image_missing_state')) %>");
 
-          field.setCustomValidity("");
-          field.removeAttribute("aria-invalid");
-          if (feedback) {
-            feedback.textContent = "";
-            feedback.classList.add("hidden");
-          }
-          return true;
+                    const write = (selector, value) => {
+                        const node = form.querySelector(selector);
+                        if (node) node.textContent = value;
+                    };
+
+                    write("[data-review-title]", title);
+                    write("[data-review-description]", description.length > 200 ? `${description.slice(0, 200)}...` : description);
+                    write("[data-review-category]", category);
+                    write("[data-review-theme]", theme);
+                    write("[data-review-image]", imageState);
+                    write("[data-review-image-state]", imageState);
+                };
+
+                const publishStepViewed = (step) => {
+                    if (typeof window.gtag !== "function") return;
+                    const labels = {
+                        1: "start",
+                        2: "image",
+                        3: "confirm"
+                    };
+                    window.gtag("event", "post_create_step_view", {
+                        event_category: "post_form",
+                        event_label: labels[step] || `step_${step}`,
+                        step_number: step
+                    });
+                };
+
+                const updateStepChips = (step) => {
+                    form.querySelectorAll("[data-step-chip]").forEach((chip) => {
+                        const chipStep = Number(chip.dataset.stepChip);
+                        chip.classList.remove("ds-badge-inactive", "ds-tone-info", "ds-tone-success");
+
+                        if (chipStep < step) {
+                            chip.classList.add("ds-tone-success");
+                        } else if (chipStep === step) {
+                            chip.classList.add("ds-tone-info");
+                        } else {
+                            chip.classList.add("ds-badge-inactive");
+                        }
+                    });
+                };
+
+                const showStep = (step, opts = {}) => {
+                    currentStep = step;
+                    form.dataset.postCurrentStep = String(step);
+
+                    form.querySelectorAll("[data-post-step-panel]").forEach((panel) => {
+                        panel.classList.toggle("hidden", Number(panel.dataset.postStepPanel) !== step);
+                    });
+
+                    updateStepChips(step);
+
+                    const percent = (step / steps.length) * 100;
+                    if (progressText) progressText.textContent = `${step} / ${steps.length}`;
+                    if (progressFill) progressFill.style.width = `${percent}%`;
+                    if (progressBar) progressBar.setAttribute("aria-valuenow", String(step));
+
+                    updateReview();
+
+                    if (!opts.silent) publishStepViewed(step);
+                };
+
+                const stepHasInvalidFields = (step) => {
+                    const panel = form.querySelector(`[data-post-step-panel='${step}']`);
+                    if (!panel) return false;
+                    return Boolean(panel.querySelector("[aria-invalid='true']"));
+                };
+
+                const stepHasBlockingFields = (step) => {
+                    if (step === 1) {
+                        const required = ["#post_title", "#post_description"];
+                        if (form.querySelector("#post_user_id")) required.push("#post_user_id");
+
+                        const missingRequired = required.some((selector) => !(form.querySelector(selector)?.value || "").trim());
+                        return missingRequired || stepHasInvalidFields(1);
+                    }
+
+                    if (step === 2) {
+                        const input = form.querySelector("[data-image-upload-input]");
+                        const hasStepErrors = stepHasInvalidFields(2);
+                        if (!input || !input.required) return hasStepErrors;
+
+                        const hasExisting = input.dataset.hasExistingImage === "true";
+                        const hasSelectedFile = input.files && input.files.length > 0;
+                        return !(hasExisting || hasSelectedFile) || hasStepErrors;
+                    }
+
+                    return false;
+                };
+
+                const setUploadFeedback = (message = "") => {
+                    const feedback = form.querySelector("[data-image-upload-feedback]");
+                    const input = form.querySelector("[data-image-upload-input]");
+                    if (!feedback || !input) return;
+
+                    if (!message) {
+                        feedback.textContent = "";
+                        feedback.classList.add("hidden");
+                        input.setCustomValidity("");
+                        input.removeAttribute("aria-invalid");
+                        return;
+                    }
+
+                    feedback.textContent = message;
+                    feedback.classList.remove("hidden");
+                    input.setCustomValidity(message);
+                    input.setAttribute("aria-invalid", "true");
+                };
+
+                const validateUpload = () => {
+                    const input = form.querySelector("[data-image-upload-input]");
+                    if (!input || !input.files || input.files.length === 0) {
+                        setUploadFeedback("");
+                        updateReview();
+                        return true;
+                    }
+
+                    const file = input.files[0];
+
+                    if (!allowedTypes.includes(file.type)) {
+                        const message = "<%= j(t('posts.form.image_type_error', default: '対応していない画像形式です。JPEG / PNG / WEBP / GIF を選択してください。')) %>";
+                        setUploadFeedback(message);
+                        if (typeof window.gtag === "function") {
+                            window.gtag("event", "image_upload_failure", {
+                                event_category: "post_form",
+                                event_label: "unsupported_format"
+                            });
+                        }
+                        return false;
+                    }
+
+                    if (Number(file.size || 0) > maxUploadBytes) {
+                        const message = "<%= j(t('posts.form.image_size_error', default: '画像サイズが大きすぎます。8MB以下の画像を選択してください。')) %>";
+                        setUploadFeedback(message);
+                        if (typeof window.gtag === "function") {
+                            window.gtag("event", "image_upload_failure", {
+                                event_category: "post_form",
+                                event_label: "file_too_large",
+                                file_size: Number(file.size || 0)
+                            });
+                        }
+                        return false;
+                    }
+
+                    setUploadFeedback("");
+                    updateReview();
+
+                    if (typeof window.gtag === "function") {
+                        window.gtag("event", "image_upload_selected", {
+                            event_category: "post_form",
+                            event_label: "valid_file",
+                            file_size: Number(file.size || 0)
+                        });
+                    }
+                    return true;
+                };
+
+                const validateAffiliateUrlField = (field) => {
+                    if (!field) return true;
+                    const feedback = field.parentElement?.querySelector("[data-url-field-error]");
+                    const value = String(field.value || "").trim();
+
+                    if (value.length === 0) {
+                        field.setCustomValidity("");
+                        field.removeAttribute("aria-invalid");
+                        if (feedback) {
+                            feedback.textContent = "";
+                            feedback.classList.add("hidden");
+                        }
+                        return true;
+                    }
+
+                    let valid = true;
+                    let message = "";
+                    try {
+                        const parsed = new URL(value);
+                        valid = parsed.protocol === "http:" || parsed.protocol === "https:";
+                        if (!valid) message = "<%= j(t('posts.form.url_protocol_error')) %>";
+                    } catch (_) {
+                        valid = false;
+                        message = "<%= j(t('posts.form.url_format_error')) %>";
+                    }
+
+                    if (!valid) {
+                        field.setCustomValidity(message);
+                        field.setAttribute("aria-invalid", "true");
+                        if (feedback) {
+                            feedback.textContent = message;
+                            feedback.classList.remove("hidden");
+                        }
+                        return false;
+                    }
+
+                    field.setCustomValidity("");
+                    field.removeAttribute("aria-invalid");
+                    if (feedback) {
+                        feedback.textContent = "";
+                        feedback.classList.add("hidden");
+                    }
+                    return true;
+                };
+
+                const validateAffiliateUrls = () => {
+                    const fields = Array.from(form.querySelectorAll("[data-url-validate]")).filter((field) => {
+                        const row = field.closest("[data-item-row]");
+                        const destroyField = row?.querySelector("[data-item-destroy]");
+                        return !(row?.classList.contains("hidden") || destroyField?.value === "1");
+                    });
+
+                    return fields.every((field) => validateAffiliateUrlField(field));
+                };
+
+                const bindUrlValidation = (scope) => {
+                    scope.querySelectorAll("[data-url-validate]").forEach((field) => {
+                        if (field.dataset.urlValidateBound === "1") return;
+                        field.dataset.urlValidateBound = "1";
+                        field.addEventListener("input", () => validateAffiliateUrlField(field));
+                        field.addEventListener("blur", () => validateAffiliateUrlField(field));
+                    });
+                };
+
+                const addItemRow = () => {
+                    const template = form.querySelector("[data-item-template]");
+                    const list = form.querySelector("[data-items-list]");
+                    if (!template || !list) return;
+
+                    const html = template.innerHTML.replaceAll("__INDEX__", String(nextItemIndex));
+                    nextItemIndex += 1;
+
+                    const wrapper = document.createElement("div");
+                    wrapper.innerHTML = html.trim();
+                    const row = wrapper.firstElementChild;
+                    if (!row) return;
+
+                    list.appendChild(row);
+                    bindUrlValidation(row);
+
+                    const firstInput = row.querySelector("input[type='text'], input[type='url']");
+                    if (firstInput) firstInput.focus();
+                };
+
+                const removeItemRow = (row) => {
+                    const destroyField = row.querySelector("[data-item-destroy]");
+                    if (destroyField) {
+                        destroyField.value = "1";
+                        row.classList.add("hidden");
+                    } else {
+                        row.remove();
+                    }
+                };
+
+                form.querySelectorAll("[data-post-step-next]").forEach((button) => {
+                    button.addEventListener("click", () => {
+                        const from = Number(button.dataset.postStepNext);
+
+                        if (stepHasBlockingFields(from)) {
+                            if (typeof window.dsNotify === "function") {
+                                window.dsNotify("<%= j(t('posts.form.complete_required_notice', default: '必須項目とエラーを確認してください。')) %>", "warning");
+                            }
+                            return;
+                        }
+
+                        if (from === 2 && !validateUpload()) return;
+
+                        if (from === 2 && !validateAffiliateUrls()) {
+                            if (typeof window.dsNotify === "function") {
+                                window.dsNotify("<%= j(t('posts.form.url_fix_notice')) %>", "warning");
+                            }
+                            return;
+                        }
+
+                        const target = Math.min(from + 1, steps.length);
+                        showStep(target);
+
+                        if (typeof window.gtag === "function") {
+                            window.gtag("event", "post_create_step_transition", {
+                                event_category: "post_form",
+                                event_label: `${from}_to_${target}`
+                            });
+                        }
+                    });
+                });
+
+                form.querySelectorAll("[data-post-step-prev]").forEach((button) => {
+                    button.addEventListener("click", () => {
+                        const from = Number(button.dataset.postStepPrev);
+                        const target = Math.max(1, from - 1);
+                        showStep(target);
+                    });
+                });
+
+                const uploadInput = form.querySelector("[data-image-upload-input]");
+                if (uploadInput) {
+                    uploadInput.addEventListener("change", validateUpload);
+                }
+
+                const retryButton = form.querySelector("[data-image-upload-retry]");
+                if (retryButton && uploadInput) {
+                    retryButton.addEventListener("click", () => {
+                        uploadInput.value = "";
+                        setUploadFeedback("");
+                        updateReview();
+                        uploadInput.focus();
+                        if (typeof window.gtag === "function") {
+                            window.gtag("event", "image_upload_retry", {
+                                event_category: "post_form",
+                                event_label: "retry_button"
+                            });
+                        }
+                    });
+                }
+
+                const addItemButton = form.querySelector("[data-add-item-row]");
+                if (addItemButton) {
+                    addItemButton.addEventListener("click", addItemRow);
+                }
+
+                form.addEventListener("click", (event) => {
+                    const removeButton = event.target.closest("[data-remove-item-row]");
+                    if (!removeButton) return;
+                    const row = removeButton.closest("[data-item-row]");
+                    if (!row) return;
+                    removeItemRow(row);
+                });
+
+                form.addEventListener("input", updateReview);
+                form.addEventListener("change", updateReview);
+
+                bindUrlValidation(form);
+
+                form.addEventListener("submit", (event) => {
+                    const uploadValid = validateUpload();
+                    const urlsValid = validateAffiliateUrls();
+
+                    if (!uploadValid || !urlsValid) {
+                        event.preventDefault();
+                        if (!urlsValid && typeof window.dsNotify === "function") {
+                            window.dsNotify("<%= j(t('posts.form.url_fix_notice')) %>", "warning");
+                        }
+                        if (!uploadValid && typeof window.dsNotify === "function") {
+                            window.dsNotify("<%= j(t('posts.form.image_fix_notice', default: '画像の内容を確認してください。')) %>", "warning");
+                        }
+                        return;
+                    }
+
+                    if (typeof window.gtag !== "function") return;
+                    window.gtag("event", "post_create_step_complete", {
+                        event_category: "post_form",
+                        event_label: form.dataset.postCurrentStep || "unknown"
+                    });
+                });
+
+                window.addEventListener("beforeunload", () => {
+                    if (form.dataset.uiFormDirty !== "true" || form.dataset.uiSubmitting === "true") return;
+                    if (typeof window.gtag !== "function") return;
+                    window.gtag("event", "post_create_step_dropout", {
+                        event_category: "post_form",
+                        event_label: form.dataset.postCurrentStep || "unknown"
+                    });
+                });
+
+                const hasImageErrors = Boolean(form.querySelector("#post_image_error, [data-image-upload-feedback]:not(.hidden)"));
+                const hasOptionalErrors = Boolean(form.querySelector("#post_category_error, #post_theme_error, #post_tag_list_error, [data-url-field-error]:not(.hidden)"));
+                const initialStep = hasImageErrors || hasOptionalErrors ? 2 : 1;
+
+                showStep(initialStep, {
+                    silent: true
+                });
+                publishStepViewed(initialStep);
+                updateReview();
+            });
         };
 
-        const validateAffiliateUrls = () => {
-          const fields = Array.from(form.querySelectorAll("[data-url-validate]"));
-          return fields.every((field) => validateAffiliateUrlField(field));
-        };
-
-        form.querySelectorAll("[data-post-step-next]").forEach((button) => {
-          button.addEventListener("click", () => {
-            const from = Number(button.dataset.postStepNext);
-            if (stepHasBlockingFields(from)) {
-              if (typeof window.dsNotify === "function") {
-                window.dsNotify("Complete required fields before proceeding.", "warning");
-              }
-              return;
-            }
-
-            if (from === 2 && !validateUpload()) {
-              return;
-            }
-
-            if (from === 2 && !validateAffiliateUrls()) {
-              if (typeof window.dsNotify === "function") {
-                window.dsNotify("<%= j(t('posts.form.url_fix_notice')) %>", "warning");
-              }
-              return;
-            }
-
-            const target = Math.min(from + 1, steps.length);
-            showStep(target);
-            if (typeof window.gtag === "function") {
-              window.gtag("event", "post_create_step_transition", {
-                event_category: "post_form",
-                event_label: `${from}_to_${target}`
-              });
-            }
-          });
+        document.addEventListener("turbo:load", () => {
+            focusFirstErrorField();
+            installFlow();
         });
-
-        form.querySelectorAll("[data-post-step-prev]").forEach((button) => {
-          button.addEventListener("click", () => {
-            const from = Number(button.dataset.postStepPrev);
-            const target = Math.max(1, from - 1);
-            showStep(target);
-          });
+        document.addEventListener("DOMContentLoaded", () => {
+            focusFirstErrorField();
+            installFlow();
         });
-
-        const uploadInput = form.querySelector("[data-image-upload-input]");
-        if (uploadInput) {
-          uploadInput.addEventListener("change", validateUpload);
-        }
-
-        const retryButton = form.querySelector("[data-image-upload-retry]");
-        if (retryButton && uploadInput) {
-          retryButton.addEventListener("click", () => {
-            uploadInput.value = "";
-            setUploadFeedback("");
-            uploadInput.focus();
-            if (typeof window.gtag === "function") {
-              window.gtag("event", "image_upload_retry", {
-                event_category: "post_form",
-                event_label: "retry_button"
-              });
-            }
-          });
-        }
-
-        form.addEventListener("input", updateReview);
-        form.addEventListener("change", updateReview);
-
-        form.querySelectorAll("[data-url-validate]").forEach((field) => {
-          field.addEventListener("input", () => validateAffiliateUrlField(field));
-          field.addEventListener("blur", () => validateAffiliateUrlField(field));
-        });
-
-        form.addEventListener("submit", () => {
-          validateAffiliateUrls();
-          if (typeof window.gtag !== "function") return;
-          window.gtag("event", "post_create_step_complete", {
-            event_category: "post_form",
-            event_label: form.dataset.postCurrentStep || "unknown"
-          });
-        });
-
-        window.addEventListener("beforeunload", () => {
-          if (form.dataset.uiFormDirty !== "true" || form.dataset.uiSubmitting === "true") return;
-          if (typeof window.gtag !== "function") return;
-          window.gtag("event", "post_create_step_dropout", {
-            event_category: "post_form",
-            event_label: form.dataset.postCurrentStep || "unknown"
-          });
-        });
-
-        const hasImageErrors = Boolean(form.querySelector("#post_image_error"));
-        const hasOptionalErrors = Boolean(form.querySelector("#post_category_error, #post_theme_error, #post_tag_list_error"));
-        const initialStep = hasImageErrors || hasOptionalErrors ? 2 : 1;
-        showStep(initialStep, { silent: true });
-        publishStepViewed(initialStep);
-        updateReview();
-      });
-    };
-
-    document.addEventListener("turbo:load", () => { focusFirstErrorField(); installFlow(); });
-    document.addEventListener("DOMContentLoaded", () => { focusFirstErrorField(); installFlow(); });
-    window.setTimeout(() => { focusFirstErrorField(); installFlow(); }, 0);
-  }
+        window.setTimeout(() => {
+            focusFirstErrorField();
+            installFlow();
+        }, 0);
+    }
 </script>
-

@@ -17,9 +17,9 @@
                 disabled_reason_prefix: t("ui.disabled_reason"),
                 disabled_submit_notice: t("ui.complete_required")
               } do |f| %>
-  <% if user.errors.any? %>
-    <div class="space-y-2">
-      <%= render "shared/feedback_panel",
+<% if user.errors.any? %>
+<div class="space-y-2">
+    <%= render "shared/feedback_panel",
                  level: :error,
                  title: t("users.form.error_summary"),
                  body: t("ui.error_with_recovery"),
@@ -28,73 +28,97 @@
                    { label: t("ui.back"), href: (request.referer.presence || root_path) }
                  ] %>
 
-      <div class="rounded-lg border ds-tone-danger p-3 text-sm" role="alert" aria-live="assertive">
+    <div class="rounded-lg border ds-tone-danger p-3 text-sm" role="alert" aria-live="assertive">
         <ul class="list-disc pl-5">
-          <% if name_error.present? %><li><a href="#user_name" class="underline"><%= name_error %></a></li><% end %>
-          <% if bio_error.present? %><li><a href="#user_bio" class="underline"><%= bio_error %></a></li><% end %>
-          <% if email_error.present? %><li><a href="#user_email" class="underline"><%= email_error %></a></li><% end %>
+            <% if name_error.present? %><li><a href="#user_name" class="underline"><%= name_error %></a></li><% end %>
+            <% if bio_error.present? %><li><a href="#user_bio" class="underline"><%= bio_error %></a></li><% end %>
+            <% if email_error.present? %><li><a href="#user_email" class="underline"><%= email_error %></a></li><% end %>
         </ul>
-      </div>
     </div>
-  <% end %>
+</div>
+<% end %>
 
-  <div>
+<div>
     <%= f.label :name, t("users.form.name_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
-    <%= f.text_field :name, required: true, maxlength: 40, class: input_class.call(name_error), placeholder: t("users.form.name_placeholder"), aria: { invalid: name_error.present? ? "true" : nil, describedby: "user_name_guide user_name_counter user_name_error" }, data: { char_count_max: 40, char_count_target: "user_name_counter" } %>
+    <%= f.text_field :name,
+                     required: true,
+                     maxlength: 40,
+                     autocomplete: "name",
+                     class: input_class.call(name_error),
+                     placeholder: t("users.form.name_placeholder"),
+                     aria: { invalid: name_error.present? ? "true" : nil, describedby: "user_name_guide user_name_counter user_name_error" },
+                     data: { char_count_max: 40, char_count_target: "user_name_counter" } %>
     <p id="user_name_guide" class="ds-field-guide"><%= t("users.form.name_guide_profile") %></p>
     <p class="ds-text-muted"><%= t("users.form.name_recommended") %></p>
     <p id="user_name_counter" class="ds-char-counter" aria-live="polite"></p>
     <% if name_error.present? %>
-      <p id="user_name_error" class="ds-field-error"><%= name_error %></p>
+    <p id="user_name_error" class="ds-field-error"><%= name_error %></p>
     <% end %>
-  </div>
+</div>
 
-  <div>
+<div>
     <%= f.label :bio, t("users.form.bio_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
-    <%= f.text_area :bio, rows: 5, maxlength: 300, class: input_class.call(bio_error), placeholder: t("users.form.bio_placeholder"), aria: { invalid: bio_error.present? ? "true" : nil, describedby: "user_bio_guide user_bio_counter user_bio_error" }, data: { char_count_max: 300, char_count_target: "user_bio_counter" } %>
+    <%= f.text_area :bio,
+                    rows: 5,
+                    maxlength: 300,
+                    class: input_class.call(bio_error),
+                    placeholder: t("users.form.bio_placeholder"),
+                    aria: { invalid: bio_error.present? ? "true" : nil, describedby: "user_bio_guide user_bio_counter user_bio_error" },
+                    data: { char_count_max: 300, char_count_target: "user_bio_counter" } %>
     <p id="user_bio_guide" class="ds-field-guide"><%= t("users.form.bio_guide") %></p>
     <p class="ds-text-muted"><%= t("users.form.bio_recommended") %></p>
     <p id="user_bio_counter" class="ds-char-counter" aria-live="polite"></p>
     <% if bio_error.present? %>
-      <p id="user_bio_error" class="ds-field-error"><%= bio_error %></p>
+    <p id="user_bio_error" class="ds-field-error"><%= bio_error %></p>
     <% end %>
-  </div>
+</div>
 
-  <div>
+<div>
     <%= f.label :email, t("users.form.email_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
-    <%= f.email_field :email, class: input_class.call(email_error), placeholder: "you@example.com", aria: { invalid: email_error.present? ? "true" : nil, describedby: "user_email_hint user_email_error" } %>
+    <%= f.email_field :email,
+                      autocomplete: "email",
+                      class: input_class.call(email_error),
+                      placeholder: "you@example.com",
+                      aria: { invalid: email_error.present? ? "true" : nil, describedby: "user_email_hint user_email_error" } %>
     <p id="user_email_hint" class="ds-field-guide"><%= t("users.form.email_hint_profile") %></p>
     <% if email_error.present? %>
-      <p id="user_email_error" class="ds-field-error"><%= email_error %></p>
+    <p id="user_email_error" class="ds-field-error"><%= email_error %></p>
     <% end %>
-  </div>
+</div>
 
-  <%= f.button type: :submit, class: "tap-target cta-primary ds-cta-experiment", data: { variant: "compact", ga_event: "profile_form_submit_click", ga_category: "profile_form", ga_label: "submit_profile" } do %>
+<div class="flex flex-wrap items-center gap-3">
+    <%= f.button type: :submit,
+                 class: "tap-target cta-primary ds-cta-experiment",
+                 data: { variant: "compact", ga_event: "profile_form_submit_click", ga_category: "profile_form", ga_label: "submit_profile" } do %>
     <span class="inline-flex items-center gap-1.5">
-      <%= ui_icon(:check_circle, class_name: "h-4 w-4") %>
-      <span data-submit-label><%= submit_label %></span>
+        <%= ui_icon(:check_circle, class_name: "h-4 w-4") %>
+        <span data-submit-label><%= submit_label %></span>
     </span>
-  <% end %>
+    <% end %>
+</div>
 
-  <p class="ds-disabled-reason" data-disabled-reason aria-live="polite"></p>
+<p class="ds-disabled-reason" data-disabled-reason aria-live="polite"></p>
 <% end %>
 
 <script>
-  if (!window.__userFormErrorAutofocusInstalled) {
-    window.__userFormErrorAutofocusInstalled = true;
+    if (!window.__userFormErrorAutofocusInstalled) {
+        window.__userFormErrorAutofocusInstalled = true;
 
-    const focusFirstErrorField = () => {
-      const form = document.querySelector("[data-form-autofocus-errors]");
-      if (!form) return;
-      const firstInvalid = form.querySelector("[aria-invalid='true']");
-      if (!firstInvalid) return;
-      firstInvalid.focus();
-      if (typeof firstInvalid.scrollIntoView === "function") {
-        firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-    };
+        const focusFirstErrorField = () => {
+            const form = document.querySelector("[data-form-autofocus-errors]");
+            if (!form) return;
+            const firstInvalid = form.querySelector("[aria-invalid='true']");
+            if (!firstInvalid) return;
+            firstInvalid.focus();
+            if (typeof firstInvalid.scrollIntoView === "function") {
+                firstInvalid.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+            }
+        };
 
-    document.addEventListener("turbo:load", focusFirstErrorField);
-    document.addEventListener("DOMContentLoaded", focusFirstErrorField);
-  }
+        document.addEventListener("turbo:load", focusFirstErrorField);
+        document.addEventListener("DOMContentLoaded", focusFirstErrorField);
+    }
 </script>

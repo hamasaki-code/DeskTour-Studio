@@ -1,19 +1,19 @@
 <% content_for :title, t("users.new.title") %>
 <% content_for :description, t("users.new.description") %>
 
-<section class="mx-auto w-full max-w-3xl space-y-content" data-page-content>
-  <div>
-    <h1 class="ds-heading-xl"><%= t("users.new.heading") %></h1>
-    <p class="mt-2 ds-text-support">
-      <%= t("users.new.lead") %>
-    </p>
-  </div>
+<section class="space-y-content" data-page-content>
+    <div class="space-y-3">
+        <h1 class="ds-heading-xl ds-text-strong"><%= t("users.new.heading") %></h1>
+        <p class="ds-text-support">
+            <%= t("users.new.lead") %>
+        </p>
+    </div>
 
-  <div class="ds-card p-6">
-    <%= render "form", user: @user, submit_label: t("users.form.submit_create") %>
-  </div>
+    <div class="rounded-2xl border ds-border-subtle ds-surface-panel p-5 sm:p-6">
+        <%= render "form", user: @user, submit_label: t("users.form.submit_create") %>
+    </div>
 </section>
 
-<section class="mx-auto hidden w-full max-w-3xl" data-page-skeleton aria-hidden="true">
-  <%= render "shared/screen_skeleton", variant: :detail %>
+<section class="hidden" data-page-skeleton aria-hidden="true">
+    <%= render "shared/screen_skeleton", variant: :detail %>
 </section>
