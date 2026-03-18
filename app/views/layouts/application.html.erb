@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="<%= I18n.locale %>">
-  <head>
+
+<head>
     <title><%= page_title(content_for(:title)) %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="description" content="<%= meta_description(content_for(:description)) %>">
@@ -21,7 +22,7 @@
     <meta name="twitter:image" content="<%= content_for(:og_image_url) || og_image_url %>">
     <meta name="twitter:image:alt" content="<%= t('images.desk_alt') %>">
     <% if search_console_verification_token.present? %>
-      <meta name="google-site-verification" content="<%= search_console_verification_token %>">
+    <meta name="google-site-verification" content="<%= search_console_verification_token %>">
     <% end %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -29,207 +30,115 @@
     <%= yield :head %>
 
     <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="icon" href="/icon.svg?v=2" type="image/svg+xml">
+    <link rel="icon" href="/icon.png?v=2" type="image/png" sizes="512x512">
+    <link rel="shortcut icon" href="/icon.png?v=2" type="image/png">
+    <link rel="apple-touch-icon" href="/icon.png?v=2">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
-    <% if ga4_enabled? %>
-      <script async src="https://www.googletagmanager.com/gtag/js?id=<%= ga4_measurement_id %>"></script>
-      <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){ dataLayer.push(arguments); }
-        gtag("js", new Date());
-        gtag("config", "<%= ga4_measurement_id %>", { anonymize_ip: true });
-      </script>
-    <% end %>
-    <% if recaptcha_enabled? %>
-      <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    <% end %>
-    <% if adsense_enabled? %>
-      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<%= ENV["ADSENSE_CLIENT_ID"] %>" crossorigin="anonymous"></script>
-    <% end %>
-  </head>
 
-  <body class="lang-<%= I18n.locale %> min-h-screen ds-text-strong" data-screen="<%= "#{controller_name}-#{action_name}" %>">
+    <% if ga4_enabled? %>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<%= ga4_measurement_id %>"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag("js", new Date());
+        gtag("config", "<%= ga4_measurement_id %>", {
+            anonymize_ip: true
+        });
+    </script>
+    <% end %>
+
+    <% if recaptcha_enabled? %>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <% end %>
+
+    <% if adsense_enabled? %>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<%= ENV["ADSENSE_CLIENT_ID"] %>" crossorigin="anonymous"></script>
+    <% end %>
+</head>
+
+<body class="lang-<%= I18n.locale %> min-h-screen antialiased <%= editorial_shell_page? ? 'bg-[#f7f6f2] text-[#1a1a1a]' : 'bg-[var(--ds-color-page)] text-slate-100' %>" data-screen="<%= "#{controller_name}-#{action_name}" %>">
     <% tracked_events = analytics_events %>
     <% mobile_sticky_active = controller_name == "posts" && action_name.in?(%w[index show]) %>
-    <% main_padding_class = mobile_sticky_active ? "pb-40 sm:pb-8" : "pb-10 sm:pb-8" %>
+    <% main_padding_class = mobile_sticky_active ? "pb-40 sm:pb-12" : "pb-14 sm:pb-12" %>
+    <% main_width_class = if editorial_shell_page? && controller_name == "posts" && action_name == "show"
+      "max-w-5xl"
+    elsif editorial_shell_page? && controller_name == "posts" && action_name.in?(%w[new edit])
+      "max-w-6xl"
+    elsif editorial_shell_page? && controller_name == "users" && action_name == "show"
+      "max-w-5xl"
+    elsif editorial_shell_page? && controller_name == "users" && action_name.in?(%w[new edit])
+      "max-w-6xl"
+    elsif editorial_shell_page? && ((controller_name == "pages" && action_name.in?(%w[login support])) || (controller_name == "sessions" && action_name == "create") || (controller_name == "password_resets" && action_name.in?(%w[new create edit update])) || (controller_name == "support_requests" && action_name == "create"))
+      "max-w-6xl"
+    elsif editorial_shell_page? && controller_name == "pages" && action_name == "onboarding"
+      "max-w-6xl"
+    elsif editorial_shell_page? && controller_name == "pages" && action_name.in?(%w[privacy terms cookie operator])
+      "max-w-5xl"
+    elsif controller_name == "posts" && action_name.in?(%w[show new edit notifications])
+      "max-w-4xl"
+    elsif controller_name == "users" && action_name.in?(%w[show new edit])
+      "max-w-4xl"
+    else
+      "max-w-7xl"
+    end %>
 
-    <header class="sticky top-0 z-40 border-b ds-border-subtle ds-surface-overlay backdrop-blur" data-mobile-header-root>
-      <div class="mx-auto flex w-full max-w-6xl items-center gap-2 px-4 py-2 sm:px-6 sm:py-3">
-        <%= link_to "DeskTour Studio", root_path, class: "min-w-0 flex-1 truncate text-base font-bold ds-text-strong sm:text-lg", data: { ga_event: "navigation_home_click", ga_category: "navigation", ga_label: "header_logo" } %>
+    <div class="ds-page-atmosphere pointer-events-none fixed inset-0 -z-10"></div>
 
-        <%= link_to new_post_path, class: "tap-target cta-primary cta-compact sm:hidden", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "mobile_header_create_post_direct" } do %>
-          <span><%= t("navigation.create_post") %></span>
+    <%= render "shared/editorial_header" %>
+
+    <main class="mx-auto w-full <%= main_width_class %> px-4 pt-8 <%= main_padding_class %> sm:px-6 sm:pt-10 lg:px-8">
+        <% breadcrumbs = context_breadcrumbs %>
+        <% if breadcrumbs.size > 1 %>
+        <nav aria-label="<%= t('navigation.breadcrumb') %>" class="mb-6">
+            <ol class="flex flex-wrap items-center gap-2 text-xs font-medium <%= editorial_shell_page? ? 'text-[#6b6b6b]' : 'text-slate-300' %>">
+                <% breadcrumbs.each_with_index do |crumb, idx| %>
+                <li class="inline-flex items-center gap-2">
+                    <% if idx < breadcrumbs.size - 1 %>
+                    <%= link_to crumb[:label], crumb[:href], class: "transition #{editorial_shell_page? ? 'hover:text-[#1a1a1a]' : 'hover:text-slate-100'}" %>
+                    <% else %>
+                    <span aria-current="page" class="font-semibold <%= editorial_shell_page? ? 'text-[#1a1a1a]' : 'text-slate-100' %>"><%= crumb[:label] %></span>
+                    <% end %>
+                    <% if idx < breadcrumbs.size - 1 %>
+                    <span aria-hidden="true">/</span>
+                    <% end %>
+                </li>
+                <% end %>
+            </ol>
+        </nav>
         <% end %>
 
-        <button type="button" data-mobile-header-toggle aria-expanded="false" aria-controls="mobile-header-menu" class="tap-target inline-flex items-center justify-center rounded-lg border ds-border-strong px-2.5 py-2 ds-text-weak ds-hover-muted sm:hidden" data-ga-event="navigation_mobile_menu_toggle_click" data-ga-category="navigation" data-ga-label="mobile_header_menu_toggle">
-          <%= ui_icon(:bars_3, class_name: "h-5 w-5") %>
-          <span class="sr-only">Menu</span>
-        </button>
+        <%= render "shared/policy_revision_banner" %>
 
-        <div class="ml-auto hidden items-center gap-2 sm:flex">
-          <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target cta-primary", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "desktop_header_create_post" } %>
-          <div class="relative" data-desktop-utility-root>
-            <button type="button" data-desktop-utility-toggle aria-expanded="false" aria-controls="desktop-utility-menu" class="tap-target cta-tertiary" data-ga-event="navigation_desktop_utility_toggle_click" data-ga-category="navigation" data-ga-label="desktop_utility_toggle">
-              <span class="inline-flex items-center gap-1.5">
-                <span><%= t("navigation.utility_menu") %></span>
-                <%= ui_icon(:chevron_down, class_name: "h-4 w-4 ds-text-weak") %>
-              </span>
-            </button>
+        <p class="mb-4 rounded-xl border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-sm text-slate-400 ds-offline-banner"><%= t("ui.offline_banner") %></p>
+        <p class="mb-4 rounded-xl border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-sm text-slate-400 ds-low-bandwidth-banner"><%= t("ui.low_bandwidth_banner") %></p>
 
-            <div id="desktop-utility-menu" data-desktop-utility-menu class="absolute right-0 top-full z-30 mt-2 hidden w-72 ds-popover-surface ds-motion-popover p-3">
-              <div class="space-y-2.5">
-                <section class="ds-utility-section">
-                  <p class="ds-utility-section-title"><%= t("navigation.utility_create") %></p>
-                  <div class="space-y-1">
-                    <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target cta-tertiary w-full justify-start", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "desktop_utility_create_post" } %>
-                    <%= link_to t("navigation.create_profile"), new_user_path, class: "tap-target cta-tertiary w-full justify-start", data: { ga_event: "navigation_profile_create_click", ga_category: "navigation", ga_label: "desktop_utility_create_profile" } %>
-                  </div>
-                </section>
-
-                <section class="ds-utility-section">
-                  <p class="ds-utility-section-title"><%= t("navigation.utility_browse") %></p>
-                  <div class="space-y-1">
-                    <%= link_to t("posts.index.title"), root_path, class: "tap-target cta-tertiary w-full justify-start", data: { ga_event: "navigation_home_click", ga_category: "navigation", ga_label: "desktop_utility_home" } %>
-                    <%= link_to t("navigation.users_index"), users_path, class: "tap-target cta-tertiary w-full justify-start", data: { ga_event: "navigation_user_index_click", ga_category: "navigation", ga_label: "desktop_utility_users" } %>
-                    <% if owned_users.any? %>
-                      <%= link_to t("navigation.my_profile"), user_path(owned_users.first), class: "tap-target cta-tertiary w-full justify-start", data: { ga_event: "navigation_profile_click", ga_category: "navigation", ga_label: "desktop_header_my_profile" } %>
-                    <% end %>
-                    <%= link_to t("navigation.onboarding"), onboarding_path, class: "tap-target cta-tertiary w-full justify-start", data: { ga_event: "navigation_onboarding_click", ga_category: "navigation", ga_label: "desktop_header_onboarding" } %>
-                  </div>
-                </section>
-
-                <section class="ds-utility-section">
-                  <p class="ds-utility-section-title"><%= t("navigation.utility_settings") %></p>
-      <div class="rounded-lg border ds-border-subtle ds-surface-base p-2">
-                    <p class="mb-1 ds-text-meta font-semibold"><%= t("language.switch_aria") %></p>
-                    <div class="ds-locale-switch w-full" role="group" aria-label="<%= t('language.switch_aria') %>">
-                      <%= link_to locale_switch_path(:ja), class: "ds-locale-pill #{locale_selected?(:ja) ? 'ds-locale-pill-active' : 'ds-locale-pill-inactive'}", aria: { current: (locale_selected?(:ja) ? "true" : nil) }, data: { locale_switch_link: true, target_locale: "ja", ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "desktop_locale_ja" } do %>
-                        <span><%= t("language.option_ja") %></span>
-                        <% if locale_selected?(:ja) %>
-                          <%= ui_icon(:check, class_name: "h-3 w-3") %>
-                        <% end %>
-                      <% end %>
-                      <%= link_to locale_switch_path(:en), class: "ds-locale-pill #{locale_selected?(:en) ? 'ds-locale-pill-active' : 'ds-locale-pill-inactive'}", aria: { current: (locale_selected?(:en) ? "true" : nil) }, data: { locale_switch_link: true, target_locale: "en", ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "desktop_locale_en" } do %>
-                        <span><%= t("language.option_en") %></span>
-                        <% if locale_selected?(:en) %>
-                          <%= ui_icon(:check, class_name: "h-3 w-3") %>
-                        <% end %>
-                      <% end %>
-                    </div>
-                  </div>
-                  <div class="ds-legal-links border-t ds-border-subtle pt-2">
-                    <%= link_to t("footer.terms"), terms_path %>
-                    <%= link_to t("footer.privacy_policy"), privacy_policy_path %>
-                    <%= link_to t("footer.cookie_policy"), cookie_policy_path %>
-                  </div>
-                </section>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="mobile-header-menu" data-mobile-header-menu class="hidden border-t ds-border-subtle ds-surface-base ds-motion-popover sm:hidden">
-        <div class="mx-auto w-full max-w-6xl space-y-2.5 px-4 py-2.5">
-          <section class="ds-utility-section">
-            <p class="ds-utility-section-title"><%= t("navigation.utility_create") %></p>
-            <div class="grid grid-cols-2 gap-2">
-              <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target cta-primary flex w-full items-center justify-center", data: { mobile_header_action: true, ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "mobile_header_create_post_menu" } %>
-              <% if owned_users.any? %>
-                <%= link_to t("navigation.my_profile"), user_path(owned_users.first), class: "tap-target cta-secondary flex w-full items-center justify-center", data: { mobile_header_action: true, ga_event: "navigation_profile_click", ga_category: "navigation", ga_label: "mobile_header_my_profile" } %>
-              <% else %>
-                <%= link_to t("navigation.create_profile"), new_user_path, class: "tap-target cta-secondary flex w-full items-center justify-center", data: { mobile_header_action: true, ga_event: "navigation_profile_create_click", ga_category: "navigation", ga_label: "mobile_header_create_profile" } %>
-              <% end %>
-            </div>
-          </section>
-
-          <section class="ds-utility-section">
-            <p class="ds-utility-section-title"><%= t("navigation.utility_browse") %></p>
-            <div class="space-y-1">
-              <%= link_to t("posts.index.title"), root_path, class: "tap-target cta-tertiary flex w-full items-center justify-start", data: { mobile_header_action: true, ga_event: "navigation_home_click", ga_category: "navigation", ga_label: "mobile_header_home" } %>
-              <%= link_to t("navigation.users_index"), users_path, class: "tap-target cta-tertiary flex w-full items-center justify-start", data: { mobile_header_action: true, ga_event: "navigation_user_index_click", ga_category: "navigation", ga_label: "mobile_header_users" } %>
-              <%= link_to t("navigation.onboarding"), onboarding_path, class: "tap-target cta-tertiary flex w-full items-center justify-start", data: { mobile_header_action: true, ga_event: "navigation_onboarding_click", ga_category: "navigation", ga_label: "mobile_header_onboarding" } %>
-            </div>
-          </section>
-
-          <section class="ds-utility-section">
-            <p class="ds-utility-section-title"><%= t("navigation.utility_settings") %></p>
-            <div class="rounded-lg border ds-border-subtle ds-surface-base p-2">
-              <p class="mb-1 ds-text-meta font-semibold"><%= t("language.switch_aria") %></p>
-              <div class="ds-locale-switch" role="group" aria-label="<%= t('language.switch_aria') %>">
-                <%= link_to locale_switch_path(:ja), class: "ds-locale-pill #{locale_selected?(:ja) ? 'ds-locale-pill-active' : 'ds-locale-pill-inactive'}", aria: { current: (locale_selected?(:ja) ? "true" : nil) }, data: { locale_switch_link: true, target_locale: "ja", mobile_header_action: true, ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "mobile_locale_ja" } do %>
-                  <span><%= t("language.option_ja") %></span>
-                  <% if locale_selected?(:ja) %>
-                    <%= ui_icon(:check, class_name: "ml-1 h-3 w-3") %>
-                  <% end %>
-                <% end %>
-                <%= link_to locale_switch_path(:en), class: "ds-locale-pill #{locale_selected?(:en) ? 'ds-locale-pill-active' : 'ds-locale-pill-inactive'}", aria: { current: (locale_selected?(:en) ? "true" : nil) }, data: { locale_switch_link: true, target_locale: "en", mobile_header_action: true, ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "mobile_locale_en" } do %>
-                  <span><%= t("language.option_en") %></span>
-                  <% if locale_selected?(:en) %>
-                    <%= ui_icon(:check, class_name: "ml-1 h-3 w-3") %>
-                  <% end %>
-                <% end %>
-              </div>
-            </div>
-            <div class="ds-legal-links border-t ds-border-subtle pt-2">
-              <%= link_to t("footer.terms"), terms_path, data: { mobile_header_action: true } %>
-              <%= link_to t("footer.privacy_policy"), privacy_policy_path, data: { mobile_header_action: true } %>
-              <%= link_to t("footer.cookie_policy"), cookie_policy_path, data: { mobile_header_action: true } %>
-            </div>
-          </section>
-        </div>
-      </div>
-    </header>
-
-    <main class="mx-auto w-full max-w-6xl px-4 pt-8 <%= main_padding_class %> sm:px-6">
-      <% breadcrumbs = context_breadcrumbs %>
-      <% if breadcrumbs.size > 1 %>
-        <nav aria-label="<%= t('navigation.breadcrumb') %>" class="mb-4">
-          <ol class="flex flex-wrap items-center gap-1.5 text-xs ds-text-weak">
-            <% breadcrumbs.each_with_index do |crumb, idx| %>
-              <li class="inline-flex items-center gap-1.5">
-                <% if idx < breadcrumbs.size - 1 %>
-                  <%= link_to crumb[:label], crumb[:href], class: "ds-link-underlined ds-hover-link" %>
-                <% else %>
-                  <span aria-current="page" class="font-semibold ds-text-strong"><%= crumb[:label] %></span>
-                <% end %>
-                <% if idx < breadcrumbs.size - 1 %>
-                  <span aria-hidden="true">/</span>
-                <% end %>
-              </li>
-            <% end %>
-          </ol>
-        </nav>
-      <% end %>
-
-      <%= render "shared/policy_revision_banner" %>
-
-      <p class="mb-4 ds-offline-banner"><%= t("ui.offline_banner") %></p>
-      <p class="mb-4 ds-low-bandwidth-banner"><%= t("ui.low_bandwidth_banner") %></p>
-
-      <% if controller_name == "posts" && action_name.in?(%w[index show new]) %>
-        <div class="mb-4 ds-legal-links">
-          <span class="ds-text-weak"><%= t("legal.quick_links") %>:</span>
-          <%= link_to t("footer.terms"), terms_path %>
-          <%= link_to t("footer.privacy_policy"), privacy_policy_path %>
-          <%= link_to t("footer.cookie_policy"), cookie_policy_path %>
-        </div>
-      <% end %>
-
-      <% flash.each do |type, message| %>
+        <% flash.each do |type, message| %>
         <% next if type.to_s == "analytics_events" %>
         <% visual = flash_visual(type) %>
-        <% tone = case visual[:level]
-        when :error
-          "ds-tone-danger"
-        when :warning
-          "ds-tone-warning"
+        <% tone = if editorial_shell_page?
+          case visual[:level]
+          when :error
+            "border-rose-300 bg-rose-50 text-rose-900"
+          when :warning
+            "border-amber-300 bg-amber-50 text-amber-900"
+          else
+            "border-emerald-300 bg-emerald-50 text-emerald-900"
+          end
         else
-          "ds-tone-success"
+          case visual[:level]
+        when :error
+          "border-rose-400/30 bg-rose-500/[0.08] text-rose-100"
+        when :warning
+          "border-amber-300/30 bg-amber-500/[0.08] text-amber-100"
+        else
+          "border-emerald-400/30 bg-emerald-500/[0.07] text-emerald-100"
+          end
         end %>
         <% toast_level = case visual[:level]
         when :error
@@ -241,409 +150,458 @@
         end %>
         <% role = visual[:level] == :error ? "alert" : "status" %>
         <% live = visual[:level] == :error ? "assertive" : "polite" %>
-        <div class="mb-4 rounded-lg border px-4 py-3 text-sm <%= tone %>" role="<%= role %>" aria-live="<%= live %>" data-flash-message="<%= message %>" data-flash-level="<%= toast_level %>">
-          <div class="flex items-start gap-2">
-            <%= status_badge(level: visual[:level], icon: visual[:icon], label: t(visual[:label_key])) %>
-            <p class="pt-0.5"><%= message %></p>
-          </div>
+        <div class="mb-6" role="<%= role %>" aria-live="<%= live %>" data-flash-message="<%= message %>" data-flash-level="<%= toast_level %>">
+            <%= render "shared/feedback_panel",
+                       level: visual[:level],
+                       title: t(visual[:label_key]),
+                       body: message %>
         </div>
-      <% end %>
-      <%= yield %>
+        <% end %>
+
+        <%= yield %>
     </main>
 
     <% if controller_name == "posts" && action_name == "index" %>
-      <div class="mobile-sticky-bar ds-motion-slide sm:hidden" data-index-mobile-cta>
-        <div class="mx-auto w-full max-w-6xl px-4 pt-3">
-          <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target cta-primary flex w-full justify-center rounded-xl px-4", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "mobile_create_post_bottom_bar" } %>
+    <div class="mobile-sticky-bar ds-motion-slide sm:hidden" data-index-mobile-cta>
+        <div class="mx-auto w-full max-w-7xl px-4 pb-4 lg:px-8">
+            <div class="rounded-2xl border border-[#d8d4ca] bg-[var(--ds-surface-overlay)] p-3 shadow-[0_18px_44px_rgba(26,26,26,0.12)] backdrop-blur-xl">
+                <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target cta-primary inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "mobile_create_post_bottom_bar" } %>
+            </div>
         </div>
-      </div>
+    </div>
     <% end %>
 
-    <footer class="mt-10 border-t ds-border-subtle ds-surface-base">
-      <div class="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-6 text-sm ds-text-weak sm:flex-row sm:items-center sm:justify-between sm:px-6">
-        <p>&copy; <%= Date.current.year %> DeskTour Studio</p>
-        <div class="flex flex-wrap gap-4">
-          <%= link_to t("footer.terms"), terms_path, class: "ds-hover-link" %>
-          <%= link_to t("footer.privacy_policy"), privacy_policy_path, class: "ds-hover-link" %>
-          <%= link_to t("footer.cookie_policy"), cookie_policy_path, class: "ds-hover-link" %>
+    <%= render "shared/editorial_footer" %>
+
+    <dialog id="ui-confirm-dialog" class="ds-confirm-dialog w-full max-w-lg rounded-[28px] border p-0" data-confirm-level="primary">
+        <div class="ds-confirm-shell">
+            <div class="ds-confirm-heading">
+                <span class="ds-confirm-icon-ring" data-confirm-icon-wrap>
+                    <span data-confirm-icon>
+                        <%= ui_icon(:exclamation_triangle, class_name: "h-5 w-5") %>
+                    </span>
+                </span>
+                <div class="min-w-0">
+                    <p class="ds-confirm-kicker">DeskTour Studio</p>
+                    <h2 class="ds-confirm-title" data-confirm-title><%= t("ui.confirm_title") %></h2>
+                </div>
+            </div>
+            <p class="ds-confirm-message" data-confirm-message><%= t("ui.confirm_message") %></p>
+            <div class="ds-confirm-actions">
+                <button type="button" class="tap-target ds-confirm-cancel" data-confirm-cancel><%= t("ui.cancel") %></button>
+                <button type="button" class="tap-target ds-confirm-ok ds-confirm-ok-primary" data-confirm-ok><%= t("ui.confirm") %></button>
+            </div>
         </div>
-      </div>
-    </footer>
-    <dialog id="ui-confirm-dialog" class="ds-dialog-surface w-full max-w-md rounded-xl border ds-border-subtle p-0 shadow-lg">
-      <div class="border-b ds-border-subtle px-4 py-3">
-        <h2 class="text-base font-semibold ds-text-strong" data-confirm-title><%= t("ui.confirm_title") %></h2>
-        <p class="mt-1 text-xs ds-text-weak" data-confirm-message><%= t("ui.confirm_message") %></p>
-      </div>
-      <div class="flex justify-end gap-2 px-4 py-4">
-        <button type="button" class="tap-target cta-tertiary" data-confirm-cancel><%= t("ui.cancel") %></button>
-        <button type="button" class="tap-target cta-primary" data-confirm-ok><%= t("ui.confirm") %></button>
-      </div>
     </dialog>
+
     <p id="ui-live-region" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
     <div id="ui-toast-region" class="ds-toast-region" aria-live="polite" aria-atomic="true"></div>
 
     <script>
-      if (!window.__mobileHeaderBindingInstalled) {
-        window.__mobileHeaderBindingInstalled = true;
-        const menuOpenedMessage = "<%= j(t('navigation.menu_opened')) %>";
-        const menuClosedMessage = "<%= j(t('navigation.menu_closed')) %>";
-        const localeSwitchSessionKey = "locale_switch_session_context";
-        let activeMenuRoot = null;
-        const syncStickyInsets = () => {
-          const header = document.querySelector("[data-mobile-header-root]");
-          if (header) {
-            const headerHeight = Math.ceil(header.getBoundingClientRect().height);
-            document.documentElement.style.setProperty("--ds-header-height", `${headerHeight}px`);
-          }
+        if (!window.__mobileHeaderBindingInstalled) {
+            window.__mobileHeaderBindingInstalled = true;
+            const menuOpenedMessage = "<%= j(t('navigation.menu_opened')) %>";
+            const menuClosedMessage = "<%= j(t('navigation.menu_closed')) %>";
+            const localeSwitchSessionKey = "locale_switch_session_context";
+            let activeMenuRoot = null;
 
-          const bottomBar = document.querySelector(".mobile-sticky-bar");
-          if (bottomBar) {
-            const barHeight = Math.ceil(bottomBar.getBoundingClientRect().height);
-            document.documentElement.style.setProperty("--ds-mobile-bar-height", `${Math.max(barHeight, 56)}px`);
-          } else {
-            document.documentElement.style.setProperty("--ds-mobile-bar-height", "0px");
-          }
-        };
+            const syncStickyInsets = () => {
+                const header = document.querySelector("[data-mobile-header-root]");
+                if (header) {
+                    const headerHeight = Math.ceil(header.getBoundingClientRect().height);
+                    document.documentElement.style.setProperty("--ds-header-height", `${headerHeight}px`);
+                }
 
-        const bindStickyInsetSync = () => {
-          syncStickyInsets();
-          window.addEventListener("resize", syncStickyInsets);
-          document.addEventListener("turbo:load", syncStickyInsets);
-          document.addEventListener("DOMContentLoaded", syncStickyInsets);
-          if (window.visualViewport) {
-            window.visualViewport.addEventListener("resize", syncStickyInsets);
-            window.visualViewport.addEventListener("scroll", syncStickyInsets);
-          }
-        };
-
-        const announceToRegion = (message) => {
-          const region = document.getElementById("ui-live-region");
-          if (!region || !message) return;
-          region.textContent = "";
-          requestAnimationFrame(() => {
-            region.textContent = message;
-          });
-        };
-
-        const announceScreenTransition = () => {
-          const body = document.body;
-          if (!body) return;
-          const screen = body.dataset.screen || "";
-          if (!screen || window.__lastAnnouncedScreen === screen) return;
-          window.__lastAnnouncedScreen = screen;
-          announceToRegion("<%= j(t('ui.page_changed')) %>");
-        };
-
-        const trackLocaleSwitchContinuation = () => {
-          const contextRaw = sessionStorage.getItem(localeSwitchSessionKey);
-          if (!contextRaw || typeof window.gtag !== "function") return;
-          try {
-            const context = JSON.parse(contextRaw);
-            const now = Date.now();
-            const currentLocale = (document.documentElement.getAttribute("lang") || "").toLowerCase();
-            if (!context || !context.target_locale) return;
-            const sameLocale = currentLocale === String(context.target_locale).toLowerCase();
-            const elapsed = now - Number(context.at || 0);
-            if (sameLocale && elapsed <= (10 * 60 * 1000)) {
-              window.gtag("event", "language_switch_session_continued", {
-                event_category: "navigation",
-                event_label: context.target_locale,
-                elapsed_ms: elapsed
-              });
-            }
-          } catch (_) {
-          } finally {
-            sessionStorage.removeItem(localeSwitchSessionKey);
-          }
-        };
-
-        const enableMenuFocusTrap = (menuRoot, toggleButton) => {
-          activeMenuRoot = menuRoot;
-          const firstFocusable = menuRoot.querySelector("a, button, [tabindex='0']");
-          if (firstFocusable && typeof firstFocusable.focus === "function") {
-            window.setTimeout(() => firstFocusable.focus(), 0);
-          }
-          if (toggleButton) toggleButton.dataset.menuToggle = "true";
-        };
-
-        const disableMenuFocusTrap = () => {
-          activeMenuRoot = null;
-        };
-
-        const toastQueue = [];
-        let toastRendering = false;
-        let lastToastFingerprint = "";
-        let lastToastAt = 0;
-        const toastPolicies = {
-          success: { duration: 2200, tone: "ds-toast-success", priority: 1 },
-          info: { duration: 2600, tone: "ds-toast-info", priority: 1 },
-          warning: { duration: 3600, tone: "ds-toast-warning", priority: 2 },
-          error: { duration: 5200, tone: "ds-toast-error", priority: 3 }
-        };
-
-        const renderNextToast = () => {
-          if (toastRendering || toastQueue.length === 0) return;
-          toastQueue.sort((a, b) => b.priority - a.priority);
-          const nextToast = toastQueue.shift();
-          const toastRegion = document.getElementById("ui-toast-region");
-          if (!toastRegion || !nextToast) return;
-
-          toastRendering = true;
-          const toast = document.createElement("div");
-          toast.className = `ds-toast ${nextToast.tone}`;
-          toast.textContent = nextToast.message;
-          toastRegion.appendChild(toast);
-          window.setTimeout(() => {
-            toast.remove();
-            toastRendering = false;
-            renderNextToast();
-          }, nextToast.duration);
-        };
-
-        window.dsNotify = (message, level = "info") => {
-          if (!message) return;
-          announceToRegion(message);
-          const key = String(level || "info");
-          const policy = toastPolicies[key] || toastPolicies.info;
-          const fingerprint = `${key}:${message}`;
-          const now = Date.now();
-          if (fingerprint === lastToastFingerprint && (now - lastToastAt) <= 1200) return;
-          lastToastFingerprint = fingerprint;
-          lastToastAt = now;
-          toastQueue.push({ message, ...policy });
-          renderNextToast();
-        };
-        window.dsAnnounce = (message) => announceToRegion(message);
-
-        window.dsConfirmAction = (options = {}) => {
-          const dialog = document.getElementById("ui-confirm-dialog");
-          if (!dialog || typeof dialog.showModal !== "function") return Promise.resolve(false);
-
-          const titleNode = dialog.querySelector("[data-confirm-title]");
-          const messageNode = dialog.querySelector("[data-confirm-message]");
-          const cancelButton = dialog.querySelector("[data-confirm-cancel]");
-          const okButton = dialog.querySelector("[data-confirm-ok]");
-          const previousFocus = document.activeElement;
-          const level = options.level === "danger" ? "danger" : options.level === "warning" ? "warning" : "primary";
-
-          if (titleNode) titleNode.textContent = options.title || "<%= j(t('ui.confirm_title')) %>";
-          if (messageNode) messageNode.textContent = options.message || "<%= j(t('ui.confirm_message')) %>";
-          if (okButton) okButton.textContent = options.confirmLabel || "<%= j(t('ui.confirm')) %>";
-          if (cancelButton) cancelButton.textContent = options.cancelLabel || "<%= j(t('ui.cancel')) %>";
-
-          if (okButton) {
-            okButton.classList.remove("cta-primary", "cta-warning", "cta-danger");
-            okButton.classList.add(level === "danger" ? "cta-danger" : level === "warning" ? "cta-warning" : "cta-primary");
-          }
-
-          return new Promise((resolve) => {
-            const cleanup = () => {
-              dialog.removeEventListener("cancel", onCancel);
-              if (cancelButton) cancelButton.removeEventListener("click", onCancel);
-              if (okButton) okButton.removeEventListener("click", onConfirm);
-              if (previousFocus && typeof previousFocus.focus === "function") {
-                window.setTimeout(() => previousFocus.focus(), 0);
-              }
+                const bottomBar = document.querySelector(".mobile-sticky-bar");
+                if (bottomBar) {
+                    const barHeight = Math.ceil(bottomBar.getBoundingClientRect().height);
+                    document.documentElement.style.setProperty("--ds-mobile-bar-height", `${Math.max(barHeight, 56)}px`);
+                } else {
+                    document.documentElement.style.setProperty("--ds-mobile-bar-height", "0px");
+                }
             };
 
-            const onCancel = (event) => {
-              if (event) event.preventDefault();
-              cleanup();
-              dialog.close();
-              resolve(false);
+            const bindStickyInsetSync = () => {
+                syncStickyInsets();
+                window.addEventListener("resize", syncStickyInsets);
+                document.addEventListener("turbo:load", syncStickyInsets);
+                document.addEventListener("DOMContentLoaded", syncStickyInsets);
+                if (window.visualViewport) {
+                    window.visualViewport.addEventListener("resize", syncStickyInsets);
+                    window.visualViewport.addEventListener("scroll", syncStickyInsets);
+                }
             };
 
-            const onConfirm = (event) => {
-              if (event) event.preventDefault();
-              cleanup();
-              dialog.close();
-              resolve(true);
+            const announceToRegion = (message) => {
+                const region = document.getElementById("ui-live-region");
+                if (!region || !message) return;
+                region.textContent = "";
+                requestAnimationFrame(() => {
+                    region.textContent = message;
+                });
             };
 
-            dialog.addEventListener("cancel", onCancel, { once: true });
-            if (cancelButton) cancelButton.addEventListener("click", onCancel, { once: true });
-            if (okButton) okButton.addEventListener("click", onConfirm, { once: true });
-            dialog.showModal();
-            window.setTimeout(() => {
-              (cancelButton || okButton || dialog).focus();
-            }, 0);
-          });
-        };
+            const announceScreenTransition = () => {
+                const body = document.body;
+                if (!body) return;
+                const screen = body.dataset.screen || "";
+                if (!screen || window.__lastAnnouncedScreen === screen) return;
+                window.__lastAnnouncedScreen = screen;
+                announceToRegion("<%= j(t('ui.page_changed')) %>");
+            };
 
-        const closeMobileHeaderMenu = (reason = "dismissed") => {
-          const menu = document.querySelector("[data-mobile-header-menu]");
-          const toggle = document.querySelector("[data-mobile-header-toggle]");
-          if (!menu || menu.classList.contains("hidden")) return;
+            const trackLocaleSwitchContinuation = () => {
+                const contextRaw = sessionStorage.getItem(localeSwitchSessionKey);
+                if (!contextRaw || typeof window.gtag !== "function") return;
+                try {
+                    const context = JSON.parse(contextRaw);
+                    const now = Date.now();
+                    const currentLocale = (document.documentElement.getAttribute("lang") || "").toLowerCase();
+                    if (!context || !context.target_locale) return;
+                    const sameLocale = currentLocale === String(context.target_locale).toLowerCase();
+                    const elapsed = now - Number(context.at || 0);
+                    if (sameLocale && elapsed <= (10 * 60 * 1000)) {
+                        window.gtag("event", "language_switch_session_continued", {
+                            event_category: "navigation",
+                            event_label: context.target_locale,
+                            elapsed_ms: elapsed
+                        });
+                    }
+                } catch (_) {} finally {
+                    sessionStorage.removeItem(localeSwitchSessionKey);
+                }
+            };
 
-          menu.classList.add("hidden");
-          if (toggle) toggle.setAttribute("aria-expanded", "false");
-          disableMenuFocusTrap();
-          window.dsNotify(menuClosedMessage, "info");
-          if (typeof window.gtag === "function") {
-            window.gtag("event", "navigation_mobile_menu_close", {
-              event_category: "navigation",
-              event_label: `mobile_header_menu_${reason}`
+            const enableMenuFocusTrap = (menuRoot) => {
+                activeMenuRoot = menuRoot;
+                const firstFocusable = menuRoot.querySelector("a, button, [tabindex='0']");
+                if (firstFocusable && typeof firstFocusable.focus === "function") {
+                    window.setTimeout(() => firstFocusable.focus(), 0);
+                }
+            };
+
+            const disableMenuFocusTrap = () => {
+                activeMenuRoot = null;
+            };
+
+            const toastQueue = [];
+            let toastRendering = false;
+            let lastToastFingerprint = "";
+            let lastToastAt = 0;
+            const maxQueuedToasts = 2;
+
+            const toastPolicies = {
+                success: {
+                    duration: 2200,
+                    tone: "ds-toast-success",
+                    priority: 1
+                },
+                info: {
+                    duration: 2600,
+                    tone: "ds-toast-info",
+                    priority: 1
+                },
+                warning: {
+                    duration: 3600,
+                    tone: "ds-toast-warning",
+                    priority: 2
+                },
+                error: {
+                    duration: 5200,
+                    tone: "ds-toast-error",
+                    priority: 3
+                }
+            };
+
+            const renderNextToast = () => {
+                if (toastRendering || toastQueue.length === 0) return;
+                toastQueue.sort((a, b) => b.priority - a.priority);
+                const nextToast = toastQueue.shift();
+                const toastRegion = document.getElementById("ui-toast-region");
+                if (!toastRegion || !nextToast) return;
+
+                toastRendering = true;
+                const toast = document.createElement("div");
+                toast.className = `ds-toast ${nextToast.tone}`;
+                toast.textContent = nextToast.message;
+                toastRegion.appendChild(toast);
+                window.setTimeout(() => {
+                    toast.remove();
+                    toastRendering = false;
+                    renderNextToast();
+                }, nextToast.duration);
+            };
+
+            window.dsNotify = (message, level = "info") => {
+                if (!message) return;
+                announceToRegion(message);
+                const key = String(level || "info");
+                const policy = toastPolicies[key] || toastPolicies.info;
+                const fingerprint = `${key}:${message}`;
+                const now = Date.now();
+                if (fingerprint === lastToastFingerprint && (now - lastToastAt) <= 1200) return;
+                lastToastFingerprint = fingerprint;
+                lastToastAt = now;
+                if (toastQueue.length >= maxQueuedToasts) {
+                    toastQueue.sort((a, b) => a.priority - b.priority);
+                    toastQueue.shift();
+                }
+                toastQueue.push({
+                    message,
+                    ...policy
+                });
+                renderNextToast();
+            };
+
+            window.dsAnnounce = (message) => announceToRegion(message);
+
+            window.dsConfirmAction = (options = {}) => {
+                const dialog = document.getElementById("ui-confirm-dialog");
+                if (!dialog || typeof dialog.showModal !== "function") return Promise.resolve(false);
+
+                const titleNode = dialog.querySelector("[data-confirm-title]");
+                const messageNode = dialog.querySelector("[data-confirm-message]");
+                const cancelButton = dialog.querySelector("[data-confirm-cancel]");
+                const okButton = dialog.querySelector("[data-confirm-ok]");
+                const iconNode = dialog.querySelector("[data-confirm-icon]");
+                const previousFocus = document.activeElement;
+                const level = options.level === "danger" ? "danger" : options.level === "warning" ? "warning" : "primary";
+
+                if (titleNode) titleNode.textContent = options.title || "<%= j(t('ui.confirm_title')) %>";
+                if (messageNode) messageNode.textContent = options.message || "<%= j(t('ui.confirm_message')) %>";
+                if (okButton) okButton.textContent = options.confirmLabel || "<%= j(t('ui.confirm')) %>";
+                if (cancelButton) cancelButton.textContent = options.cancelLabel || "<%= j(t('ui.cancel')) %>";
+                dialog.dataset.confirmLevel = level;
+                if (iconNode) {
+                    iconNode.className = level === "danger" ? "h-5 w-5 text-rose-700" : level === "warning" ? "h-5 w-5 text-amber-700" : "h-5 w-5 text-[#1a1a1a]";
+                }
+
+                if (okButton) {
+                    okButton.className = "tap-target ds-confirm-ok";
+                    okButton.classList.add(level === "danger" ? "ds-confirm-ok-danger" : level === "warning" ? "ds-confirm-ok-warning" : "ds-confirm-ok-primary");
+                }
+
+                return new Promise((resolve) => {
+                    const cleanup = () => {
+                        dialog.removeEventListener("cancel", onCancel);
+                        if (cancelButton) cancelButton.removeEventListener("click", onCancel);
+                        if (okButton) okButton.removeEventListener("click", onConfirm);
+                        if (previousFocus && typeof previousFocus.focus === "function") {
+                            window.setTimeout(() => previousFocus.focus(), 0);
+                        }
+                    };
+
+                    const onCancel = (event) => {
+                        if (event) event.preventDefault();
+                        cleanup();
+                        dialog.close();
+                        resolve(false);
+                    };
+
+                    const onConfirm = (event) => {
+                        if (event) event.preventDefault();
+                        cleanup();
+                        dialog.close();
+                        resolve(true);
+                    };
+
+                    dialog.addEventListener("cancel", onCancel, {
+                        once: true
+                    });
+                    if (cancelButton) cancelButton.addEventListener("click", onCancel, {
+                        once: true
+                    });
+                    if (okButton) okButton.addEventListener("click", onConfirm, {
+                        once: true
+                    });
+                    dialog.showModal();
+                    window.setTimeout(() => {
+                        (cancelButton || okButton || dialog).focus();
+                    }, 0);
+                });
+            };
+
+            const closeMobileHeaderMenu = (reason = "dismissed") => {
+                const menu = document.querySelector("[data-mobile-header-menu]");
+                const toggle = document.querySelector("[data-mobile-header-toggle]");
+                if (!menu || menu.classList.contains("hidden")) return;
+
+                menu.classList.add("hidden");
+                if (toggle) toggle.setAttribute("aria-expanded", "false");
+                disableMenuFocusTrap();
+                window.dsNotify(menuClosedMessage, "info");
+                if (typeof window.gtag === "function") {
+                    window.gtag("event", "navigation_mobile_menu_close", {
+                        event_category: "navigation",
+                        event_label: `mobile_header_menu_${reason}`
+                    });
+                }
+            };
+
+            const closeDesktopUtilityMenu = (reason = "dismissed") => {
+                const menu = document.querySelector("[data-desktop-utility-menu]");
+                const toggle = document.querySelector("[data-desktop-utility-toggle]");
+                if (!menu || menu.classList.contains("hidden")) return;
+
+                menu.classList.add("hidden");
+                if (toggle) toggle.setAttribute("aria-expanded", "false");
+                disableMenuFocusTrap();
+                if (typeof window.gtag === "function") {
+                    window.gtag("event", "navigation_desktop_utility_close", {
+                        event_category: "navigation",
+                        event_label: `desktop_utility_${reason}`
+                    });
+                }
+            };
+
+            document.addEventListener("click", (event) => {
+                const localeLink = event.target.closest("[data-locale-switch-link]");
+                if (localeLink) {
+                    const targetLocale = localeLink.dataset.targetLocale || "";
+                    sessionStorage.setItem(localeSwitchSessionKey, JSON.stringify({
+                        target_locale: targetLocale,
+                        at: Date.now()
+                    }));
+                }
+
+                const toggle = event.target.closest("[data-mobile-header-toggle]");
+                if (toggle) {
+                    const menu = document.querySelector("[data-mobile-header-menu]");
+                    if (!menu) return;
+
+                    const expanded = toggle.getAttribute("aria-expanded") == "true";
+                    if (expanded) {
+                        closeMobileHeaderMenu("toggle");
+                    } else {
+                        toggle.setAttribute("aria-expanded", "true");
+                        menu.classList.remove("hidden");
+                        window.dsNotify(menuOpenedMessage, "info");
+                        enableMenuFocusTrap(menu);
+                    }
+                    return;
+                }
+
+                const desktopToggle = event.target.closest("[data-desktop-utility-toggle]");
+                if (desktopToggle) {
+                    const menu = document.querySelector("[data-desktop-utility-menu]");
+                    if (!menu) return;
+                    const expanded = desktopToggle.getAttribute("aria-expanded") == "true";
+                    if (expanded) {
+                        closeDesktopUtilityMenu("toggle");
+                    } else {
+                        desktopToggle.setAttribute("aria-expanded", "true");
+                        menu.classList.remove("hidden");
+                        enableMenuFocusTrap(menu);
+                    }
+                    return;
+                }
+
+                const action = event.target.closest("[data-mobile-header-action]");
+                if (action) {
+                    closeMobileHeaderMenu("menu_action");
+                    return;
+                }
+
+                const root = document.querySelector("[data-mobile-header-root]");
+                const menu = document.querySelector("[data-mobile-header-menu]");
+                if (root && menu && !menu.classList.contains("hidden") && !root.contains(event.target)) {
+                    closeMobileHeaderMenu("outside_tap");
+                }
+
+                const desktopRoot = document.querySelector("[data-desktop-utility-root]");
+                const desktopMenu = document.querySelector("[data-desktop-utility-menu]");
+                if (desktopRoot && desktopMenu && !desktopMenu.classList.contains("hidden") && !desktopRoot.contains(event.target)) {
+                    closeDesktopUtilityMenu("outside_tap");
+                }
             });
-          }
-        };
 
-        const closeDesktopUtilityMenu = (reason = "dismissed") => {
-          const menu = document.querySelector("[data-desktop-utility-menu]");
-          const toggle = document.querySelector("[data-desktop-utility-toggle]");
-          if (!menu || menu.classList.contains("hidden")) return;
-
-          menu.classList.add("hidden");
-          if (toggle) toggle.setAttribute("aria-expanded", "false");
-          disableMenuFocusTrap();
-          if (typeof window.gtag === "function") {
-            window.gtag("event", "navigation_desktop_utility_close", {
-              event_category: "navigation",
-              event_label: `desktop_utility_${reason}`
+            document.addEventListener("keydown", (event) => {
+                if (event.key === "Escape") {
+                    closeMobileHeaderMenu("escape");
+                    closeDesktopUtilityMenu("escape");
+                    return;
+                }
+                if (event.key !== "Tab" || !activeMenuRoot || activeMenuRoot.classList.contains("hidden")) return;
+                const candidates = Array.from(activeMenuRoot.querySelectorAll("a[href], button:not([disabled]), [tabindex='0']")).filter((node) => !node.hasAttribute("disabled"));
+                if (candidates.length === 0) return;
+                const first = candidates[0];
+                const last = candidates[candidates.length - 1];
+                const current = document.activeElement;
+                if (event.shiftKey && current === first) {
+                    event.preventDefault();
+                    last.focus();
+                } else if (!event.shiftKey && current === last) {
+                    event.preventDefault();
+                    first.focus();
+                }
             });
-          }
-        };
 
-        document.addEventListener("click", (event) => {
-          const localeLink = event.target.closest("[data-locale-switch-link]");
-          if (localeLink) {
-            const targetLocale = localeLink.dataset.targetLocale || "";
-            sessionStorage.setItem(localeSwitchSessionKey, JSON.stringify({ target_locale: targetLocale, at: Date.now() }));
-          }
-
-          const toggle = event.target.closest("[data-mobile-header-toggle]");
-          if (toggle) {
-            const menu = document.querySelector("[data-mobile-header-menu]");
-            if (!menu) return;
-
-            const expanded = toggle.getAttribute("aria-expanded") == "true";
-            if (expanded) {
-              closeMobileHeaderMenu("toggle");
-            } else {
-              toggle.setAttribute("aria-expanded", "true");
-              menu.classList.remove("hidden");
-              window.dsNotify(menuOpenedMessage, "info");
-              enableMenuFocusTrap(menu, toggle);
-            }
-            return;
-          }
-
-          const desktopToggle = event.target.closest("[data-desktop-utility-toggle]");
-          if (desktopToggle) {
-            const menu = document.querySelector("[data-desktop-utility-menu]");
-            if (!menu) return;
-            const expanded = desktopToggle.getAttribute("aria-expanded") == "true";
-            if (expanded) {
-              closeDesktopUtilityMenu("toggle");
-            } else {
-              desktopToggle.setAttribute("aria-expanded", "true");
-              menu.classList.remove("hidden");
-              enableMenuFocusTrap(menu, desktopToggle);
-            }
-            return;
-          }
-
-          const action = event.target.closest("[data-mobile-header-action]");
-          if (action) {
-            closeMobileHeaderMenu("menu_action");
-            return;
-          }
-
-          const root = document.querySelector("[data-mobile-header-root]");
-          const menu = document.querySelector("[data-mobile-header-menu]");
-          if (root && menu && !menu.classList.contains("hidden") && !root.contains(event.target)) {
-            closeMobileHeaderMenu("outside_tap");
-          }
-
-          const desktopRoot = document.querySelector("[data-desktop-utility-root]");
-          const desktopMenu = document.querySelector("[data-desktop-utility-menu]");
-          if (desktopRoot && desktopMenu && !desktopMenu.classList.contains("hidden") && !desktopRoot.contains(event.target)) {
-            closeDesktopUtilityMenu("outside_tap");
-          }
-        });
-
-        document.addEventListener("keydown", (event) => {
-          if (event.key === "Escape") {
-            closeMobileHeaderMenu("escape");
-            closeDesktopUtilityMenu("escape");
-            return;
-          }
-          if (event.key !== "Tab" || !activeMenuRoot || activeMenuRoot.classList.contains("hidden")) return;
-          const candidates = Array.from(activeMenuRoot.querySelectorAll("a[href], button:not([disabled]), [tabindex='0']")).filter((node) => !node.hasAttribute("disabled"));
-          if (candidates.length === 0) return;
-          const first = candidates[0];
-          const last = candidates[candidates.length - 1];
-          const current = document.activeElement;
-          if (event.shiftKey && current === first) {
-            event.preventDefault();
-            last.focus();
-          } else if (!event.shiftKey && current === last) {
-            event.preventDefault();
-            first.focus();
-          }
-        });
-
-        bindStickyInsetSync();
-        trackLocaleSwitchContinuation();
-        document.addEventListener("turbo:load", announceScreenTransition);
-        document.addEventListener("turbo:load", trackLocaleSwitchContinuation);
-        document.addEventListener("DOMContentLoaded", announceScreenTransition);
-        document.addEventListener("DOMContentLoaded", trackLocaleSwitchContinuation);
-        window.setTimeout(announceScreenTransition, 0);
-        window.setTimeout(trackLocaleSwitchContinuation, 0);
-      }
+            bindStickyInsetSync();
+            trackLocaleSwitchContinuation();
+            document.addEventListener("turbo:load", announceScreenTransition);
+            document.addEventListener("turbo:load", trackLocaleSwitchContinuation);
+            document.addEventListener("DOMContentLoaded", announceScreenTransition);
+            document.addEventListener("DOMContentLoaded", trackLocaleSwitchContinuation);
+            window.setTimeout(announceScreenTransition, 0);
+            window.setTimeout(trackLocaleSwitchContinuation, 0);
+        }
     </script>
 
     <script>
-      document.addEventListener("click", async (event) => {
-        const button = event.target.closest("[data-copy-url]");
-        if (!button) return;
-        const target = button.getAttribute("data-copy-url");
-        const labelNode = button.querySelector("[data-copy-label]") || button.querySelector("span:last-child");
-        const defaultLabel = button.dataset.defaultLabel || (labelNode ? labelNode.textContent.trim() : "");
-        try {
-          await navigator.clipboard.writeText(target);
-          if (labelNode) labelNode.textContent = "<%= j(t('clipboard.copy_success')) %>";
-          button.dataset.defaultLabel = defaultLabel;
-          if (typeof window.dsNotify === "function") window.dsNotify("<%= j(t('clipboard.copy_success')) %>", "success");
-        } catch (_) {
-          if (labelNode) labelNode.textContent = "<%= j(t('clipboard.copy_failed')) %>";
-          button.dataset.defaultLabel = defaultLabel;
-          if (typeof window.dsNotify === "function") window.dsNotify("<%= j(t('clipboard.copy_failed')) %>", "error");
-        }
-        if (labelNode && defaultLabel.length > 0) {
-          window.setTimeout(() => {
-            labelNode.textContent = defaultLabel;
-          }, 1800);
-        }
-      });
-    </script>
-    <% if ga4_enabled? && tracked_events.any? %>
-      <script>
-        document.addEventListener("turbo:load", () => {
-          if (typeof window.gtag !== "function") return;
-          const events = <%= raw(json_escape(tracked_events.to_json)) %>;
-          events.forEach((eventData) => {
-            window.gtag("event", eventData.name, eventData.params || {});
-          });
-        }, { once: true });
-      </script>
-    <% end %>
-    <% if ga4_enabled? %>
-      <script>
-        document.addEventListener("click", (event) => {
-          const trackedElement = event.target.closest("[data-ga-event]");
-          if (!trackedElement || typeof window.gtag !== "function") return;
-
-          const eventName = trackedElement.dataset.gaEvent;
-          if (!eventName) return;
-
-          const params = {};
-          if (trackedElement.dataset.gaCategory) params.event_category = trackedElement.dataset.gaCategory;
-          if (trackedElement.dataset.gaLabel) params.event_label = trackedElement.dataset.gaLabel;
-          window.gtag("event", eventName, params);
+        document.addEventListener("click", async (event) => {
+            const button = event.target.closest("[data-copy-url]");
+            if (!button) return;
+            const target = button.getAttribute("data-copy-url");
+            const labelNode = button.querySelector("[data-copy-label]") || button.querySelector("span:last-child");
+            const defaultLabel = button.dataset.defaultLabel || (labelNode ? labelNode.textContent.trim() : "");
+            try {
+                await navigator.clipboard.writeText(target);
+                if (labelNode) labelNode.textContent = "<%= j(t('clipboard.copy_success')) %>";
+                button.dataset.defaultLabel = defaultLabel;
+                if (typeof window.dsNotify === "function") window.dsNotify("<%= j(t('clipboard.copy_success')) %>", "success");
+            } catch (_) {
+                if (labelNode) labelNode.textContent = "<%= j(t('clipboard.copy_failed')) %>";
+                button.dataset.defaultLabel = defaultLabel;
+                if (typeof window.dsNotify === "function") window.dsNotify("<%= j(t('clipboard.copy_failed')) %>", "error");
+            }
+            if (labelNode && defaultLabel.length > 0) {
+                window.setTimeout(() => {
+                    labelNode.textContent = defaultLabel;
+                }, 1800);
+            }
         });
-      </script>
-    <% end %>
-  </body>
-</html>
+    </script>
 
+    <% if ga4_enabled? && tracked_events.any? %>
+    <script>
+        document.addEventListener("turbo:load", () => {
+            if (typeof window.gtag !== "function") return;
+            const events = < %= raw(json_escape(tracked_events.to_json)) % > ;
+            events.forEach((eventData) => {
+                window.gtag("event", eventData.name, eventData.params || {});
+            });
+        }, {
+            once: true
+        });
+    </script>
+    <% end %>
+
+    <% if ga4_enabled? %>
+    <script>
+        document.addEventListener("click", (event) => {
+            const trackedElement = event.target.closest("[data-ga-event]");
+            if (!trackedElement || typeof window.gtag !== "function") return;
+
+            const eventName = trackedElement.dataset.gaEvent;
+            if (!eventName) return;
+
+            const params = {};
+            if (trackedElement.dataset.gaCategory) params.event_category = trackedElement.dataset.gaCategory;
+            if (trackedElement.dataset.gaLabel) params.event_label = trackedElement.dataset.gaLabel;
+            window.gtag("event", eventName, params);
+        });
+    </script>
+    <% end %>
+</body>
+
+</html>

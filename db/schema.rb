@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_02_100000) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_12_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -101,6 +101,19 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_02_100000) do
     t.index ["status"], name: "index_reports_on_status"
   end
 
+  create_table "support_requests", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "email", null: false
+    t.string "username"
+    t.string "subject", null: false
+    t.text "message", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_support_requests_on_created_at"
+    t.index ["status"], name: "index_support_requests_on_status"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name", null: false
     t.text "bio"
@@ -108,8 +121,11 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_02_100000) do
     t.string "email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "username"
+    t.string "password_digest"
     t.index ["created_at"], name: "index_users_on_created_at"
     t.index ["email"], name: "index_users_on_email"
+    t.index ["username"], name: "index_users_on_username", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

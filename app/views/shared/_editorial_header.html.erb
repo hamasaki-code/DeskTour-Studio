@@ -1,0 +1,72 @@
+<header class="ds-editorial-header sticky top-0 z-40 border-b border-[#d8d4ca] bg-[#f7f6f2]/95 text-[#1a1a1a] backdrop-blur" data-mobile-header-root>
+    <div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:gap-6 lg:px-8">
+        <div class="min-w-0 flex-1">
+            <%= link_to root_path, class: "inline-flex min-w-0 items-center gap-3", data: { ga_event: "navigation_home_click", ga_category: "navigation", ga_label: "editorial_header_logo" } do %>
+            <span class="rounded-full border border-[#d8d4ca] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#6b6b6b]"><%= t("editorial.header.label") %></span>
+            <span class="min-w-0">
+                <span class="block truncate text-lg font-medium tracking-[-0.02em]">DeskTour Studio</span>
+                <span class="hidden truncate text-sm text-[#6b6b6b] xl:block">
+                    <%= t("editorial.header.tagline") %>
+                </span>
+            </span>
+            <% end %>
+        </div>
+
+        <div class="hidden items-center gap-2 lg:flex">
+            <nav class="flex flex-wrap items-center gap-2 text-sm text-[#6b6b6b] lg:flex-nowrap" aria-label="<%= t('editorial.header.primary_navigation') %>">
+                <% nav_link_class = "whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white hover:text-[#1a1a1a] xl:px-4" %>
+                <%= link_to t("editorial.navigation.home"), root_path, class: "#{nav_link_class} #{current_page?(root_path) ? 'bg-white text-[#1a1a1a] shadow-sm' : ''}" %>
+                <%= link_to t("editorial.navigation.gallery"), gallery_path, class: "#{nav_link_class} #{current_page?(gallery_path) || (controller_name == 'posts' && action_name == 'index') ? 'bg-white text-[#1a1a1a] shadow-sm' : ''}" %>
+                <%= link_to t("navigation.users_index"), users_path, class: "#{nav_link_class} #{controller_name == 'users' ? 'bg-white text-[#1a1a1a] shadow-sm' : ''}" %>
+                <%= link_to t("navigation.onboarding"), onboarding_path, class: "#{nav_link_class} #{controller_name == 'pages' && action_name == 'onboarding' ? 'bg-white text-[#1a1a1a] shadow-sm' : ''}" %>
+            </nav>
+
+            <div class="flex flex-wrap items-center gap-2 lg:flex-nowrap">
+                <div class="inline-flex items-center rounded-full border border-[#d8d4ca] bg-white p-1 text-sm text-[#6b6b6b]">
+                    <%= link_to t("language.option_ja"), locale_switch_path(:ja), class: "whitespace-nowrap rounded-full px-3 py-1.5 #{locale_selected?(:ja) ? 'bg-[#1a1a1a] text-white' : 'hover:text-[#1a1a1a]'}", data: { locale_switch_link: true, target_locale: "ja" } %>
+                    <%= link_to t("language.option_en"), locale_switch_path(:en), class: "whitespace-nowrap rounded-full px-3 py-1.5 #{locale_selected?(:en) ? 'bg-[#1a1a1a] text-white' : 'hover:text-[#1a1a1a]'}", data: { locale_switch_link: true, target_locale: "en" } %>
+                </div>
+                <% if authenticated_session_active? %>
+                <%= button_to t("editorial.header.logout"), logout_path, method: :delete, form: { class: "contents" }, class: "inline-flex whitespace-nowrap items-center justify-center rounded-full border border-[#d8d4ca] bg-white px-4 py-2 text-sm font-medium text-[#1a1a1a] transition hover:border-[#c7c1b4] hover:bg-[#fcfbf8]" %>
+                <% else %>
+                <%= link_to t("editorial.header.login"), login_path, class: "inline-flex whitespace-nowrap items-center justify-center rounded-full border border-[#d8d4ca] bg-white px-4 py-2 text-sm font-medium text-[#1a1a1a] transition hover:border-[#c7c1b4] hover:bg-[#fcfbf8]" %>
+                <% end %>
+                <%= link_to t("navigation.create_post"), new_post_path, class: "inline-flex whitespace-nowrap items-center justify-center rounded-full bg-[#1a1a1a] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#303030]", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "editorial_header_create_post" } %>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2 lg:hidden">
+            <%= link_to t("navigation.create_post"), new_post_path, class: "inline-flex items-center justify-center rounded-full bg-[#1a1a1a] px-3.5 py-2 text-sm font-medium text-white transition hover:bg-[#303030]" %>
+            <button type="button" data-mobile-header-toggle aria-expanded="false" aria-controls="mobile-header-menu" class="tap-target inline-flex items-center justify-center rounded-full border border-[#d8d4ca] bg-white p-2.5 text-[#1a1a1a]">
+                <%= ui_icon(:bars_3, class_name: "h-5 w-5") %>
+                <span class="sr-only"><%= t("ui.utility_menu") %></span>
+            </button>
+        </div>
+    </div>
+
+    <div id="mobile-header-menu" data-mobile-header-menu class="hidden border-t border-[#d8d4ca] bg-[#f7f6f2]/98 backdrop-blur lg:hidden">
+        <div class="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-5 sm:px-6">
+            <nav class="grid gap-2" aria-label="<%= t('editorial.header.primary_navigation') %>">
+                <% mobile_link_class = "tap-target rounded-[18px] border border-transparent bg-white/70 px-4 py-3 text-sm font-medium text-[#1a1a1a] transition hover:border-[#d8d4ca] hover:bg-white" %>
+                <%= link_to t("editorial.navigation.home"), root_path, class: mobile_link_class, data: { mobile_header_action: true } %>
+                <%= link_to t("editorial.navigation.gallery"), gallery_path, class: mobile_link_class, data: { mobile_header_action: true } %>
+                <%= link_to t("navigation.users_index"), users_path, class: mobile_link_class, data: { mobile_header_action: true } %>
+                <%= link_to t("navigation.onboarding"), onboarding_path, class: mobile_link_class, data: { mobile_header_action: true } %>
+                <%= link_to t("operator.page.link_label"), about_path, class: mobile_link_class, data: { mobile_header_action: true } %>
+                <%= link_to t("support.page.link_label"), support_path, class: mobile_link_class, data: { mobile_header_action: true } %>
+            </nav>
+
+            <div class="flex flex-wrap items-center gap-2">
+                <div class="inline-flex items-center rounded-full border border-[#d8d4ca] bg-white p-1 text-sm text-[#6b6b6b]">
+                    <%= link_to t("language.option_ja"), locale_switch_path(:ja), class: "whitespace-nowrap rounded-full px-3 py-1.5 #{locale_selected?(:ja) ? 'bg-[#1a1a1a] text-white' : 'hover:text-[#1a1a1a]'}", data: { locale_switch_link: true, target_locale: "ja", mobile_header_action: true } %>
+                    <%= link_to t("language.option_en"), locale_switch_path(:en), class: "whitespace-nowrap rounded-full px-3 py-1.5 #{locale_selected?(:en) ? 'bg-[#1a1a1a] text-white' : 'hover:text-[#1a1a1a]'}", data: { locale_switch_link: true, target_locale: "en", mobile_header_action: true } %>
+                </div>
+                <% if authenticated_session_active? %>
+                <%= button_to t("editorial.header.logout"), logout_path, method: :delete, form: { class: "contents" }, class: "inline-flex items-center justify-center rounded-full border border-[#d8d4ca] bg-white px-4 py-2 text-sm font-medium text-[#1a1a1a] transition hover:border-[#c7c1b4] hover:bg-[#fcfbf8]" %>
+                <% else %>
+                <%= link_to t("editorial.header.login"), login_path, class: "inline-flex items-center justify-center rounded-full border border-[#d8d4ca] bg-white px-4 py-2 text-sm font-medium text-[#1a1a1a] transition hover:border-[#c7c1b4] hover:bg-[#fcfbf8]", data: { mobile_header_action: true } %>
+                <% end %>
+            </div>
+        </div>
+    </div>
+</header>

@@ -1,0 +1,37 @@
+<footer class="mt-16 border-t border-[#d8d4ca] bg-[#f7f6f2] text-[#1a1a1a]">
+    <div class="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-3 lg:px-8">
+        <section class="space-y-3">
+            <p class="text-sm font-medium tracking-[-0.02em]">DeskTour Studio</p>
+            <h2 class="text-2xl font-medium tracking-[-0.03em]"><%= t("editorial.footer.heading") %></h2>
+            <p class="max-w-sm text-sm leading-6 text-[#6b6b6b]">
+                <%= t("editorial.footer.lead") %>
+            </p>
+        </section>
+
+        <section class="space-y-3">
+            <p class="text-sm font-medium"><%= t("editorial.footer.explore_heading") %></p>
+            <div class="flex flex-col gap-2 text-sm text-[#6b6b6b]">
+                <%= link_to t("editorial.navigation.home"), root_path, class: "transition hover:text-[#1a1a1a]" %>
+                <%= link_to t("editorial.navigation.gallery"), gallery_path, class: "transition hover:text-[#1a1a1a]" %>
+                <%= link_to t("navigation.users_index"), users_path, class: "transition hover:text-[#1a1a1a]" %>
+                <%= link_to t("navigation.create_post"), new_post_path, class: "transition hover:text-[#1a1a1a]" %>
+            </div>
+        </section>
+
+        <section class="space-y-3">
+            <p class="text-sm font-medium"><%= t("editorial.footer.policies_heading") %></p>
+            <div class="flex flex-col gap-2 text-sm text-[#6b6b6b]">
+                <%= link_to t("footer.privacy_policy"), privacy_policy_path, class: "transition hover:text-[#1a1a1a]" %>
+                <%= link_to t("footer.terms"), terms_path, class: "transition hover:text-[#1a1a1a]" %>
+                <%= link_to t("footer.cookie_policy"), cookie_policy_path, class: "transition hover:text-[#1a1a1a]" %>
+                <%= link_to t("operator.page.link_label"), about_path, class: "transition hover:text-[#1a1a1a]" %>
+                <%= link_to t("support.page.link_label"), support_path, class: "transition hover:text-[#1a1a1a]" %>
+            </div>
+            <p class="pt-2 text-xs uppercase tracking-[0.22em] text-[#9a9487]"><%= t("editorial.footer.note") %></p>
+        </section>
+    </div>
+
+    <div class="border-t border-[#d8d4ca] px-4 py-6 text-center text-sm text-[#6b6b6b] sm:px-6 lg:px-8">
+        <p><%= t("editorial.footer.copyright", year: Time.current.year) %></p>
+    </div>
+</footer>

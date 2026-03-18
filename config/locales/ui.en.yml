@@ -1,6 +1,7 @@
 en:
   language:
     switch_aria: "Language switch"
+
   navigation:
     my_profile: "My Profile"
     create_profile: "Create Profile"
@@ -17,15 +18,25 @@ en:
     admin: "Admin"
     admin_posts: "Post Management"
     admin_reports: "Report Queue"
+
+  branding:
+    header_label: "Desk Setup Gallery"
+    tagline: "Discover workspaces from makers, developers, and creatives."
+    footer_heading: "Inspiring desk setups, curated."
+    footer_tagline: "Explore desk setups shared by creators and engineers around the world."
+
   footer:
     terms: "Terms"
     privacy_policy: "Privacy Policy"
     cookie_policy: "Cookie Policy"
+
   clipboard:
     copy_success: "URL copied."
     copy_failed: "Failed to copy."
+
   meta:
     default_description: "Discover desk setup ideas and share your workspace on DeskTour Studio."
+
   ui:
     page_changed: "Screen updated"
     cancel: "Cancel"
@@ -35,3 +46,12 @@ en:
     draft_restored: "Draft restored."
     draft_expired: "Saved draft expired and was removed."
     draft_cleared: "Local draft removed."
+    processing: "Processing..."
+    disabled_reason: "Please review the required fields."
+    complete_required: "Please complete the required fields."
+
+  legal:
+    revision:
+      title: "Policy update %{id}"
+      effective_on: "Effective on %{date}"
+      view_changes: "View changes"

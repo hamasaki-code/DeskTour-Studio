@@ -12,42 +12,42 @@
     --ds-space-section: 2.25rem;
     --ds-space-block: 1.5rem;
     --ds-space-component: 0.875rem;
-    --ds-focus-ring-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
-    --ds-focus-border-color: rgb(37, 99, 235);
-    --ds-text-main: rgb(15 23 42);
-    --ds-text-body: rgb(51 65 85);
-    --ds-text-support: rgb(30 41 59);
-    --ds-text-meta: rgb(51 65 85);
-    --ds-text-muted: rgb(51 65 85);
-    --ds-text-weak: rgb(71 85 105);
-    --ds-text-link: rgb(29 78 216);
-    --ds-text-link-hover: rgb(30 64 175);
-    --ds-text-danger: rgb(185 28 28);
+    --ds-focus-ring-shadow: 0 0 0 3px rgba(26, 26, 26, 0.14);
+    --ds-focus-border-color: rgb(26 26 26 / 0.35);
+    --ds-text-main: rgb(26 26 26);
+    --ds-text-body: rgb(48 48 48);
+    --ds-text-support: rgb(75 85 99);
+    --ds-text-meta: rgb(107 107 107);
+    --ds-text-muted: rgb(107 107 107);
+    --ds-text-weak: rgb(90 90 90);
+    --ds-text-link: rgb(26 26 26);
+    --ds-text-link-hover: rgb(48 48 48);
+    --ds-text-danger: rgb(159 18 57);
     --ds-text-warning: rgb(146 64 14);
-    --ds-text-success: rgb(4 120 87);
-    --ds-text-inverse-support: rgb(219 234 254);
-    --ds-text-inverse-meta: rgb(191 219 254 / 0.9);
-    --ds-surface-page: rgb(248 250 252);
+    --ds-text-success: rgb(6 95 70);
+    --ds-text-inverse-support: rgb(255 255 255);
+    --ds-text-inverse-meta: rgb(228 228 231);
+    --ds-surface-page: rgb(247 246 242);
     --ds-surface-base: rgb(255 255 255);
-    --ds-surface-muted: rgb(241 245 249);
-    --ds-surface-overlay: rgb(255 255 255 / 0.94);
-    --ds-border-subtle: rgb(226 232 240);
-    --ds-border-strong: rgb(203 213 225);
-    --ds-border-muted: rgb(241 245 249);
-    --ds-overlay-weak: rgb(2 6 23 / 0.2);
-    --ds-overlay-strong: rgb(2 6 23 / 0.35);
-    --ds-tone-info-bg: rgb(239 246 255);
-    --ds-tone-info-border: rgb(191 219 254);
-    --ds-tone-info-text: rgb(29 78 216);
-    --ds-tone-success-bg: rgb(236 253 245);
-    --ds-tone-success-border: rgb(110 231 183);
-    --ds-tone-success-text: rgb(4 120 87);
-    --ds-tone-warning-bg: rgb(255 251 235);
-    --ds-tone-warning-border: rgb(252 211 77);
+    --ds-surface-muted: rgb(242 240 234);
+    --ds-surface-overlay: rgb(247 246 242 / 0.92);
+    --ds-border-subtle: rgb(216 212 202);
+    --ds-border-strong: rgb(199 193 180);
+    --ds-border-muted: rgb(216 212 202 / 0.56);
+    --ds-overlay-weak: rgb(26 26 26 / 0.05);
+    --ds-overlay-strong: rgb(26 26 26 / 0.12);
+    --ds-tone-info-bg: rgb(26 26 26 / 0.04);
+    --ds-tone-info-border: rgb(26 26 26 / 0.12);
+    --ds-tone-info-text: rgb(75 85 99);
+    --ds-tone-success-bg: rgb(5 150 105 / 0.08);
+    --ds-tone-success-border: rgb(5 150 105 / 0.16);
+    --ds-tone-success-text: rgb(6 95 70);
+    --ds-tone-warning-bg: rgb(217 119 6 / 0.08);
+    --ds-tone-warning-border: rgb(217 119 6 / 0.16);
     --ds-tone-warning-text: rgb(146 64 14);
-    --ds-tone-danger-bg: rgb(254 242 242);
-    --ds-tone-danger-border: rgb(252 165 165);
-    --ds-tone-danger-text: rgb(185 28 28);
+    --ds-tone-danger-bg: rgb(225 29 72 / 0.08);
+    --ds-tone-danger-border: rgb(225 29 72 / 0.16);
+    --ds-tone-danger-text: rgb(159 18 57);
     --ds-safe-area-bottom: env(safe-area-inset-bottom, 0px);
     --ds-safe-area-top: env(safe-area-inset-top, 0px);
     --ds-header-height: 4.25rem;
@@ -56,8 +56,20 @@
     --ds-motion-duration-normal: 220ms;
     --ds-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
     --ds-motion-easing-emphasis: cubic-bezier(0.2, 0.9, 0.2, 1);
-    --ds-skeleton-base: rgb(226 232 240);
-    --ds-skeleton-shimmer: rgb(241 245 249);
+    --ds-skeleton-base: rgb(232 230 225);
+    --ds-skeleton-shimmer: rgb(216 212 202 / 0.75);
+    --ds-color-page: #f7f6f2;
+    --ds-color-page-grad-end: #f3f0e8;
+    --ds-color-surface-1: #ffffff;
+    --ds-color-surface-2: #f2f0ea;
+    --ds-color-border-soft: rgba(216, 212, 202, 1);
+    --ds-color-border-strong: rgba(199, 193, 180, 1);
+    --ds-color-accent-primary: #1a1a1a;
+    --ds-color-accent-primary-hover: #303030;
+    --ds-color-accent-primary-ink: #ffffff;
+    --ds-color-accent-secondary-ink: #1a1a1a;
+    --ds-color-accent-violet: #6b6b6b;
+    --ds-color-accent-warm: #d8d4ca;
   }
 
   html[lang="ja"] {
@@ -90,6 +102,7 @@
   }
 
   body {
+    margin: 0;
     font-family: var(--ds-font-sans);
     letter-spacing: var(--ds-letter-spacing-body);
     color: var(--ds-text-main);
@@ -307,6 +320,72 @@
     background-color: var(--ds-surface-base);
   }
 
+  .ds-page-atmosphere {
+    background:
+      radial-gradient(circle at top left, rgb(255 255 255 / 0.72), transparent 34%),
+      radial-gradient(circle at top right, rgb(232 230 225 / 0.5), transparent 28%),
+      radial-gradient(circle at bottom, rgb(216 212 202 / 0.32), transparent 24%),
+      linear-gradient(180deg, var(--ds-color-page) 0%, var(--ds-color-page-grad-end) 100%);
+  }
+
+  .ds-editorial-header {
+    --ds-header-top-bleed: 1.45rem;
+    position: sticky;
+    top: 0;
+    padding-top: calc(var(--ds-safe-area-top) + var(--ds-header-top-bleed));
+    margin-top: calc(-1 * var(--ds-header-top-bleed));
+    isolation: isolate;
+  }
+
+  .ds-editorial-header::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(-1 * (var(--ds-safe-area-top) + var(--ds-header-top-bleed)) - 2px);
+    height: calc(var(--ds-safe-area-top) + var(--ds-header-top-bleed) + 2px);
+    background-color: rgb(247 246 242 / 0.95);
+    backdrop-filter: blur(12px);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .ds-header-shell {
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(17 21 29 / 0.8);
+    backdrop-filter: blur(24px);
+  }
+
+  .ds-panel-elevated {
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(255 255 255 / 0.95);
+    box-shadow: 0 24px 64px rgba(26, 26, 26, 0.12);
+    backdrop-filter: blur(20px);
+  }
+
+  .ds-surface-panel {
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(255 255 255 / 0.82);
+    box-shadow: 0 14px 40px rgba(26, 26, 26, 0.08);
+    backdrop-filter: blur(8px);
+  }
+
+  .ds-surface-panel-strong {
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(255 255 255 / 0.96);
+    box-shadow: 0 16px 42px rgba(26, 26, 26, 0.08);
+  }
+
+  .ds-surface-subtle {
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(242 240 234 / 0.92);
+  }
+
+  .ds-surface-empty {
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(255 255 255 / 0.72);
+  }
+
   .ds-surface-base {
     background-color: var(--ds-surface-base);
   }
@@ -396,17 +475,43 @@
     color: var(--ds-tone-danger-text);
   }
 
+  .ds-feedback-panel {
+    @apply rounded-[24px] border px-5 py-4 text-sm;
+    box-shadow: 0 16px 40px rgba(26, 26, 26, 0.08);
+  }
+
+  .ds-feedback-icon-ring {
+    @apply inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border;
+    border-color: currentColor;
+    background-color: rgb(255 255 255 / 0.72);
+  }
+
+  .ds-feedback-title {
+    @apply text-sm font-semibold;
+    color: var(--ds-text-main);
+  }
+
+  .ds-feedback-body {
+    @apply text-sm leading-7;
+    color: inherit;
+  }
+
+  .ds-feedback-actions {
+    @apply flex flex-wrap gap-2 pt-1;
+  }
+
   .ds-popover-surface {
     @apply rounded-xl border p-2 shadow-2xl;
-    border-color: var(--ds-border-strong);
-    background-color: var(--ds-surface-base);
-    box-shadow: 0 12px 32px rgb(15 23 42 / 0.18);
+    border-color: var(--ds-border-subtle);
+    background-color: var(--ds-surface-overlay);
+    box-shadow: 0 18px 44px rgb(26 26 26 / 0.12);
   }
 
   .ds-form-control {
     @apply w-full rounded-lg border px-3 py-2 text-sm;
     border-color: var(--ds-border-strong);
     background-color: var(--ds-surface-base);
+    color: var(--ds-text-main);
   }
 
   .ds-form-control-error {
@@ -419,8 +524,114 @@
     color: var(--ds-tone-danger-text);
   }
 
-  dialog.ds-dialog-surface::backdrop {
-    background-color: rgb(15 23 42 / 0.3);
+  dialog.ds-dialog-surface::backdrop,
+  #ui-confirm-dialog::backdrop {
+    background-color: rgb(2 6 23 / 0.62);
+  }
+
+  .ds-confirm-dialog {
+    border-color: var(--ds-border-subtle);
+    background-color: rgb(255 255 255 / 0.96);
+    color: var(--ds-text-main);
+    box-shadow: 0 28px 72px rgba(26, 26, 26, 0.18);
+  }
+
+  .ds-confirm-shell {
+    padding: 1.75rem;
+    background:
+      linear-gradient(180deg, rgb(255 255 255 / 0.96) 0%, rgb(247 246 242 / 0.92) 100%);
+  }
+
+  .ds-confirm-heading {
+    @apply flex items-start gap-4;
+  }
+
+  .ds-confirm-icon-ring {
+    @apply inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border;
+    border-color: var(--ds-border-subtle);
+    background-color: rgb(255 255 255 / 0.86);
+  }
+
+  .ds-confirm-kicker {
+    @apply text-[11px] font-semibold uppercase;
+    color: var(--ds-text-meta);
+    letter-spacing: 0.18em;
+  }
+
+  .ds-confirm-title {
+    @apply mt-3 text-2xl font-medium;
+    color: var(--ds-text-main);
+    letter-spacing: -0.02em;
+  }
+
+  .ds-confirm-message {
+    @apply mt-3 text-sm leading-7;
+    color: var(--ds-text-meta);
+  }
+
+  .ds-confirm-actions {
+    @apply mt-6 flex flex-wrap justify-end gap-3;
+  }
+
+  .ds-confirm-cancel {
+    @apply inline-flex items-center justify-center rounded-full border px-5 py-3 text-sm font-medium;
+    border-color: var(--ds-border-subtle);
+    background-color: var(--ds-surface-base);
+    color: var(--ds-text-main);
+  }
+
+  .ds-confirm-cancel:hover {
+    border-color: var(--ds-border-strong);
+    background-color: rgb(252 251 248);
+  }
+
+  .ds-confirm-ok {
+    @apply inline-flex items-center justify-center rounded-full border px-5 py-3 text-sm font-medium;
+  }
+
+  .ds-confirm-ok-primary {
+    border-color: rgb(26 26 26 / 0.08);
+    background-color: var(--ds-color-accent-primary);
+    color: var(--ds-color-accent-primary-ink);
+    box-shadow: 0 10px 24px rgb(26 26 26 / 0.12);
+  }
+
+  .ds-confirm-ok-primary:hover {
+    background-color: var(--ds-color-accent-primary-hover);
+  }
+
+  .ds-confirm-ok-warning {
+    border-color: rgb(245 158 11 / 0.26);
+    background-color: rgb(255 247 237);
+    color: rgb(146 64 14);
+  }
+
+  .ds-confirm-ok-warning:hover {
+    border-color: rgb(217 119 6 / 0.34);
+    background-color: rgb(254 243 199);
+  }
+
+  .ds-confirm-ok-danger {
+    border-color: rgb(244 63 94 / 0.22);
+    background-color: rgb(255 241 242);
+    color: rgb(159 18 57);
+  }
+
+  .ds-confirm-ok-danger:hover {
+    border-color: rgb(225 29 72 / 0.32);
+    background-color: rgb(255 228 230);
+  }
+
+  .ds-confirm-dialog[data-confirm-level="warning"] .ds-confirm-icon-ring {
+    border-color: rgb(245 158 11 / 0.22);
+    background-color: rgb(255 247 237);
+    color: rgb(146 64 14);
+  }
+
+  .ds-confirm-dialog[data-confirm-level="danger"] .ds-confirm-icon-ring {
+    border-color: rgb(244 63 94 / 0.22);
+    background-color: rgb(255 241 242);
+    color: rgb(159 18 57);
   }
 
   .ds-card-interactive {
@@ -429,33 +640,50 @@
   }
 
   .ds-card-interactive:hover {
-    border-color: rgb(148 163 184);
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.09);
+    border-color: var(--ds-border-strong);
+    box-shadow: 0 12px 34px rgba(26, 26, 26, 0.1);
   }
 
   .ds-card-interactive:focus-visible {
-    box-shadow: var(--ds-focus-ring-shadow), 0 8px 24px rgba(15, 23, 42, 0.09);
-    border-color: rgb(59 130 246);
+    box-shadow: var(--ds-focus-ring-shadow), 0 12px 34px rgba(26, 26, 26, 0.1);
+    border-color: rgb(26 26 26 / 0.2);
   }
 
   .ds-badge {
-    @apply inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-600;
+    @apply inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium;
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(255 255 255 / 0.86);
+    color: rgb(75 85 99);
   }
 
   .ds-badge-active {
-    @apply inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-blue-300 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-800;
+    @apply inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2.5 py-1 text-xs font-semibold;
+    border-color: rgb(26 26 26 / 0.16);
+    background-color: rgb(26 26 26 / 0.06);
+    color: rgb(26 26 26);
   }
 
   .ds-badge-inactive {
-    @apply inline-flex items-center whitespace-nowrap rounded-full border border-slate-300 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100;
+    @apply inline-flex items-center whitespace-nowrap rounded-full border px-2.5 py-1 text-xs font-medium;
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(255 255 255 / 0.78);
+    color: rgb(75 85 99);
+  }
+
+  .ds-badge-inactive:hover {
+    background-color: rgb(252 251 248);
+    color: rgb(26 26 26);
   }
 
   .ds-badge-info {
-    @apply inline-flex items-center whitespace-nowrap rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-600;
+    @apply inline-flex items-center whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium;
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(255 255 255 / 0.84);
+    color: rgb(107 107 107);
   }
 
   .ds-shadow-soft {
-    box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
+    box-shadow: 0 10px 30px rgba(26, 26, 26, 0.08);
   }
 
   .ds-icon-button {
@@ -473,7 +701,9 @@
   }
 
   .ds-media-frame {
-    @apply relative overflow-hidden rounded-xl border border-slate-200 bg-slate-100;
+    @apply relative overflow-hidden rounded-xl border;
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(242 240 234);
   }
 
   .ds-media-frame img {
@@ -513,23 +743,47 @@
   }
 
   .ds-filter-shell {
-    @apply bg-slate-50/70;
+    background-color: rgb(255 255 255 / 0.72);
   }
 
   .ds-filter-shell-collapsed {
-    @apply border-slate-200/80 bg-slate-50/35;
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(255 255 255 / 0.58);
   }
 
   .cta-primary {
-    @apply inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700;
+    @apply inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold;
+    background-color: var(--ds-color-accent-primary);
+    color: var(--ds-color-accent-primary-ink);
+    border: 1px solid rgb(26 26 26 / 0.08);
+    box-shadow: 0 10px 24px rgb(26 26 26 / 0.12);
+  }
+
+  .cta-primary:hover {
+    background-color: var(--ds-color-accent-primary-hover);
+    box-shadow: 0 12px 28px rgb(26 26 26 / 0.14);
   }
 
   .cta-secondary {
-    @apply inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100;
+    @apply inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-semibold;
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(255 255 255 / 0.82);
+    color: var(--ds-color-accent-secondary-ink);
+  }
+
+  .cta-secondary:hover {
+    background-color: rgb(252 251 248);
+    color: rgb(26 26 26);
   }
 
   .cta-tertiary {
-    @apply inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900;
+    @apply inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-sm font-medium;
+    color: rgb(75 85 99);
+  }
+
+  .cta-tertiary:hover {
+    background-color: rgb(255 255 255 / 0.72);
+    color: rgb(26 26 26);
   }
 
   .cta-compact {
@@ -537,11 +791,25 @@
   }
 
   .cta-warning {
-    @apply inline-flex items-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-800 hover:bg-amber-100;
+    @apply inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-semibold;
+    border-color: rgb(251 191 36 / 0.35);
+    background-color: rgb(251 191 36 / 0.14);
+    color: rgb(254 240 138);
+  }
+
+  .cta-warning:hover {
+    background-color: rgb(251 191 36 / 0.22);
   }
 
   .cta-danger {
-    @apply inline-flex items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100;
+    @apply inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-semibold;
+    border-color: rgb(251 113 133 / 0.38);
+    background-color: rgb(251 113 133 / 0.14);
+    color: rgb(254 205 211);
+  }
+
+  .cta-danger:hover {
+    background-color: rgb(251 113 133 / 0.22);
   }
 
   .cta-primary:focus-visible,
@@ -578,21 +846,26 @@
     @apply fixed inset-x-0 bottom-0 z-50 border-t backdrop-blur;
     border-color: var(--ds-border-subtle);
     background-color: var(--ds-surface-overlay);
-    box-shadow: 0 -10px 24px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 -14px 28px rgba(26, 26, 26, 0.08);
     padding-bottom: max(var(--ds-safe-area-bottom), 0px);
     min-height: var(--ds-mobile-bar-height);
   }
 
   .ad-slot-surface {
-    @apply rounded-xl border border-slate-300 bg-slate-50/75 px-4 py-5 sm:px-5 sm:py-5;
+    @apply rounded-xl border px-4 py-5 sm:px-5 sm:py-5;
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(255 255 255 / 0.74);
   }
 
   .ad-slot-label {
-    @apply mb-2 inline-flex items-center rounded-full border border-slate-300 bg-white px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-600;
+    @apply mb-2 inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide;
+    border-color: var(--ds-color-border-soft);
+    background-color: rgb(255 255 255 / 0.84);
+    color: rgb(107 107 107);
   }
 
   .ad-slot-divider {
-    @apply mb-2 text-center text-xs font-semibold text-slate-600;
+    @apply mb-2 text-center text-xs font-semibold text-slate-400;
   }
 
   .lang-ja .ds-reading-column {
@@ -631,9 +904,10 @@
   }
 
   .ds-locale-pill-active {
-    @apply rounded-full text-white shadow-sm;
-    background-color: var(--ds-text-main);
-    box-shadow: 0 0 0 1px var(--ds-text-main);
+    @apply rounded-full shadow-sm;
+    background-color: var(--ds-color-accent-primary);
+    color: var(--ds-color-accent-primary-ink);
+    box-shadow: 0 0 0 1px rgb(214 236 255 / 0.5);
   }
 
   .ds-locale-pill-inactive {
@@ -641,54 +915,69 @@
   }
 
   .ds-locale-pill-inactive:hover {
-    @apply bg-slate-100;
+    background-color: rgb(255 255 255 / 0.08);
   }
 
   .ds-toast-region {
-    @apply fixed left-1/2 top-4 z-[70] flex -translate-x-1/2 flex-col gap-2 px-4;
-    width: min(30rem, calc(100vw - 1.5rem));
+    @apply fixed left-1/2 z-[70] flex -translate-x-1/2 flex-col gap-2 px-4;
+    top: calc(var(--ds-safe-area-top) + 0.75rem);
+    width: min(24rem, calc(100vw - 1.5rem));
     pointer-events: none;
   }
 
   .ds-toast {
-    @apply rounded-lg border px-3 py-2 text-sm font-medium shadow-lg;
+    @apply rounded-[20px] border px-4 py-3 text-sm shadow-lg;
+    box-shadow: 0 16px 40px rgba(26, 26, 26, 0.12);
+    line-height: 1.55;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
     animation: ds-toast-in 160ms ease-out;
   }
 
   .ds-toast-success {
-    @apply border-emerald-300 bg-emerald-50 text-emerald-800;
+    border-color: rgb(16 185 129 / 0.18);
+    background-color: rgb(236 253 245 / 0.96);
+    color: rgb(6 95 70);
   }
 
   .ds-toast-warning {
-    @apply border-amber-300 bg-amber-50 text-amber-900;
+    border-color: rgb(245 158 11 / 0.18);
+    background-color: rgb(255 251 235 / 0.98);
+    color: rgb(146 64 14);
   }
 
   .ds-toast-error {
-    @apply border-red-300 bg-red-50 text-red-800;
+    border-color: rgb(244 63 94 / 0.2);
+    background-color: rgb(255 241 242 / 0.98);
+    color: rgb(159 18 57);
   }
 
   .ds-toast-info {
-    @apply border-slate-300 bg-white text-slate-800;
+    border-color: var(--ds-border-subtle);
+    background-color: rgb(255 255 255 / 0.96);
+    color: var(--ds-text-support);
   }
 
   .ds-char-counter {
-    @apply mt-1 text-xs text-slate-500;
+    @apply mt-1 text-xs text-slate-400;
   }
 
   .ds-char-counter-warning {
-    @apply font-semibold text-amber-700;
+    @apply font-semibold text-amber-300;
   }
 
   .ds-char-counter-error {
-    @apply font-semibold text-red-700;
+    @apply font-semibold text-rose-300;
   }
 
   .ds-disabled-reason {
-    @apply min-h-5 text-xs font-medium text-slate-600;
+    @apply min-h-5 text-xs font-medium text-slate-400;
   }
 
   .ds-field-guide {
-    @apply mt-1 text-xs leading-5 text-slate-500;
+    @apply mt-1 text-xs leading-5 text-slate-400;
   }
 
   .ds-loading-shell {
@@ -701,7 +990,8 @@
 
   .ds-skeleton-line,
   .ds-skeleton-block {
-    @apply rounded bg-slate-200;
+    @apply rounded;
+    background-color: var(--ds-skeleton-base);
     position: relative;
     overflow: hidden;
   }
@@ -726,11 +1016,11 @@
   }
 
   .ds-loading-inline {
-    @apply inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600;
+    @apply inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400;
   }
 
   .ds-loading-dot {
-    @apply h-1.5 w-1.5 rounded-full bg-slate-400;
+    @apply h-1.5 w-1.5 rounded-full bg-slate-500;
     animation: ds-loading-pulse 950ms infinite ease-in-out;
   }
 
@@ -755,19 +1045,25 @@
   }
 
   .ds-legal-links {
-    @apply flex flex-wrap items-center gap-3 text-xs text-slate-600;
+    @apply flex flex-wrap items-center gap-3 text-xs text-slate-400;
   }
 
   .ds-legal-links a {
-    @apply underline decoration-slate-300 underline-offset-2 hover:text-slate-900;
+    @apply underline decoration-slate-600 underline-offset-2 hover:text-slate-100;
   }
 
   .ds-trust-note {
-    @apply rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-900;
+    @apply rounded-lg border px-3 py-2 text-xs;
+    border-color: rgb(199 231 255 / 0.35);
+    background-color: rgb(199 231 255 / 0.12);
+    color: rgb(224 242 254);
   }
 
   .ds-offline-banner {
-    @apply hidden rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-900;
+    @apply hidden rounded-lg border px-3 py-2 text-xs font-semibold;
+    border-color: rgb(255 255 255 / 0.08);
+    background-color: rgb(255 255 255 / 0.02);
+    color: rgb(148 163 184);
   }
 
   html.ds-offline .ds-offline-banner {
@@ -791,7 +1087,8 @@
   }
 
   .ds-progress-fill {
-    @apply h-full rounded-full bg-blue-600;
+    @apply h-full rounded-full;
+    background-color: var(--ds-color-accent-primary);
     transition: width var(--ds-motion-duration-normal) var(--ds-motion-easing-standard);
   }
 
@@ -823,9 +1120,9 @@
   }
 
   .ds-notification-item-unread {
-    @apply border-blue-200;
-    background-color: rgb(239 246 255);
-    box-shadow: inset 3px 0 0 rgb(59 130 246);
+    border-color: rgb(199 231 255 / 0.34);
+    background-color: rgb(199 231 255 / 0.1);
+    box-shadow: inset 3px 0 0 rgb(199 231 255 / 0.74);
   }
 
   .ds-notification-item-read {
@@ -862,7 +1159,10 @@
   }
 
   .ds-low-bandwidth-banner {
-    @apply hidden rounded-lg border border-sky-300 bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-900;
+    @apply hidden rounded-lg border px-3 py-2 text-xs font-semibold;
+    border-color: rgb(255 255 255 / 0.08);
+    background-color: rgb(255 255 255 / 0.02);
+    color: rgb(148 163 184);
   }
 
   html.ds-low-bandwidth .ds-low-bandwidth-banner {
@@ -879,19 +1179,23 @@
   }
 
   .ds-cta-experiment[data-variant="control"] {
-    --ds-cta-accent: rgb(37 99 235);
+    --ds-cta-accent: var(--ds-color-accent-primary);
+    --ds-cta-ink: var(--ds-color-accent-primary-ink);
   }
 
   .ds-cta-experiment[data-variant="high-contrast"] {
-    --ds-cta-accent: rgb(2 132 199);
+    --ds-cta-accent: rgb(224 242 254);
+    --ds-cta-ink: rgb(15 23 42);
   }
 
   .ds-cta-experiment[data-variant="compact"] {
-    --ds-cta-accent: rgb(29 78 216);
+    --ds-cta-accent: rgb(186 230 253);
+    --ds-cta-ink: rgb(15 23 42);
   }
 
   .ds-cta-experiment.cta-primary {
     background-color: var(--ds-cta-accent);
+    color: var(--ds-cta-ink, var(--ds-color-accent-primary-ink));
   }
 
   [data-page-skeleton] {

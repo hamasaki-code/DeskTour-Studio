@@ -1,0 +1,18 @@
+en:
+  support:
+    form:
+      submitted: "Your support request has been received."
+    page:
+      response_heading: "Direct support form"
+      response_body: "Send your message here and DeskTour Studio will forward it to the support inbox configured for this environment."
+      contact_heading: "Send a support request."
+      contact_body: "Use the form below so your request stays structured and easy to review."
+      form:
+        name_label: "Your name"
+        name_placeholder: "How should we address you?"
+        username_placeholder: "Optional, but helpful"
+        subject_label: "Subject"
+        subject_placeholder: "What do you need help with?"
+        message_label: "Message"
+        message_placeholder: "Tell us what happened, what page you were on, and what you expected."
+        submit: "Send support request"

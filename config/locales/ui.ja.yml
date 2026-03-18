@@ -1,6 +1,7 @@
 ja:
   language:
     switch_aria: "言語切り替え"
+
   navigation:
     my_profile: "マイプロフィール"
     create_profile: "プロフィール作成"
@@ -17,15 +18,25 @@ ja:
     admin: "管理"
     admin_posts: "投稿管理"
     admin_reports: "通報キュー"
+
+  branding:
+    header_label: "デスクセットアップギャラリー"
+    tagline: "クリエイターや開発者の作業空間を見つけるギャラリー"
+    footer_heading: "世界のデスクセットアップから、次の発想を。"
+    footer_tagline: "世界中のクリエイターやエンジニアが共有するデスクセットアップを集めたギャラリー。"
+
   footer:
     terms: "利用規約"
     privacy_policy: "プライバシーポリシー"
     cookie_policy: "Cookieポリシー"
+
   clipboard:
     copy_success: "URLをコピーしました"
     copy_failed: "コピーに失敗しました"
+
   meta:
     default_description: "DeskTour Studioでデスクセットアップのアイデアを探し、あなたのワークスペースを共有しましょう。"
+
   ui:
     page_changed: "画面を更新しました"
     cancel: "キャンセル"
@@ -35,3 +46,12 @@ ja:
     draft_restored: "下書きを復元しました。"
     draft_expired: "保存済み下書きの有効期限が切れたため削除しました。"
     draft_cleared: "ローカル下書きを削除しました。"
+    processing: "処理中..."
+    disabled_reason: "必須項目を確認してください。"
+    complete_required: "必須項目を入力してください。"
+
+  legal:
+    revision:
+      title: "ポリシー更新 %{id}"
+      effective_on: "施行日: %{date}"
+      view_changes: "変更内容を見る"

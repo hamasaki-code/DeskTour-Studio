@@ -3,7 +3,6 @@
 <section class="space-y-4" data-page-content>
   <div class="flex flex-wrap items-center justify-between gap-3">
     <h1 class="ds-heading-xl">Post Management</h1>
-    <%= link_to "Report Queue", admin_reports_path, class: "tap-target cta-secondary cta-compact" %>
   </div>
   <div class="overflow-x-auto rounded-xl border ds-border-subtle ds-surface-base">
     <table class="min-w-full text-left text-sm">
@@ -29,7 +28,7 @@
               <div class="flex flex-wrap gap-2">
                 <% next_status = post.published? ? "draft" : "published" %>
                 <%= button_to "Set #{next_status}", admin_post_path(post, status: next_status), method: :patch, class: "tap-target cta-tertiary cta-compact" %>
-                <%= button_to "Delete", admin_post_path(post), method: :delete, data: { turbo_confirm: "Delete this post?" }, class: "tap-target cta-danger cta-compact" %>
+                <%= button_to "Delete", admin_post_path(post), method: :delete, data: { confirm_action: true, confirm_title: "Delete this post?", confirm_message: "This action permanently removes the post from the admin list.", confirm_label: "Delete", confirm_level: "danger" }, class: "tap-target cta-danger cta-compact" %>
               </div>
             </td>
           </tr>

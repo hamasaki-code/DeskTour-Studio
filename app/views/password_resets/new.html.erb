@@ -1,0 +1,55 @@
+<% content_for :title, t("auth.reset.title") %>
+<% content_for :description, t("auth.reset.description") %>
+
+<section class="space-y-8 text-[#1a1a1a]">
+    <div class="rounded-[32px] border border-[#d8d4ca] bg-[#f7f6f2] px-6 py-8 shadow-[0_24px_80px_rgba(26,26,26,0.08)] lg:px-8 lg:py-10">
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end">
+            <div class="space-y-4">
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-[#6b6b6b]"><%= t("auth.reset.eyebrow") %></p>
+                <h1 class="text-4xl font-medium tracking-[-0.03em] lg:text-5xl"><%= t("auth.reset.heading") %></h1>
+                <p class="max-w-2xl text-base leading-7 text-[#6b6b6b]"><%= t("auth.reset.lead") %></p>
+            </div>
+
+            <div class="rounded-[24px] border border-[#e8e6e1] bg-white p-5">
+                <p class="text-sm font-medium text-[#1a1a1a]"><%= t("auth.reset.summary_heading") %></p>
+                <p class="mt-3 text-sm leading-6 text-[#6b6b6b]"><%= t("auth.reset.summary_body") %></p>
+            </div>
+        </div>
+    </div>
+
+    <section class="rounded-[32px] border border-[#d8d4ca] bg-white p-6 shadow-[0_18px_60px_rgba(26,26,26,0.08)] lg:p-8">
+        <div class="grid gap-6 lg:grid-cols-2">
+            <article class="rounded-[24px] border border-[#e8e6e1] bg-[#f7f6f2] p-6">
+                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("auth.reset.form_eyebrow") %></p>
+                <h2 class="mt-2 text-2xl font-medium tracking-[-0.03em]"><%= t("auth.reset.form_heading") %></h2>
+                <p class="mt-3 text-sm leading-7 text-[#6b6b6b]"><%= t("auth.reset.form_body") %></p>
+
+                <%= form_with url: password_reset_path, class: "mt-5 space-y-4", data: { turbo: false } do |f| %>
+                <div>
+                    <%= f.label :username, t("auth.form.username_label"), class: "mb-1 block text-sm font-medium text-[#1a1a1a]" %>
+                    <%= f.text_field :username, value: @reset_username, required: true, autocomplete: "username", class: "ds-form-control", placeholder: t("auth.form.username_placeholder") %>
+                </div>
+
+                <div>
+                    <%= f.label :email, t("users.form.email_label"), class: "mb-1 block text-sm font-medium text-[#1a1a1a]" %>
+                    <%= f.email_field :email, value: @reset_email, required: true, autocomplete: "email", class: "ds-form-control", placeholder: "you@example.com" %>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3">
+                    <%= f.button t("auth.reset.submit"), type: :submit, class: "inline-flex items-center justify-center rounded-full bg-[#1a1a1a] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#303030]" %>
+                    <%= link_to t("editorial.header.login"), login_path, class: "inline-flex items-center justify-center rounded-full border border-[#d8d4ca] bg-white px-5 py-3 text-sm font-medium text-[#1a1a1a] transition hover:border-[#c7c1b4] hover:bg-[#fcfbf8]" %>
+                </div>
+                <% end %>
+            </article>
+
+            <article class="rounded-[24px] border border-[#e8e6e1] bg-white p-6 shadow-[0_18px_60px_rgba(26,26,26,0.04)]">
+                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("auth.reset.help_eyebrow") %></p>
+                <h2 class="mt-2 text-2xl font-medium tracking-[-0.03em]"><%= t("auth.reset.help_heading") %></h2>
+                <p class="mt-3 text-sm leading-7 text-[#6b6b6b]"><%= t("auth.reset.help_body") %></p>
+                <div class="mt-5">
+                    <%= link_to t("support.page.cta"), support_path, class: "inline-flex items-center justify-center rounded-full border border-[#d8d4ca] bg-white px-5 py-3 text-sm font-medium text-[#1a1a1a] transition hover:border-[#c7c1b4] hover:bg-[#fcfbf8]" %>
+                </div>
+            </article>
+        </div>
+    </section>
+</section>

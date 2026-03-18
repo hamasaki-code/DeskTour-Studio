@@ -3,112 +3,130 @@
 <% grouped_notifications = @notifications.group_by { |notification| notification.created_at.to_date } %>
 
 <section class="mx-auto w-full max-w-3xl space-y-content" data-page-content>
-  <header class="flex flex-wrap items-center justify-between gap-3">
-    <div>
-      <h1 class="ds-heading-xl"><%= t("posts.notifications.heading") %></h1>
-      <p class="mt-1 ds-text-support">
-        <%= link_to @post.title, post_path(@post), class: "ds-link-primary" %>
-        <%= t("posts.notifications.reactions_to_post") %>
-      </p>
-    </div>
-    <%= link_to post_path(@post), class: "tap-target cta-secondary", data: { ga_event: "notification_back_to_post_click", ga_category: "notifications", ga_label: "header_back_to_post" } do %>
-      <%= ui_icon(:arrow_uturn_left, class_name: "h-4 w-4") %>
-      <span><%= t("posts.notifications.back_to_post") %></span>
-    <% end %>
-  </header>
+    <header class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+            <h1 class="ds-heading-xl"><%= t("posts.notifications.heading") %></h1>
+            <p class="mt-1 ds-text-support">
+                <%= link_to @post.title, post_path(@post), class: "ds-link-primary" %>
+                <%= t("posts.notifications.reactions_to_post") %>
+            </p>
+        </div>
 
-  <div class="ds-card p-5 sm:p-6">
-    <% if @notifications.any? %>
-      <div class="space-y-5">
-        <% grouped_notifications.each do |date, notifications| %>
-          <section class="ds-notification-group">
-            <h2 class="ds-notification-group-title"><%= l(date, format: :default) %></h2>
-            <div class="space-y-2">
-              <% notifications.each do |notification| %>
-                <% read = notification.read_at.present? %>
-                <article class="ds-notification-item <%= read ? 'ds-notification-item-read' : 'ds-notification-item-unread' %>">
-                  <div class="flex flex-wrap items-start justify-between gap-2">
-                    <p class="text-sm ds-text-strong"><%= notification.message %></p>
-                    <% if read %>
-                      <span class="inline-flex items-center gap-1 rounded border ds-tone-success px-2 py-0.5 text-[11px] font-semibold">
-                        <%= ui_icon(:check_circle, class_name: "h-3.5 w-3.5") %>
-                        <span><%= t("notification_labels.read") %></span>
-                      </span>
-                    <% else %>
-                      <span class="inline-flex items-center gap-1 rounded border ds-tone-info px-2 py-0.5 text-[11px] font-semibold">
-                        <%= ui_icon(:information_circle, class_name: "h-3.5 w-3.5") %>
-                        <span><%= t("notification_labels.unread") %></span>
-                      </span>
-                    <% end %>
-                  </div>
-                  <p class="mt-1 ds-text-meta"><%= timestamp_tag(notification.created_at, style: :datetime) %></p>
-                </article>
-              <% end %>
-            </div>
-          </section>
+        <%= link_to post_path(@post), class: "tap-target cta-secondary", data: { ga_event: "notification_back_to_post_click", ga_category: "notifications", ga_label: "header_back_to_post" } do %>
+        <%= ui_icon(:arrow_uturn_left, class_name: "h-4 w-4") %>
+        <span><%= t("posts.notifications.back_to_post") %></span>
         <% end %>
-      </div>
-    <% else %>
-      <div class="rounded-lg border border-dashed ds-border-strong ds-surface-muted px-4 py-8 text-center">
+    </header>
+
+    <div class="ds-card ds-surface-panel p-5 sm:p-6">
+        <% if @notifications.any? %>
+        <div class="space-y-5">
+            <% grouped_notifications.each do |date, notifications| %>
+            <section class="ds-notification-group">
+                <h2 class="ds-notification-group-title"><%= l(date, format: :default) %></h2>
+                <div class="space-y-2">
+                    <% notifications.each do |notification| %>
+                    <% read = notification.read_at.present? %>
+                    <article class="ds-notification-item <%= read ? 'ds-notification-item-read' : 'ds-notification-item-unread' %>">
+                        <div class="flex flex-wrap items-start justify-between gap-2">
+                            <p class="text-sm ds-text-strong"><%= notification.message %></p>
+
+                            <% if read %>
+                            <span class="inline-flex items-center gap-1 rounded border ds-tone-success px-2 py-0.5 text-[11px] font-semibold">
+                                <%= ui_icon(:check_circle, class_name: "h-3.5 w-3.5") %>
+                                <span><%= t("notification_labels.read") %></span>
+                            </span>
+                            <% else %>
+                            <span class="inline-flex items-center gap-1 rounded border ds-tone-info px-2 py-0.5 text-[11px] font-semibold">
+                                <%= ui_icon(:information_circle, class_name: "h-3.5 w-3.5") %>
+                                <span><%= t("notification_labels.unread") %></span>
+                            </span>
+                            <% end %>
+                        </div>
+
+                        <p class="mt-1 ds-text-meta"><%= timestamp_tag(notification.created_at, style: :datetime) %></p>
+                    </article>
+                    <% end %>
+                </div>
+            </section>
+            <% end %>
+        </div>
+        <% else %>
         <%= render "shared/state_action",
-                   level: :info,
-                   title: t("posts.notifications.empty_state"),
-                   body: t("posts.notifications.description"),
-                   primary_action: { label: t("posts.notifications.back_to_post"), href: post_path(@post), data: { ga_event: "notification_back_to_post_click", ga_category: "notifications", ga_label: "empty_back_to_post" } },
-                   secondary_action: { label: t("navigation.create_post"), href: new_post_path, data: { ga_event: "notification_empty_create_post_click", ga_category: "notifications", ga_label: "empty_create_post" } } %>
-      </div>
-    <% end %>
-  </div>
+                 level: :info,
+                 title: t("posts.notifications.empty_state"),
+                 body: t("posts.notifications.description"),
+                 primary_action: {
+                   label: t("posts.notifications.back_to_post"),
+                   href: post_path(@post),
+                   data: {
+                     ga_event: "notification_back_to_post_click",
+                     ga_category: "notifications",
+                     ga_label: "empty_back_to_post"
+                   }
+                 },
+                 secondary_action: {
+                   label: t("navigation.create_post"),
+                   href: new_post_path,
+                   data: {
+                     ga_event: "notification_empty_create_post_click",
+                     ga_category: "notifications",
+                     ga_label: "empty_create_post"
+                   }
+                 } %>
+        <% end %>
+    </div>
 </section>
 
 <section class="mx-auto hidden w-full max-w-3xl" data-page-skeleton aria-hidden="true">
-  <%= render "shared/screen_skeleton", variant: :notifications %>
+    <%= render "shared/screen_skeleton", variant: :notifications %>
 </section>
 
 <script>
-  if (!window.__postNotificationScreenBindingInstalled) {
-    window.__postNotificationScreenBindingInstalled = true;
-    const POST_ID = "<%= @post.id %>";
-    const STORAGE_KEY = "post_notification_visits";
-    let tracked = false;
+    if (!window.__postNotificationScreenBindingInstalled) {
+        window.__postNotificationScreenBindingInstalled = true;
+        const POST_ID = "<%= @post.id %>";
+        const STORAGE_KEY = "post_notification_visits";
+        let tracked = false;
 
-    const readJson = (key, fallback = {}) => {
-      try {
-        const raw = localStorage.getItem(key);
-        if (!raw) return fallback;
-        const parsed = JSON.parse(raw);
-        return parsed && typeof parsed === "object" ? parsed : fallback;
-      } catch (_) {
-        return fallback;
-      }
-    };
+        const readJson = (key, fallback = {}) => {
+            try {
+                const raw = localStorage.getItem(key);
+                if (!raw) return fallback;
+                const parsed = JSON.parse(raw);
+                return parsed && typeof parsed === "object" ? parsed : fallback;
+            } catch (_) {
+                return fallback;
+            }
+        };
 
-    const writeJson = (key, value) => {
-      try {
-        localStorage.setItem(key, JSON.stringify(value));
-      } catch (_) {}
-    };
+        const writeJson = (key, value) => {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+            } catch (_) {}
+        };
 
-    const trackVisit = () => {
-      if (tracked) return;
-      tracked = true;
-      const visits = readJson(STORAGE_KEY, {});
-      const current = Number(visits[POST_ID] || 0) + 1;
-      visits[POST_ID] = current;
-      writeJson(STORAGE_KEY, visits);
+        const trackVisit = () => {
+            if (tracked) return;
+            tracked = true;
 
-      if (typeof window.gtag === "function") {
-        window.gtag("event", "notification_revisit", {
-          event_category: "notifications",
-          event_label: current > 1 ? "repeat_visit" : "first_visit",
-          post_id: POST_ID,
-          visit_count: current
-        });
-      }
-    };
+            const visits = readJson(STORAGE_KEY, {});
+            const current = Number(visits[POST_ID] || 0) + 1;
+            visits[POST_ID] = current;
+            writeJson(STORAGE_KEY, visits);
 
-    document.addEventListener("turbo:load", trackVisit);
-    document.addEventListener("DOMContentLoaded", trackVisit);
-    window.setTimeout(trackVisit, 0);
-  }
+            if (typeof window.gtag === "function") {
+                window.gtag("event", "notification_revisit", {
+                    event_category: "notifications",
+                    event_label: current > 1 ? "repeat_visit" : "first_visit",
+                    post_id: POST_ID,
+                    visit_count: current
+                });
+            }
+        };
+
+        document.addEventListener("turbo:load", trackVisit);
+        document.addEventListener("DOMContentLoaded", trackVisit);
+        window.setTimeout(trackVisit, 0);
+    }
 </script>

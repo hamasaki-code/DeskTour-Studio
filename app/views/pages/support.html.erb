@@ -1,0 +1,79 @@
+<% content_for :title, t("support.page.title") %>
+<% content_for :description, t("support.page.description") %>
+
+<section class="space-y-8 text-[#1a1a1a]">
+    <div class="rounded-[32px] border border-[#d8d4ca] bg-[#f7f6f2] px-6 py-8 shadow-[0_24px_80px_rgba(26,26,26,0.08)] lg:px-8 lg:py-10">
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end">
+            <div class="space-y-4">
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-[#6b6b6b]"><%= t("support.page.eyebrow") %></p>
+                <h1 class="text-4xl font-medium tracking-[-0.03em] lg:text-5xl"><%= t("support.page.heading") %></h1>
+                <p class="max-w-2xl text-base leading-7 text-[#6b6b6b]"><%= t("support.page.lead") %></p>
+            </div>
+
+            <div class="rounded-[24px] border border-[#e8e6e1] bg-white p-5">
+                <p class="text-sm font-medium text-[#1a1a1a]"><%= t("support.page.response_heading") %></p>
+                <p class="mt-3 text-sm leading-6 text-[#6b6b6b]"><%= t("support.page.response_body") %></p>
+            </div>
+        </div>
+    </div>
+
+    <section class="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+        <article class="rounded-[28px] border border-[#d8d4ca] bg-white p-6 shadow-[0_18px_60px_rgba(26,26,26,0.06)]">
+            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("support.page.contact_eyebrow") %></p>
+            <h2 class="mt-2 text-2xl font-medium tracking-[-0.03em]"><%= t("support.page.contact_heading") %></h2>
+            <p class="mt-3 text-sm leading-7 text-[#6b6b6b]"><%= t("support.page.contact_body") %></p>
+            <% if @support_request.errors.any? %>
+            <div class="mt-5 rounded-[24px] border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900">
+                <p class="font-medium"><%= t("users.form.error_summary") %></p>
+                <ul class="mt-3 list-disc space-y-1 pl-5">
+                    <% @support_request.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                    <% end %>
+                </ul>
+            </div>
+            <% end %>
+
+            <%= form_with model: @support_request, url: support_path, class: "mt-5 space-y-4", data: { turbo: false } do |f| %>
+            <div>
+                <%= f.label :name, t("support.page.form.name_label"), class: "mb-1 block text-sm font-medium text-[#1a1a1a]" %>
+                <%= f.text_field :name, required: true, class: "ds-form-control", placeholder: t("support.page.form.name_placeholder") %>
+            </div>
+
+            <div>
+                <%= f.label :email, t("users.form.email_label"), class: "mb-1 block text-sm font-medium text-[#1a1a1a]" %>
+                <%= f.email_field :email, required: true, class: "ds-form-control", placeholder: "you@example.com" %>
+            </div>
+
+            <div>
+                <%= f.label :username, t("auth.form.username_label"), class: "mb-1 block text-sm font-medium text-[#1a1a1a]" %>
+                <%= f.text_field :username, class: "ds-form-control", placeholder: t("support.page.form.username_placeholder") %>
+            </div>
+
+            <div>
+                <%= f.label :subject, t("support.page.form.subject_label"), class: "mb-1 block text-sm font-medium text-[#1a1a1a]" %>
+                <%= f.text_field :subject, required: true, class: "ds-form-control", placeholder: t("support.page.form.subject_placeholder") %>
+            </div>
+
+            <div>
+                <%= f.label :message, t("support.page.form.message_label"), class: "mb-1 block text-sm font-medium text-[#1a1a1a]" %>
+                <%= f.text_area :message, required: true, rows: 6, class: "ds-form-control", placeholder: t("support.page.form.message_placeholder") %>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+                <%= f.button t("support.page.form.submit"), type: :submit, class: "inline-flex items-center justify-center rounded-full bg-[#1a1a1a] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#303030]" %>
+                <%= link_to t("support.page.open_signup"), new_user_path, class: "inline-flex items-center justify-center rounded-full border border-[#d8d4ca] bg-[#f7f6f2] px-5 py-3 text-sm font-medium text-[#1a1a1a] transition hover:border-[#c7c1b4] hover:bg-[#fcfbf8]" %>
+            </div>
+            <% end %>
+        </article>
+
+        <article class="rounded-[28px] border border-[#d8d4ca] bg-[#f7f6f2] p-6 shadow-[0_18px_60px_rgba(26,26,26,0.06)]">
+            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("support.page.topics_eyebrow") %></p>
+            <h2 class="mt-2 text-2xl font-medium tracking-[-0.03em]"><%= t("support.page.topics_heading") %></h2>
+            <ul class="mt-4 space-y-3 text-sm leading-7 text-[#6b6b6b]">
+                <% t("support.page.topics").each do |topic| %>
+                <li class="rounded-[20px] border border-[#e8e6e1] bg-white px-4 py-3"><%= topic %></li>
+                <% end %>
+            </ul>
+        </article>
+    </section>
+</section>
