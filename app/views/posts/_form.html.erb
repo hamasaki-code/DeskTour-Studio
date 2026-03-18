@@ -226,17 +226,17 @@
             <div class="flex items-center justify-between gap-3">
                 <div>
                     <h2 class="ds-heading-md"><%= t("posts.form.related_items") %></h2>
-                    <p class="mt-1 ds-text-support"><%= t("posts.form.related_items_lead", default: "Add the gear and products featured in this setup.") %></p>
+                    <p class="mt-1 ds-text-support"><%= t("posts.form.related_items_lead") %></p>
                 </div>
-                <button type="button" class="tap-target cta-secondary cta-compact" data-add-item-row><%= t("posts.form.add_item", default: "Add item") %></button>
+                <button type="button" class="tap-target cta-secondary cta-compact" data-add-item-row><%= t("posts.form.add_item") %></button>
             </div>
 
             <div class="mt-3 space-y-4" data-items-list>
                 <%= f.fields_for :items do |item_fields| %>
                 <div class="grid gap-3 rounded-lg border ds-border-subtle ds-surface-base p-3 sm:grid-cols-2" data-item-row>
                     <div class="sm:col-span-2 flex justify-between gap-2">
-                        <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("posts.form.item_block_label", default: "Item") %></p>
-                        <button type="button" class="tap-target cta-tertiary cta-compact" data-remove-item-row><%= t("posts.form.remove_item", default: "Remove") %></button>
+                        <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("posts.form.item_block_label") %></p>
+                        <button type="button" class="tap-target cta-tertiary cta-compact" data-remove-item-row><%= t("posts.form.remove_item") %></button>
                     </div>
 
                     <div>
@@ -264,8 +264,8 @@
             <template data-item-template>
                 <div class="grid gap-3 rounded-lg border ds-border-subtle ds-surface-base p-3 sm:grid-cols-2" data-item-row>
                     <div class="sm:col-span-2 flex justify-between gap-2">
-                        <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("posts.form.item_block_label", default: "Item") %></p>
-                        <button type="button" class="tap-target cta-tertiary cta-compact" data-remove-item-row><%= t("posts.form.remove_item", default: "Remove") %></button>
+                        <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("posts.form.item_block_label") %></p>
+                        <button type="button" class="tap-target cta-tertiary cta-compact" data-remove-item-row><%= t("posts.form.remove_item") %></button>
                     </div>
 
                     <div>
@@ -543,7 +543,7 @@
                     const file = input.files[0];
 
                     if (!allowedTypes.includes(file.type)) {
-                        const message = "<%= j(t('posts.form.image_type_error', default: '対応していない画像形式です。JPEG / PNG / WEBP / GIF を選択してください。')) %>";
+                        const message = "<%= j(t('posts.form.image_type_error')) %>";
                         setUploadFeedback(message);
                         if (typeof window.gtag === "function") {
                             window.gtag("event", "image_upload_failure", {
@@ -555,7 +555,7 @@
                     }
 
                     if (Number(file.size || 0) > maxUploadBytes) {
-                        const message = "<%= j(t('posts.form.image_size_error', default: '画像サイズが大きすぎます。8MB以下の画像を選択してください。')) %>";
+                        const message = "<%= j(t('posts.form.image_size_error')) %>";
                         setUploadFeedback(message);
                         if (typeof window.gtag === "function") {
                             window.gtag("event", "image_upload_failure", {
@@ -680,7 +680,7 @@
 
                         if (stepHasBlockingFields(from)) {
                             if (typeof window.dsNotify === "function") {
-                                window.dsNotify("<%= j(t('posts.form.complete_required_notice', default: '必須項目とエラーを確認してください。')) %>", "warning");
+                                window.dsNotify("<%= j(t('posts.form.complete_required_notice')) %>", "warning");
                             }
                             return;
                         }
@@ -763,7 +763,7 @@
                             window.dsNotify("<%= j(t('posts.form.url_fix_notice')) %>", "warning");
                         }
                         if (!uploadValid && typeof window.dsNotify === "function") {
-                            window.dsNotify("<%= j(t('posts.form.image_fix_notice', default: '画像の内容を確認してください。')) %>", "warning");
+                            window.dsNotify("<%= j(t('posts.form.image_fix_notice')) %>", "warning");
                         }
                         return;
                     }

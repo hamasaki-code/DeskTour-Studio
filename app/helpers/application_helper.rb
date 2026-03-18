@@ -1,23 +1,23 @@
 module ApplicationHelper
   POST_IMAGE_VARIANTS = {
     thumbnail: {
-      resize_to_fill: [640, 360],
+      resize_to_fill: [ 640, 360 ],
       format: :webp
     },
     main: {
-      resize_to_limit: [1600, 1600],
+      resize_to_limit: [ 1600, 1600 ],
       format: :webp
     },
     og: {
-      resize_to_fill: [1200, 630],
+      resize_to_fill: [ 1200, 630 ],
       format: :jpg
     }
   }.freeze
 
   POST_IMAGE_DIMENSIONS = {
-    thumbnail: [640, 360],
-    main: [1200, 750],
-    og: [1200, 630]
+    thumbnail: [ 640, 360 ],
+    main: [ 1200, 750 ],
+    og: [ 1200, 630 ]
   }.freeze
 
   FALLBACK_POST_IMAGE = "default-desk.svg"
@@ -47,24 +47,24 @@ module ApplicationHelper
   }.freeze
 
   ITEM_BRAND_PATTERNS = {
-    "Apple" => [/\bapple\b/i, /\bmacbook\b/i, /\bipad\b/i, /\biphone\b/i],
-    "Logitech" => [/\blogitech\b/i, /\blogi\b/i],
-    "Razer" => [/\brazer\b/i],
-    "SteelSeries" => [/\bsteelseries\b/i],
-    "Dell" => [/\bdell\b/i],
-    "LG" => [/\blg\b/i],
-    "Samsung" => [/\bsamsung\b/i],
-    "BenQ" => [/\bbenq\b/i],
-    "Sony" => [/\bsony\b/i],
-    "Bose" => [/\bbose\b/i],
-    "Audio-Technica" => [/\baudio[- ]?technica\b/i],
-    "Sennheiser" => [/\bsennheiser\b/i],
-    "Anker" => [/\banker\b/i, /\bpowerconf\b/i],
-    "IKEA" => [/\bikea\b/i],
-    "Herman Miller" => [/\bherman[\s\-]?miller\b/i],
-    "NOBLECHAIRS" => [/\bnoblechairs\b/i],
-    "Keychron" => [/\bkeychron\b/i],
-    "HHKB" => [/\bhhkb\b/i]
+    "Apple" => [ /\bapple\b/i, /\bmacbook\b/i, /\bipad\b/i, /\biphone\b/i ],
+    "Logitech" => [ /\blogitech\b/i, /\blogi\b/i ],
+    "Razer" => [ /\brazer\b/i ],
+    "SteelSeries" => [ /\bsteelseries\b/i ],
+    "Dell" => [ /\bdell\b/i ],
+    "LG" => [ /\blg\b/i ],
+    "Samsung" => [ /\bsamsung\b/i ],
+    "BenQ" => [ /\bbenq\b/i ],
+    "Sony" => [ /\bsony\b/i ],
+    "Bose" => [ /\bbose\b/i ],
+    "Audio-Technica" => [ /\baudio[- ]?technica\b/i ],
+    "Sennheiser" => [ /\bsennheiser\b/i ],
+    "Anker" => [ /\banker\b/i, /\bpowerconf\b/i ],
+    "IKEA" => [ /\bikea\b/i ],
+    "Herman Miller" => [ /\bherman[\s\-]?miller\b/i ],
+    "NOBLECHAIRS" => [ /\bnoblechairs\b/i ],
+    "Keychron" => [ /\bkeychron\b/i ],
+    "HHKB" => [ /\bhhkb\b/i ]
   }.freeze
 
   ITEM_HOST_BRAND_HINTS = {
@@ -87,17 +87,17 @@ module ApplicationHelper
   }.freeze
 
   ITEM_CATEGORY_KEYWORDS = {
-    keyboard: ["keyboard", "keycap", "switch", "hhkb", "keychron"],
-    monitor: ["monitor", "display", "ultrawide", "screen", "4k"],
-    laptop: ["laptop", "macbook", "thinkpad", "notebook", "surface"],
-    desk: ["desk", "standing desk", "table", "workstation"],
-    chair: ["chair", "stool", "ergonomic chair"],
-    audio: ["headphone", "earphone", "speaker", "mic", "microphone", "dac"],
-    lighting: ["lamp", "light", "led", "light bar", "lighting"],
-    pointer: ["mouse", "trackpad", "trackball"],
-    camera: ["webcam", "camera", "cam"],
-    dock: ["dock", "hub", "kvm", "thunderbolt"],
-    storage: ["ssd", "hdd", "nas", "drive"]
+    keyboard: [ "keyboard", "keycap", "switch", "hhkb", "keychron" ],
+    monitor: [ "monitor", "display", "ultrawide", "screen", "4k" ],
+    laptop: [ "laptop", "macbook", "thinkpad", "notebook", "surface" ],
+    desk: [ "desk", "standing desk", "table", "workstation" ],
+    chair: [ "chair", "stool", "ergonomic chair" ],
+    audio: [ "headphone", "earphone", "speaker", "mic", "microphone", "dac" ],
+    lighting: [ "lamp", "light", "led", "light bar", "lighting" ],
+    pointer: [ "mouse", "trackpad", "trackball" ],
+    camera: [ "webcam", "camera", "cam" ],
+    dock: [ "dock", "hub", "kvm", "thunderbolt" ],
+    storage: [ "ssd", "hdd", "nas", "drive" ]
   }.freeze
 
   ITEM_GENERIC_BRAND_TOKENS = %w[desk setup monitor keyboard mouse chair table stand with for and the a an rgb].freeze
@@ -171,7 +171,7 @@ module ApplicationHelper
   end
 
   def optimized_post_image_tag(post, variant: :thumbnail, **options)
-    class_names = [options[:class]]
+    class_names = [ options[:class] ]
     class_names << "ds-thumbnail-crop" if variant.to_sym == :thumbnail
     options[:class] = class_names.compact.join(" ")
 
@@ -391,7 +391,7 @@ module ApplicationHelper
   end
 
   def context_breadcrumbs
-    base = [{ label: "DeskTour Studio", href: root_path }]
+    base = [ { label: "DeskTour Studio", href: root_path } ]
 
     if controller_path.start_with?("admin/")
       admin_root = { label: t("navigation.admin"), href: admin_posts_path }
@@ -558,7 +558,7 @@ module ApplicationHelper
       score += 4 if category_down.present? && (normalized.include?(category_down) || category_down.include?(normalized))
       score += 3 if query_tokens.any? { |token| normalized.include?(token) || token.include?(normalized) }
       score -= 1 if GENERIC_POST_TAGS.include?(normalized)
-      [-score, tag]
+      [ -score, tag ]
     end
   end
 
@@ -593,7 +593,7 @@ module ApplicationHelper
 
     priority = { brand: 0, category: 1, price: 2, source: 3 }
     facts
-      .uniq { |fact| [fact[:key], fact[:value]] }
+      .uniq { |fact| [ fact[:key], fact[:value] ] }
       .sort_by { |fact| priority.fetch(fact[:key], 99) }
       .first(3)
   end
@@ -618,7 +618,7 @@ module ApplicationHelper
     tone = tones.fetch(level.to_sym, tones.fetch(:info))
 
     content_tag(:span, class: "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium #{tone}") do
-      safe_join([ui_icon(icon, class_name: "h-3.5 w-3.5"), content_tag(:span, label)])
+      safe_join([ ui_icon(icon, class_name: "h-3.5 w-3.5"), content_tag(:span, label) ])
     end
   end
 
@@ -805,18 +805,18 @@ module ApplicationHelper
   private
 
   def extract_url_info(url)
-    return ["", "", {}] if url.blank?
+    return [ "", "", {} ] if url.blank?
 
     normalized_url = url.to_s.strip
     normalized_url = "https://#{normalized_url}" if normalized_url.present? && normalized_url !~ /\A[a-z][a-z0-9+\-.]*:\/\//i
 
     uri = URI.parse(normalized_url)
     host = uri.host.to_s.sub(/\Awww\./, "")
-    text = URI.decode_www_form_component([uri.path, uri.query].compact.join(" "))
+    text = URI.decode_www_form_component([ uri.path, uri.query ].compact.join(" "))
     query_params = URI.decode_www_form(uri.query.to_s).to_h.transform_keys(&:downcase)
-    [host, text, query_params]
+    [ host, text, query_params ]
   rescue URI::InvalidURIError, ArgumentError
-    ["", "", {}]
+    [ "", "", {} ]
   end
 
   def extract_brand(name, host:)
@@ -848,7 +848,7 @@ module ApplicationHelper
   end
 
   def extract_price(name:, url_text:, query_params:)
-    text = [name, url_text].compact.join(" ")
+    text = [ name, url_text ].compact.join(" ")
     return if text.blank?
 
     currency_price_patterns = [
@@ -893,7 +893,7 @@ module ApplicationHelper
   end
 
   def fallback_post_image_name(seed = nil)
-    pool = [FALLBACK_POST_IMAGE, *DEMO_POST_IMAGES]
+    pool = [ FALLBACK_POST_IMAGE, *DEMO_POST_IMAGES ]
     key = if seed.respond_to?(:id) && seed.id.present?
       seed.id.to_s
     elsif seed.respond_to?(:title) && seed.title.present?
