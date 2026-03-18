@@ -1,0 +1,119 @@
+<% variant = (local_assigns[:variant] || :list).to_sym %>
+
+<% if variant == :list %>
+<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
+    <% 6.times do %>
+    <article class="overflow-hidden rounded-[24px] border border-[#e8e6e1] bg-white p-0 shadow-[0_18px_60px_rgba(26,26,26,0.06)]">
+        <div class="ds-skeleton-block aspect-[4/3]"></div>
+        <div class="space-y-4 p-5">
+            <div class="flex gap-2">
+                <div class="ds-skeleton-line h-7 w-20 rounded-full"></div>
+                <div class="ds-skeleton-line h-7 w-16 rounded-full"></div>
+            </div>
+            <div class="space-y-3">
+                <div class="ds-skeleton-line h-6 w-5/6"></div>
+                <div class="ds-skeleton-line w-full"></div>
+                <div class="ds-skeleton-line w-4/5"></div>
+            </div>
+            <div class="flex items-center justify-between gap-4 pt-2">
+                <div class="space-y-2">
+                    <div class="ds-skeleton-line w-24"></div>
+                    <div class="ds-skeleton-line w-20"></div>
+                </div>
+                <div class="ds-skeleton-line h-8 w-20 rounded-full"></div>
+            </div>
+        </div>
+    </article>
+    <% end %>
+</div>
+<% elsif variant == :detail %>
+<div class="space-y-6" aria-hidden="true">
+    <div class="rounded-[32px] border border-[#d8d4ca] bg-[#f7f6f2] p-6 shadow-[0_24px_80px_rgba(26,26,26,0.08)]">
+        <div class="space-y-4">
+            <div class="ds-skeleton-line h-4 w-28"></div>
+            <div class="ds-skeleton-line h-10 w-2/3"></div>
+            <div class="ds-skeleton-line w-5/6"></div>
+            <div class="ds-skeleton-line w-2/3"></div>
+        </div>
+    </div>
+    <div class="ds-skeleton-block aspect-[16/10] rounded-[32px]"></div>
+    <div class="rounded-[28px] border border-[#d8d4ca] bg-white p-6 shadow-[0_18px_60px_rgba(26,26,26,0.06)]">
+        <div class="space-y-3">
+            <div class="ds-skeleton-line h-4 w-24"></div>
+            <div class="ds-skeleton-line w-full"></div>
+            <div class="ds-skeleton-line w-full"></div>
+            <div class="ds-skeleton-line w-4/5"></div>
+        </div>
+    </div>
+</div>
+<% elsif variant == :notifications %>
+<div class="space-y-4" aria-hidden="true">
+    <div class="ds-skeleton-line h-8 w-1/2"></div>
+    <div class="ds-skeleton-line w-1/3"></div>
+    <% 5.times do %>
+    <article class="rounded-[24px] border border-[#e8e6e1] bg-white p-5 shadow-[0_18px_60px_rgba(26,26,26,0.06)]">
+        <div class="space-y-3">
+            <div class="ds-skeleton-line h-5 w-5/6"></div>
+            <div class="ds-skeleton-line w-2/5"></div>
+        </div>
+    </article>
+    <% end %>
+</div>
+<% elsif variant == :guide %>
+<div class="space-y-6" aria-hidden="true">
+    <div class="rounded-[32px] border border-[#d8d4ca] bg-[#f7f6f2] p-6 shadow-[0_24px_80px_rgba(26,26,26,0.08)]">
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+            <div class="space-y-4">
+                <div class="ds-skeleton-line h-4 w-28"></div>
+                <div class="ds-skeleton-line h-10 w-2/3"></div>
+                <div class="ds-skeleton-line w-5/6"></div>
+                <div class="ds-skeleton-line w-2/3"></div>
+            </div>
+            <div class="rounded-[24px] border border-[#e8e6e1] bg-white p-5">
+                <div class="ds-skeleton-line h-4 w-24"></div>
+                <div class="mt-3 ds-skeleton-line w-full"></div>
+                <div class="mt-2 ds-skeleton-line w-5/6"></div>
+            </div>
+        </div>
+    </div>
+    <div class="rounded-[32px] border border-[#d8d4ca] bg-white p-6 shadow-[0_18px_60px_rgba(26,26,26,0.06)]">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div class="space-y-3">
+                <div class="ds-skeleton-line h-4 w-24"></div>
+                <div class="ds-skeleton-line h-8 w-36"></div>
+            </div>
+            <div class="flex gap-2">
+                <% 3.times do %>
+                <div class="ds-skeleton-line h-10 w-20 rounded-full"></div>
+                <% end %>
+            </div>
+        </div>
+        <div class="mt-5 ds-skeleton-line h-2 w-full rounded-full"></div>
+    </div>
+    <div class="grid gap-6 lg:grid-cols-3">
+        <% 3.times do %>
+        <article class="rounded-[28px] border border-[#d8d4ca] bg-white p-6 shadow-[0_18px_60px_rgba(26,26,26,0.06)]">
+            <div class="space-y-4">
+                <div class="ds-skeleton-line h-4 w-16"></div>
+                <div class="ds-skeleton-line h-8 w-4/5"></div>
+                <div class="ds-skeleton-line w-full"></div>
+                <div class="ds-skeleton-line w-5/6"></div>
+                <div class="ds-skeleton-line h-10 w-32 rounded-full"></div>
+            </div>
+        </article>
+        <% end %>
+    </div>
+</div>
+<% else %>
+<div class="space-y-3" aria-hidden="true">
+    <% 3.times do %>
+    <article class="rounded-[24px] border border-[#e8e6e1] bg-white p-5 shadow-[0_18px_60px_rgba(26,26,26,0.06)]">
+        <div class="space-y-3">
+            <div class="ds-skeleton-line w-1/4"></div>
+            <div class="ds-skeleton-line w-2/3"></div>
+            <div class="ds-skeleton-line w-5/6"></div>
+        </div>
+    </article>
+    <% end %>
+</div>
+<% end %>

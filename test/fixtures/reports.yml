@@ -1,0 +1,26 @@
+queued_one:
+  post: one
+  reporter_user: one
+  reporter_token: token-one
+  reason: spam
+  details: "Looks like spam content"
+  status: queued
+  reviewed_at:
+
+queued_two:
+  post: one
+  reporter_user: two
+  reporter_token: token-two
+  reason: harassment
+  details: "Contains abusive words"
+  status: queued
+  reviewed_at:
+
+reviewed_one:
+  post: one
+  reporter_user:
+  reporter_token: token-reviewed
+  reason: other
+  details: "Already checked"
+  status: dismissed
+  reviewed_at: <%= 1.day.ago %>

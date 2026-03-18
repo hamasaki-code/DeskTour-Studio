@@ -1,0 +1,25 @@
+ja:
+  number:
+    format:
+      delimiter: ","
+      separator: "."
+  metrics:
+    likes: "いいね"
+  status_levels:
+    success: "成功"
+    warning: "警告"
+    error: "エラー"
+    info: "情報"
+  report_status:
+    queued: "確認待ち"
+    dismissed: "却下"
+    restored: "復元"
+    unknown: "不明"
+  post_status:
+    draft: "下書き"
+    published: "公開"
+    hidden: "非表示"
+    unknown: "不明"
+  notification_labels:
+    read: "既読"
+    unread: "未読"

@@ -1,117 +1,194 @@
 <% content_for :title, @post.title %>
 <% content_for :description, truncate(@post.description, length: 120) %>
 <% content_for :og_image_url, og_image_url(@post) %>
+<% share_url = post_share_url(@post) %>
 
-<article class="space-y-8">
-  <header class="space-y-3">
-    <div class="flex flex-wrap items-center gap-2 text-xs text-slate-500">
-      <span><%= l(@post.created_at.to_date) %></span>
-      <% if @post.category.present? %>
-        <span class="rounded-full bg-slate-100 px-2 py-1 text-slate-700"><%= @post.category %></span>
-      <% end %>
-      <% if @post.theme.present? %>
-        <span class="rounded-full bg-cyan-50 px-2 py-1 text-cyan-700"><%= @post.theme %></span>
-      <% end %>
-    </div>
-    <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl"><%= @post.title %></h1>
-  </header>
-
-  <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-    <% if @post.desk_image.attached? %>
-      <%= image_tag @post.desk_image, class: "w-full object-cover" %>
-    <% else %>
-      <div class="flex h-72 items-center justify-center bg-slate-100 text-sm text-slate-500">No Image</div>
-    <% end %>
-  </div>
-
-  <div class="rounded-xl border border-slate-200 bg-white p-6">
-    <p class="whitespace-pre-wrap text-sm leading-7 text-slate-700"><%= @post.description %></p>
-  </div>
-
-  <% if @post.tags.any? %>
-    <div class="flex flex-wrap gap-2">
-      <% @post.tags.each do |tag| %>
-        <%= link_to "##{tag}", posts_path(tag: tag), class: "rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 hover:bg-blue-100" %>
-      <% end %>
-    </div>
-  <% end %>
-
-  <section class="rounded-xl border border-slate-200 bg-white p-6">
+<article class="space-y-8 text-[#1a1a1a]">
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <h2 class="text-lg font-semibold text-slate-900">紹介アイテム</h2>
-      <span class="text-sm text-slate-500">♥ <%= @post.likes_count %></span>
-    </div>
-    <% if @post.items.any? %>
-      <div class="mt-4 space-y-3">
-        <% @post.items.each do |item| %>
-          <div class="rounded-lg border border-slate-200 p-3">
-            <p class="text-sm font-medium text-slate-900"><%= item.name %></p>
-            <% if item.affiliate_url.present? %>
-              <%= link_to "商品ページを見る", item.affiliate_url, class: "mt-2 inline-block text-sm text-blue-600 hover:text-blue-700", target: "_blank", rel: "nofollow sponsored noopener" %>
+        <%= link_to(@back_to_index_path.presence || gallery_path, class: "inline-flex items-center gap-2 text-sm font-medium text-[#6b6b6b] transition hover:text-[#1a1a1a]") do %>
+        <%= ui_icon(:arrow_uturn_left, class_name: "h-4 w-4") %>
+        <span><%= t("editorial.post.back_to_gallery") %></span>
+        <% end %>
+
+        <div class="flex flex-wrap items-center gap-2 text-xs text-[#6b6b6b]">
+            <%= timestamp_tag(@post.created_at, style: :date) %>
+            <% if @post.category.present? %>
+            <span class="rounded-full border border-[#d8d4ca] bg-white px-3 py-1"><%= @post.category %></span>
             <% end %>
-          </div>
-        <% end %>
-      </div>
-      <p class="mt-4 text-xs text-slate-500">
-        ※このページのリンクにはアフィリエイト広告を含む場合があります。
-      </p>
-    <% else %>
-      <p class="mt-3 text-sm text-slate-500">登録されたアイテムはありません。</p>
-    <% end %>
-  </section>
-
-  <div class="flex flex-wrap items-center gap-3">
-    <%= button_to "いいねする", like_post_path(@post), method: :post, class: "rounded-lg bg-rose-500 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-600" %>
-    <%= link_to "Xでシェア", x_share_url(@post), target: "_blank", rel: "noopener", class: "rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" %>
-    <%= link_to "Threadsでシェア", threads_share_url(@post), target: "_blank", rel: "noopener", class: "rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100" %>
-    <button type="button" data-copy-url="<%= post_share_url(@post) %>" class="rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100">URLをコピー</button>
-  </div>
-
-  <%= render "shared/ad_slot", slot: ENV["ADSENSE_SLOT_POST_BODY"] %>
-
-  <section id="comments" class="space-y-4 rounded-xl border border-slate-200 bg-white p-6">
-    <h2 class="text-lg font-semibold text-slate-900">コメント</h2>
-
-    <% if @comments.any? %>
-      <div class="space-y-3">
-        <% @comments.each do |comment| %>
-          <div class="rounded-lg border border-slate-100 bg-slate-50 p-3">
-            <p class="text-sm font-medium text-slate-800"><%= comment.author_name %></p>
-            <p class="mt-1 whitespace-pre-wrap text-sm text-slate-700"><%= comment.body %></p>
-          </div>
-        <% end %>
-      </div>
-    <% else %>
-      <p class="text-sm text-slate-500">まだコメントはありません。</p>
-    <% end %>
-
-    <div class="border-t border-slate-200 pt-4">
-      <%= form_with model: [@post, @comment], class: "space-y-3" do |f| %>
-        <% if @comment.errors.any? %>
-          <div class="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700">
-            <ul class="list-disc pl-5">
-              <% @comment.errors.full_messages.each do |message| %>
-                <li><%= message %></li>
-              <% end %>
-            </ul>
-          </div>
-        <% end %>
-
-        <div>
-          <%= f.label :author_name, "名前", class: "mb-1 block text-sm font-medium" %>
-          <%= f.text_field :author_name, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" %>
+            <% if @post.theme.present? %>
+            <span class="rounded-full border border-[#d8d4ca] bg-[#f7f6f2] px-3 py-1"><%= @post.theme %></span>
+            <% end %>
         </div>
-        <div>
-          <%= f.label :body, "コメント", class: "mb-1 block text-sm font-medium" %>
-          <%= f.text_area :body, rows: 4, class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" %>
-        </div>
-        <% if recaptcha_enabled? %>
-          <div class="g-recaptcha" data-sitekey="<%= recaptcha_site_key %>"></div>
-        <% end %>
-        <%= f.submit "コメントを送信", class: "rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700" %>
-      <% end %>
     </div>
-  </section>
 
-  <%= render "shared/ad_slot", slot: ENV["ADSENSE_SLOT_POST_FOOTER"] %>
+    <header class="space-y-4 rounded-[32px] border border-[#d8d4ca] bg-[#f7f6f2] px-6 py-8 shadow-[0_24px_80px_rgba(26,26,26,0.08)] lg:px-8 lg:py-10">
+        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-[#6b6b6b]"><%= t("editorial.post.eyebrow") %></p>
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end">
+            <div class="space-y-4">
+                <h1 class="max-w-3xl text-4xl font-medium leading-tight tracking-[-0.03em] lg:text-5xl"><%= @post.title %></h1>
+                <p class="max-w-2xl text-base leading-7 text-[#6b6b6b]"><%= @post.description %></p>
+            </div>
+            <div class="rounded-[24px] border border-[#e8e6e1] bg-white p-5">
+                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("editorial.post.created_by") %></p>
+                <p class="mt-3 text-xl font-medium"><%= link_to @post.user.name, user_path(@post.user), class: "transition hover:text-[#6b6b6b]" %></p>
+                <dl class="mt-4 space-y-3 text-sm text-[#6b6b6b]">
+                    <div class="flex items-center justify-between gap-3">
+                        <dt><%= t("metrics.likes") %></dt>
+                        <dd class="font-medium text-[#1a1a1a]"><%= localized_number(@post.likes_count) %></dd>
+                    </div>
+                    <div class="flex items-center justify-between gap-3">
+                        <dt><%= t("editorial.post.published_posts") %></dt>
+                        <dd class="font-medium text-[#1a1a1a]"><%= localized_number(@author_trust[:published_posts_count]) %></dd>
+                    </div>
+                    <% if @author_trust[:last_updated_at].present? %>
+                    <div class="flex items-center justify-between gap-3">
+                        <dt><%= t("editorial.post.updated") %></dt>
+                        <dd class="font-medium text-[#1a1a1a]"><%= formatted_date(@author_trust[:last_updated_at]) %></dd>
+                    </div>
+                    <% end %>
+                </dl>
+            </div>
+        </div>
+    </header>
+
+    <div class="overflow-hidden rounded-[32px] border border-[#d8d4ca] bg-white shadow-[0_24px_80px_rgba(26,26,26,0.08)]">
+        <div class="aspect-[16/10] overflow-hidden bg-[#ece9e2]">
+            <%= optimized_post_image_tag(@post, variant: :main, class: "h-full w-full object-cover") %>
+        </div>
+    </div>
+
+    <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_19rem]">
+        <div class="space-y-8">
+            <% if @post.tags.any? %>
+            <section class="rounded-[28px] border border-[#d8d4ca] bg-white p-6 shadow-[0_18px_60px_rgba(26,26,26,0.06)]">
+                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("editorial.post.themes") %></p>
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <% @post.tags.each do |tag| %>
+                    <%= link_to tag, gallery_path(tag: tag), class: "rounded-full border border-[#d8d4ca] bg-[#f7f6f2] px-4 py-2 text-sm font-medium text-[#1a1a1a] transition hover:border-[#c7c1b4] hover:bg-[#fcfbf8]" %>
+                    <% end %>
+                </div>
+            </section>
+            <% end %>
+
+            <section class="rounded-[28px] border border-[#d8d4ca] bg-[#f7f6f2] p-6 shadow-[0_18px_60px_rgba(26,26,26,0.06)]">
+                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("editorial.post.description_heading") %></p>
+                <div class="mt-4 space-y-4 text-base leading-8 text-[#4b4b4b]">
+                    <% (reading_sections(@post.description).presence || [{ title: nil, body: @post.description }]).each do |section| %>
+                    <section class="space-y-2">
+                        <% if section[:title].present? %>
+                        <h2 class="text-xl font-medium tracking-[-0.02em] text-[#1a1a1a]"><%= section[:title] %></h2>
+                        <% end %>
+                        <p class="whitespace-pre-wrap"><%= section[:body] %></p>
+                    </section>
+                    <% end %>
+                </div>
+            </section>
+
+            <section class="rounded-[28px] border border-[#d8d4ca] bg-white p-6 shadow-[0_18px_60px_rgba(26,26,26,0.06)]">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("editorial.post.items_eyebrow") %></p>
+                        <h2 class="mt-2 text-2xl font-medium tracking-[-0.03em]"><%= t("editorial.post.items_heading") %></h2>
+                    </div>
+                    <span class="text-sm text-[#6b6b6b]"><%= t("editorial.post.items_listed", count: localized_number(@post.items.size)) %></span>
+                </div>
+
+                <% if @post.items.any? %>
+                <div class="mt-6 space-y-4">
+                    <% @post.items.each do |item| %>
+                    <% fact_map = related_item_facts(item).index_by { |fact| fact[:key] } %>
+                    <article class="rounded-[24px] border border-[#e8e6e1] bg-[#f7f6f2] p-5">
+                        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                            <div class="space-y-3">
+                                <h3 class="text-lg font-medium tracking-[-0.02em]"><%= item.name %></h3>
+                                <dl class="grid gap-3 sm:grid-cols-2">
+                                    <% [ :brand, :category ].each do |key| %>
+                                    <% next unless fact_map[key].present? %>
+                                    <div>
+                                        <dt class="text-xs font-semibold uppercase tracking-[0.18em] text-[#6b6b6b]"><%= fact_map[key][:label] %></dt>
+                                        <dd class="mt-1 text-sm text-[#4b4b4b]"><%= fact_map[key][:value] %></dd>
+                                    </div>
+                                    <% end %>
+                                </dl>
+                            </div>
+                            <% if item.affiliate_url.present? %>
+                            <%= link_to t("posts.show.open_product_page"), item.affiliate_url, class: "inline-flex items-center justify-center rounded-full bg-[#1a1a1a] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#303030]", target: "_blank", rel: "nofollow sponsored noopener" %>
+                            <% end %>
+                        </div>
+                    </article>
+                    <% end %>
+                </div>
+                <p class="mt-5 text-xs leading-6 text-[#6b6b6b]"><%= t("posts.show.ugc_notice") %></p>
+                <% else %>
+                <p class="mt-6 text-sm leading-7 text-[#6b6b6b]"><%= t("posts.show.no_related_items") %></p>
+                <% end %>
+            </section>
+
+            <% if @related_posts.any? %>
+            <section class="rounded-[28px] border border-[#d8d4ca] bg-[#f7f6f2] p-6 shadow-[0_18px_60px_rgba(26,26,26,0.06)]">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("editorial.post.related_eyebrow") %></p>
+                        <h2 class="mt-2 text-2xl font-medium tracking-[-0.03em]"><%= t("posts.show.related_posts") %></h2>
+                    </div>
+                    <%= link_to t("editorial.post.back_to_gallery"), gallery_path, class: "text-sm font-medium text-[#6b6b6b] transition hover:text-[#1a1a1a]" %>
+                </div>
+                <div class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    <% @related_posts.each do |entry| %>
+                    <%= render "shared/editorial_post_card", post: entry[:candidate], destination: post_path(entry[:candidate], from: request.fullpath) %>
+                    <% end %>
+                </div>
+            </section>
+            <% end %>
+        </div>
+
+        <aside class="space-y-5">
+            <section class="rounded-[28px] border border-[#d8d4ca] bg-white p-5 shadow-[0_18px_60px_rgba(26,26,26,0.06)]">
+                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("editorial.post.actions_heading") %></p>
+                <div class="mt-4 space-y-3">
+                    <%= button_to like_post_path(@post), method: :post, class: "inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#1a1a1a] px-4 py-3 text-sm font-medium text-white transition hover:bg-[#303030]" do %>
+                    <%= ui_icon(:heart, class_name: "h-4 w-4") %>
+                    <span><%= t("posts.show.actions.like") %></span>
+                    <% end %>
+
+                    <button type="button" data-copy-url="<%= share_url %>" class="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#d8d4ca] bg-[#f7f6f2] px-4 py-3 text-sm font-medium text-[#1a1a1a] transition hover:border-[#c7c1b4] hover:bg-[#fcfbf8]">
+                        <%= ui_icon(:share, class_name: "h-4 w-4") %>
+                        <span data-copy-label><%= t("posts.show.actions.copy_url") %></span>
+                    </button>
+
+                    <%= link_to x_share_url(@post), target: "_blank", rel: "noopener", class: "inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#d8d4ca] bg-white px-4 py-3 text-sm font-medium text-[#1a1a1a] transition hover:border-[#c7c1b4] hover:bg-[#fcfbf8]" do %>
+                    <%= ui_icon(:share, class_name: "h-4 w-4") %>
+                    <span><%= t("posts.show.actions.share_x") %></span>
+                    <% end %>
+
+                    <%= link_to threads_share_url(@post), target: "_blank", rel: "noopener", class: "inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#d8d4ca] bg-white px-4 py-3 text-sm font-medium text-[#1a1a1a] transition hover:border-[#c7c1b4] hover:bg-[#fcfbf8]" do %>
+                    <%= ui_icon(:share, class_name: "h-4 w-4") %>
+                    <span><%= t("posts.show.actions.share_threads") %></span>
+                    <% end %>
+                </div>
+            </section>
+
+            <% if post_owner?(@post) %>
+            <section class="rounded-[28px] border border-[#d8d4ca] bg-[#f7f6f2] p-5 shadow-[0_18px_60px_rgba(26,26,26,0.06)]">
+                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("editorial.post.owner_tools") %></p>
+                <div class="mt-4 space-y-3">
+                    <%= link_to edit_post_path(@post), class: "inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#d8d4ca] bg-white px-4 py-3 text-sm font-medium text-[#1a1a1a] transition hover:border-[#c7c1b4] hover:bg-[#fcfbf8]" do %>
+                    <%= ui_icon(:pencil_square, class_name: "h-4 w-4") %>
+                    <span><%= t("posts.show.actions.edit") %></span>
+                    <% end %>
+
+                    <%= link_to notifications_post_path(@post), class: "inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#d8d4ca] bg-white px-4 py-3 text-sm font-medium text-[#1a1a1a] transition hover:border-[#c7c1b4] hover:bg-[#fcfbf8]" do %>
+                    <%= ui_icon(:bell, class_name: "h-4 w-4") %>
+                    <span><%= t("posts.show.actions.notifications", count: localized_number(@unread_notifications_count)) %></span>
+                    <% end %>
+
+                    <%= button_to post_path(@post), method: :delete, form: { class: "w-full" }, data: { confirm_action: true, confirm_title: t("posts.show.actions.delete_confirm"), confirm_message: t("ui.critical_delete_message"), confirm_label: t("posts.show.actions.delete"), confirm_level: "danger" }, class: "inline-flex w-full items-center justify-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-800 transition hover:bg-rose-100" do %>
+                    <%= ui_icon(:trash, class_name: "h-4 w-4") %>
+                    <span><%= t("posts.show.actions.delete") %></span>
+                    <% end %>
+                </div>
+            </section>
+            <% end %>
+        </aside>
+    </div>
 </article>

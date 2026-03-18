@@ -1,0 +1,57 @@
+<% level = (local_assigns[:level] || :info).to_sym %>
+<% title = local_assigns[:title] %>
+<% body = local_assigns[:body] %>
+<% actions = Array(local_assigns[:actions]).select { |action| action.respond_to?(:[]) && action[:label].present? } %>
+
+<% tone = case level
+when :error
+  "ds-tone-danger"
+when :warning
+  "ds-tone-warning"
+when :success
+  "ds-tone-success"
+else
+  "ds-tone-info"
+end %>
+
+<% icon = case level
+when :error then :x_circle
+when :warning then :exclamation_triangle
+when :success then :check_circle
+else :information_circle
+end %>
+
+<div class="ds-feedback-panel <%= tone %>" role="<%= level == :error ? 'alert' : 'status' %>" aria-live="<%= level == :error ? 'assertive' : 'polite' %>">
+    <div class="flex items-start gap-3">
+        <span class="ds-feedback-icon-ring">
+            <%= ui_icon(icon, class_name: "h-4.5 w-4.5") %>
+        </span>
+
+        <div class="min-w-0 flex-1 space-y-2">
+            <div class="flex flex-wrap items-center gap-2">
+                <p class="ds-feedback-title"><%= title.presence || status_level_label(level) %></p>
+                <%= status_badge(level: level, icon: icon, label: status_level_label(level)) %>
+            </div>
+
+            <% if body.present? %>
+            <p class="ds-feedback-body ds-break-words"><%= body %></p>
+            <% end %>
+
+            <% if actions.any? %>
+            <div class="ds-feedback-actions">
+                <% actions.each do |action| %>
+                <% button_class = action[:class].presence || "tap-target cta-tertiary cta-compact" %>
+
+                <% if action[:href].present? %>
+                <%= link_to action[:label], action[:href], class: button_class, data: action[:data] || {} %>
+                <% elsif action[:button].present? %>
+                <button type="button" class="<%= button_class %>" <%= tag.attributes(action[:button]) %>>
+                    <%= action[:label] %>
+                </button>
+                <% end %>
+                <% end %>
+            </div>
+            <% end %>
+        </div>
+    </div>
+</div>

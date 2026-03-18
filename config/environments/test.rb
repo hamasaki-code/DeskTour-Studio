@@ -37,6 +37,7 @@ Rails.application.configure do
   # Disable caching for Action Mailer templates even if Action Controller
   # caching is enabled.
   config.action_mailer.perform_caching = false
+  config.active_job.queue_adapter = :test
 
   # Tell Action Mailer not to deliver emails to the real world.
   # The :test delivery method accumulates sent emails in the
@@ -64,4 +65,11 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions.
   config.action_controller.raise_on_missing_callback_actions = true
+
+  # Avoid file-lock races in Sprockets cache on Windows.
+  if Gem.win_platform?
+    config.assets.configure do |env|
+      env.cache = ActiveSupport::Cache::MemoryStore.new
+    end
+  end
 end

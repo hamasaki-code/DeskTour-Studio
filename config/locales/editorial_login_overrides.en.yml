@@ -1,0 +1,9 @@
+en:
+  editorial:
+    login:
+      description: "Log in with your username and password, or create a new account."
+      heading: "Log in or create a new account."
+      lead: "Use your username and password to sign in. If you have not created an account yet, start with sign up."
+      summary_body: "Editing rights still stay tied to the browser that created the content, but account access now uses your username and password."
+      existing_body: "If you already created an account, use the login form with your username and password."
+      signup_body: "Create a profile, choose a username and password, then publish your workspace."

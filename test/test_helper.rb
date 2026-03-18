@@ -4,8 +4,13 @@ require "rails/test_help"
 
 module ActiveSupport
   class TestCase
-    # Run tests in parallel with specified workers
-    parallelize(workers: :number_of_processors, with: :threads)
+    include ActiveJob::TestHelper
+
+    # Windows does not support UNIXServer used by DRb parallelization.
+    unless Gem.win_platform?
+      # Use process-based parallelization to avoid shared-connection issues on PostgreSQL.
+      parallelize(workers: :number_of_processors, with: :processes)
+    end
 
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all

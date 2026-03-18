@@ -1,0 +1,31 @@
+en:
+  operator:
+    page:
+      link_label: "Operator"
+      title: "Operator Information"
+      description: "Learn who operates DeskTour Studio, how to contact the site, and how editorial and advertising policies are handled."
+      eyebrow: "Operator"
+      heading: "Operator information for DeskTour Studio."
+      lead: "This page explains who operates the site, how to contact support, and how policy and advertising disclosures are handled."
+      summary_heading: "What is covered here"
+      summary_points:
+        - "Basic operator information for the site."
+        - "How to send support or rights-related questions."
+        - "How editorial and advertising disclosures are handled."
+      info_eyebrow: "Site details"
+      info_heading: "Operating information"
+      fields:
+        site_name: "Site name"
+        operator_name: "Operator"
+        contact: "Contact"
+        policy: "Advertising and disclosure"
+      defaults:
+        operator_name: "DeskTour Studio Team"
+      contact_via_support_html: "Please use the %{support_link} page for contact."
+      policy_note: "Advertising and affiliate disclosures are described in the policy pages and will be updated when monetization is enabled."
+      editorial_eyebrow: "Editorial direction"
+      editorial_heading: "How this gallery is curated"
+      editorial_body:
+        - "DeskTour Studio is designed as a calm editorial gallery for thoughtful workspaces rather than a fast-moving social feed."
+        - "Published posts are selected and displayed with an emphasis on readability, original descriptions, and image-led presentation."
+        - "If a rights, privacy, or correction issue is found, please contact the operator through the support page."

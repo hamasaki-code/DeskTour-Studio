@@ -1,0 +1,5 @@
+like_for_one:
+  post: one
+  kind: 0
+  message: A new like was added.
+  read_at:

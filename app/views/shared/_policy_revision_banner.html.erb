@@ -1,0 +1,38 @@
+<% notice = policy_revision_notice %>
+<% return if notice.blank? %>
+
+<% highlights = Array(notice[:highlights]).map(&:to_s).map(&:strip).reject(&:blank?) %>
+
+<section class="mb-4 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-slate-200" role="status" aria-live="polite">
+    <div class="flex flex-wrap items-start justify-between gap-3">
+        <div class="space-y-1">
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-300">
+                <%= t("legal.revision.title", id: notice[:id]) %>
+            </p>
+
+            <% if notice[:effective_on].present? %>
+            <p class="text-xs text-slate-400">
+                <%= t("legal.revision.effective_on", date: notice[:effective_on]) %>
+            </p>
+            <% end %>
+
+            <% if notice[:summary].present? %>
+            <p class="text-sm text-slate-200"><%= notice[:summary] %></p>
+            <% end %>
+
+            <% if highlights.any? %>
+            <ul class="list-disc space-y-0.5 pl-5 text-xs text-slate-300">
+                <% highlights.each do |line| %>
+                <li><%= line %></li>
+                <% end %>
+            </ul>
+            <% end %>
+        </div>
+
+        <% if notice[:link].present? %>
+        <%= link_to t("legal.revision.view_changes"),
+                  notice[:link],
+                  class: "tap-target cta-tertiary cta-compact border border-white/15 bg-white/[0.04] text-slate-200 hover:bg-white/[0.08] hover:text-white" %>
+        <% end %>
+    </div>
+</section>

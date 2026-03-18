@@ -1,0 +1,57 @@
+en:
+  language:
+    switch_aria: "Language switch"
+
+  navigation:
+    my_profile: "My Profile"
+    create_profile: "Create Profile"
+    create_post: "Create Post"
+    menu_opened: "Menu opened"
+    menu_closed: "Menu closed"
+    utility_menu: "Utility"
+    utility_create: "Create"
+    utility_browse: "Browse"
+    utility_settings: "Settings"
+    users_index: "Creators"
+    onboarding: "Getting started"
+    breadcrumb: "Breadcrumb"
+    admin: "Admin"
+    admin_posts: "Post Management"
+    admin_reports: "Report Queue"
+
+  branding:
+    header_label: "Desk Setup Gallery"
+    tagline: "Discover workspaces from makers, developers, and creatives."
+    footer_heading: "Inspiring desk setups, curated."
+    footer_tagline: "Explore desk setups shared by creators and engineers around the world."
+
+  footer:
+    terms: "Terms"
+    privacy_policy: "Privacy Policy"
+    cookie_policy: "Cookie Policy"
+
+  clipboard:
+    copy_success: "URL copied."
+    copy_failed: "Failed to copy."
+
+  meta:
+    default_description: "Discover desk setup ideas and share your workspace on DeskTour Studio."
+
+  ui:
+    page_changed: "Screen updated"
+    cancel: "Cancel"
+    search_hint: "Add at least one search condition"
+    offline_banner: "Offline mode: your input is saved locally. It will be sent when connection returns."
+    low_bandwidth_banner: "Low-bandwidth mode: heavy media is reduced to keep key information visible."
+    draft_restored: "Draft restored."
+    draft_expired: "Saved draft expired and was removed."
+    draft_cleared: "Local draft removed."
+    processing: "Processing..."
+    disabled_reason: "Please review the required fields."
+    complete_required: "Please complete the required fields."
+
+  legal:
+    revision:
+      title: "Policy update %{id}"
+      effective_on: "Effective on %{date}"
+      view_changes: "View changes"

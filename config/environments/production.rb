@@ -73,10 +73,39 @@ Rails.application.configure do
   # Use a real queuing backend for Active Job (and separate queues per environment).
   # config.active_job.queue_adapter = :resque
   # config.active_job.queue_name_prefix = "desktour_studio_production"
+  config.active_job.queue_adapter = :async
 
   # Disable caching for Action Mailer templates even if Action Controller
   # caching is enabled.
   config.action_mailer.perform_caching = false
+  config.action_mailer.default_url_options = {
+    host: ENV.fetch("APP_HOST", "example.com"),
+    protocol: "https"
+  }
+  smtp_username = ENV["SMTP_USERNAME"].presence || ENV["MAIL_FROM"].presence || ENV["SUPPORT_INBOX_EMAIL"].presence
+  smtp_password = ENV["SMTP_PASSWORD"].presence
+  smtp_enabled = ENV["SMTP_ADDRESS"].present? || smtp_username.present? || ENV["SMTP_PASSWORD"].present?
+  smtp_ca_file = ENV["SMTP_CA_FILE"].presence || ENV["SSL_CERT_FILE"].presence
+  smtp_ca_path = ENV["SMTP_CA_PATH"].presence || ENV["SSL_CERT_DIR"].presence
+
+  if smtp_enabled
+    smtp_settings = {
+      address: ENV.fetch("SMTP_ADDRESS", "smtp.gmail.com"),
+      port: ENV.fetch("SMTP_PORT", "587").to_i,
+      domain: ENV.fetch("SMTP_DOMAIN", "gmail.com"),
+      user_name: smtp_username,
+      password: smtp_password,
+      authentication: ENV.fetch("SMTP_AUTHENTICATION", "plain").to_sym,
+      enable_starttls_auto: ENV.fetch("SMTP_ENABLE_STARTTLS_AUTO", "true") == "true",
+      openssl_verify_mode: ENV.fetch("SMTP_OPENSSL_VERIFY_MODE", "peer")
+    }
+
+    smtp_settings[:ca_file] = smtp_ca_file if smtp_ca_file.present? && File.file?(smtp_ca_file)
+    smtp_settings[:ca_path] = smtp_ca_path if smtp_ca_path.present? && File.directory?(smtp_ca_path)
+
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = smtp_settings
+  end
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

@@ -5,7 +5,7 @@ class Item < ApplicationRecord
 
   before_validation :append_affiliate_tag
 
-  validates :name, presence: true, length: { maximum: 100 }
+  validates :name, presence: true, length: { maximum: 100 }, if: :post_published?
   validates :affiliate_url, length: { maximum: 1000 }, allow_blank: true
   validate :affiliate_url_format
 
@@ -32,8 +32,12 @@ class Item < ApplicationRecord
     uri = URI.parse(affiliate_url)
     return if uri.is_a?(URI::HTTP) && uri.host.present?
 
-    errors.add(:affiliate_url, "は有効なURLを入力してください")
+    errors.add(:affiliate_url, "must be a valid URL")
   rescue URI::InvalidURIError
-    errors.add(:affiliate_url, "は有効なURLを入力してください")
+    errors.add(:affiliate_url, "must be a valid URL")
+  end
+
+  def post_published?
+    post&.published?
   end
 end

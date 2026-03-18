@@ -1,0 +1,104 @@
+<% content_for :title, t("editorial.home.meta_title") %>
+<% content_for :description, t("editorial.home.meta_description") %>
+<% featured_entries = @featured_posts.presence || (editorial_demo_content_enabled? ? editorial_demo_posts(limit: 3) : []) %>
+<% recent_entries = @recent_posts.presence || (editorial_demo_content_enabled? ? editorial_demo_posts(limit: 4) : []) %>
+<% tag_entries = @featured_posts.presence || (editorial_demo_content_enabled? ? editorial_demo_posts : []) %>
+<% display_tags = @editorial_tags.presence || tag_entries.flat_map { |entry| editorial_entry_tags(entry) }.uniq.first(6) %>
+<% hero_post = featured_entries.first %>
+
+<div class="space-y-10 text-[#1a1a1a]">
+    <section class="overflow-hidden rounded-[32px] border border-[#d8d4ca] bg-[#f7f6f2] shadow-[0_24px_80px_rgba(0,0,0,0.16)]">
+        <div class="grid gap-10 px-6 py-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,34rem)] lg:items-center lg:px-10 lg:py-12">
+            <div class="space-y-6">
+                <p class="text-xs font-semibold uppercase tracking-[0.28em] text-[#6b6b6b]"><%= t("editorial.home.eyebrow") %></p>
+                <div class="space-y-4">
+                    <h1 class="max-w-2xl text-4xl font-medium leading-tight tracking-[-0.03em] lg:text-5xl">
+                        <%= t("editorial.home.heading") %>
+                    </h1>
+                    <p class="max-w-xl text-base leading-7 text-[#6b6b6b] lg:text-lg">
+                        <%= t("editorial.home.lead") %>
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap gap-3">
+                    <%= link_to t("editorial.home.explore_gallery"), gallery_path, class: "inline-flex items-center justify-center rounded-full bg-[#1a1a1a] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#303030]" %>
+                    <%= link_to t("navigation.create_post"), new_post_path, class: "inline-flex items-center justify-center rounded-full border border-[#d8d4ca] bg-white px-5 py-3 text-sm font-medium text-[#1a1a1a] transition hover:border-[#c7c1b4] hover:bg-[#fcfbf8]" %>
+                </div>
+
+                <dl class="grid gap-3 sm:grid-cols-3">
+                    <div class="rounded-[20px] border border-[#e8e6e1] bg-white px-4 py-4">
+                        <dt class="text-xs uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("editorial.home.stats.featured") %></dt>
+                        <dd class="mt-2 text-2xl font-medium"><%= localized_number(featured_entries.size) %></dd>
+                    </div>
+                    <div class="rounded-[20px] border border-[#e8e6e1] bg-white px-4 py-4">
+                        <dt class="text-xs uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("editorial.home.stats.recent_posts") %></dt>
+                        <dd class="mt-2 text-2xl font-medium"><%= localized_number(recent_entries.size) %></dd>
+                    </div>
+                    <div class="rounded-[20px] border border-[#e8e6e1] bg-white px-4 py-4">
+                        <dt class="text-xs uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("editorial.home.stats.popular_themes") %></dt>
+                        <dd class="mt-2 text-2xl font-medium"><%= localized_number(display_tags.size) %></dd>
+                    </div>
+                </dl>
+            </div>
+
+            <% if hero_post.present? %>
+            <div class="overflow-hidden rounded-[28px] border border-[#d8d4ca] bg-white">
+                <div class="aspect-[4/3] overflow-hidden">
+                    <%= editorial_entry_image_tag(hero_post, variant: :main, class: "h-full w-full object-cover") %>
+                </div>
+                <div class="space-y-3 p-6">
+                    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-[#6b6b6b]"><%= t("editorial.home.featured_workspace") %></p>
+                    <h2 class="text-2xl font-medium tracking-[-0.02em]"><%= editorial_entry_title(hero_post) %></h2>
+                    <p class="text-sm leading-6 text-[#6b6b6b]"><%= truncate(editorial_entry_description(hero_post), length: 140) %></p>
+                    <div class="flex flex-wrap items-center gap-3 text-sm text-[#6b6b6b]">
+                        <span><%= editorial_entry_author_name(hero_post) %></span>
+                        <span class="h-1 w-1 rounded-full bg-[#b9b3a8]"></span>
+                        <span><%= editorial_entry_date_label(hero_post) %></span>
+                    </div>
+                </div>
+            </div>
+            <% end %>
+        </div>
+    </section>
+
+    <section class="space-y-5 rounded-[32px] border border-[#d8d4ca] bg-[#f7f6f2] px-6 py-8 shadow-[0_24px_80px_rgba(0,0,0,0.12)] lg:px-10">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div class="space-y-2">
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-[#6b6b6b]"><%= t("editorial.home.featured_section_eyebrow") %></p>
+                <h2 class="text-3xl font-medium tracking-[-0.03em]"><%= t("editorial.home.featured_section_heading") %></h2>
+            </div>
+            <%= link_to t("editorial.home.view_full_gallery"), gallery_path, class: "text-sm font-medium text-[#6b6b6b] transition hover:text-[#1a1a1a]" %>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-3">
+            <% featured_entries.each do |post| %>
+            <%= render "shared/editorial_post_card", post: post %>
+            <% end %>
+        </div>
+    </section>
+
+    <section class="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+        <div class="space-y-4 rounded-[32px] border border-[#d8d4ca] bg-[#f7f6f2] px-6 py-8 shadow-[0_24px_80px_rgba(0,0,0,0.12)]">
+            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-[#6b6b6b]"><%= t("editorial.home.tags_eyebrow") %></p>
+            <h2 class="text-3xl font-medium tracking-[-0.03em]"><%= t("editorial.home.tags_heading") %></h2>
+            <p class="max-w-2xl text-sm leading-7 text-[#6b6b6b]">
+                <%= t("editorial.home.tags_lead") %>
+            </p>
+            <div class="flex flex-wrap gap-3">
+                <% display_tags.each do |tag| %>
+                <%= link_to tag, gallery_path(tag: tag), class: "rounded-full border border-[#d8d4ca] bg-white px-4 py-2 text-sm font-medium text-[#1a1a1a] transition hover:border-[#c7c1b4] hover:bg-[#fcfbf8]" %>
+                <% end %>
+            </div>
+        </div>
+
+        <div class="space-y-4 rounded-[32px] border border-[#d8d4ca] bg-white px-6 py-8 shadow-[0_24px_80px_rgba(0,0,0,0.12)]">
+            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-[#6b6b6b]"><%= t("editorial.home.note_eyebrow") %></p>
+            <blockquote class="text-2xl font-medium leading-tight tracking-[-0.03em]">
+                <%= t("editorial.home.note_quote") %>
+            </blockquote>
+            <p class="text-sm leading-7 text-[#6b6b6b]">
+                <%= t("editorial.home.note_body") %>
+            </p>
+        </div>
+    </section>
+</div>

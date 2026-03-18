@@ -26,7 +26,8 @@ Rails 7 + Tailwind CSS + PostgreSQLで構築されています。
 ## セットアップ
 
 ```bash
-bundle install
+gem install bundler -v 2.6.8
+bundle _2.6.8_ install
 bin/rails db:create db:migrate
 bin/dev
 ```
@@ -56,6 +57,14 @@ ADSENSE_SLOT_INDEX_BOTTOM=
 ADSENSE_SLOT_POST_BODY=
 ADSENSE_SLOT_POST_FOOTER=
 
+# Measurement (production only)
+GA4_MEASUREMENT_ID=
+SEARCH_CONSOLE_VERIFICATION_TOKEN=
+
+# Report moderation
+REPORT_AUTO_HIDE_THRESHOLD=3
+REPORT_DAILY_LIMIT=5
+
 # Amazon Associate
 AMAZON_AFFILIATE_TAG=
 ```
@@ -76,4 +85,3 @@ AMAZON_AFFILIATE_TAG=
 - `/cookie-policy` Cookieポリシー
 - `/sitemap.xml` サイトマップ
 - `/admin/posts` 管理画面（Basic認証）
-

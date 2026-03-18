@@ -1,33 +1,34 @@
-<% content_for :title, "投稿管理" %>
+<% content_for :title, "Post Management" %>
 
-<section class="space-y-4">
-  <h1 class="text-2xl font-bold text-slate-900">投稿管理</h1>
-  <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+<section class="space-y-4" data-page-content>
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h1 class="ds-heading-xl">Post Management</h1>
+  </div>
+  <div class="overflow-x-auto rounded-xl border ds-border-subtle ds-surface-base">
     <table class="min-w-full text-left text-sm">
-      <thead class="bg-slate-50 text-slate-600">
+      <thead class="ds-surface-muted ds-text-weak">
         <tr>
-          <th class="px-4 py-3">タイトル</th>
-          <th class="px-4 py-3">公開状態</th>
-          <th class="px-4 py-3">コメント数</th>
-          <th class="px-4 py-3">操作</th>
+          <th class="px-4 py-3">Title</th>
+          <th class="px-4 py-3">Status</th>
+          <th class="px-4 py-3">Actions</th>
         </tr>
       </thead>
       <tbody>
         <% @posts.each do |post| %>
-          <tr class="border-t border-slate-200">
+          <tr class="border-t ds-border-subtle">
             <td class="px-4 py-3">
               <% if post.published? %>
-                <%= link_to post.title, post_path(post), class: "text-blue-600 hover:text-blue-700" %>
+                <%= link_to post.title, post_path(post), class: "ds-link-primary" %>
               <% else %>
-                <span><%= post.title %></span>
+                <span><%= post.title.presence || "(Untitled draft)" %></span>
               <% end %>
             </td>
-            <td class="px-4 py-3"><%= post.published? ? "公開" : "非公開" %></td>
-            <td class="px-4 py-3"><%= post.comments.count %></td>
+            <td class="px-4 py-3"><%= post_status_badge(post.status) %></td>
             <td class="px-4 py-3">
               <div class="flex flex-wrap gap-2">
-                <%= button_to(post.published? ? "非公開にする" : "公開する", admin_post_path(post, published: !post.published?), method: :patch, class: "rounded border border-slate-300 px-3 py-1 text-xs hover:bg-slate-100") %>
-                <%= button_to "削除", admin_post_path(post), method: :delete, data: { turbo_confirm: "投稿を削除しますか？" }, class: "rounded border border-red-300 px-3 py-1 text-xs text-red-700 hover:bg-red-50" %>
+                <% next_status = post.published? ? "draft" : "published" %>
+                <%= button_to "Set #{next_status}", admin_post_path(post, status: next_status), method: :patch, class: "tap-target cta-tertiary cta-compact" %>
+                <%= button_to "Delete", admin_post_path(post), method: :delete, data: { confirm_action: true, confirm_title: "Delete this post?", confirm_message: "This action permanently removes the post from the admin list.", confirm_label: "Delete", confirm_level: "danger" }, class: "tap-target cta-danger cta-compact" %>
               </div>
             </td>
           </tr>

@@ -1,13 +1,24 @@
-<% if adsense_enabled? && slot.present? %>
-  <div class="my-8 flex justify-center">
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="<%= ENV["ADSENSE_CLIENT_ID"] %>"
-         data-ad-slot="<%= slot %>"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-  </div>
+﻿<% if adsense_enabled? && slot.present? %>
+<div class="my-12 sm:my-14" role="complementary" aria-label="<%= t('ads.sponsored_placement') %>">
+    <div class="ad-slot-surface">
+        <div class="mb-3 flex items-center justify-between gap-3 border-b ds-border-subtle pb-2">
+            <p class="ad-slot-label"><%= t("ads.sponsored_label") %></p>
+            <p class="text-[11px] font-medium ds-text-weak"><%= t("ads.not_content") %></p>
+        </div>
+
+        <div class="flex justify-center rounded-lg border ds-border-subtle ds-surface-base px-2 py-3">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="<%= ENV["ADSENSE_CLIENT_ID"] %>" data-ad-slot="<%= slot %>" data-ad-format="auto" data-full-width-responsive="true"></ins>
+        </div>
+
+        <script>
+            (() => {
+                const slots = document.querySelectorAll("ins.adsbygoogle");
+                const target = slots[slots.length - 1];
+                if (!target) return;
+                if (target.getAttribute("data-adsbygoogle-status")) return;
+                (window.adsbygoogle = window.adsbygoogle || []).push({});
+            })();
+        </script>
+    </div>
+</div>
 <% end %>

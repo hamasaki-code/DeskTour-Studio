@@ -1,0 +1,18 @@
+ja:
+  support:
+    form:
+      submitted: "サポート依頼を受け付けました。"
+    page:
+      response_heading: "直接入力フォーム"
+      response_body: "このフォームから送信された内容は、この環境に設定されたサポート受信用メールアドレスへ転送されます。"
+      contact_heading: "サポート依頼を送信"
+      contact_body: "内容を確認しやすいように、下のフォームへ直接入力してください。"
+      form:
+        name_label: "お名前"
+        name_placeholder: "呼びかける名前を入力してください"
+        username_placeholder: "任意ですが入力すると確認しやすくなります"
+        subject_label: "件名"
+        subject_placeholder: "どのようなことでお困りですか？"
+        message_label: "お問い合わせ内容"
+        message_placeholder: "発生したこと、見ていたページ、期待していた動作を具体的に入力してください。"
+        submit: "サポート依頼を送信"

@@ -1,0 +1,21 @@
+en:
+  auth:
+    flash:
+      invalid_credentials: "We could not match that username and password."
+      logged_in: "You are now logged in."
+    form:
+      username_label: "Username"
+      username_placeholder: "e.g. deskowner"
+      username_guide: "Use lowercase letters, numbers, and underscores."
+      password_label: "Password"
+      password_placeholder: "At least 8 characters"
+      password_placeholder_optional: "Leave blank to keep the current password"
+      password_guide: "Use 8 or more characters."
+      password_guide_optional: "Set a new password only when you want to change it."
+      password_confirmation_label: "Password confirmation"
+      password_confirmation_placeholder: "Repeat your password"
+      password_confirmation_guide: "Enter the same password again."
+    login:
+      form_heading: "Log in with your username and password."
+      form_body: "Use the credentials you created when signing up. If you do not have an account yet, choose sign up."
+      password_placeholder: "Enter your password"

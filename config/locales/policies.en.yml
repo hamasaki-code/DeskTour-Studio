@@ -1,0 +1,80 @@
+en:
+  policies:
+    shared:
+      updated_on: "Last updated: %{date}"
+    privacy:
+      title: "Privacy Policy"
+      description: "How DeskTour Studio handles profile, posting, and operational data."
+      eyebrow: "Privacy"
+      lead: "This page explains what information DeskTour Studio handles, why it is used, and how long it may be retained."
+      summary_heading: "Summary"
+      summary_points:
+        - "We only ask for information needed to publish profiles and posts."
+        - "Operational data may be used for security, moderation, and service improvement."
+        - "Cookie-based ownership data is stored on your device to let you edit your own profile and posts."
+      updated_on: "March 12, 2026"
+      sections:
+        - heading: "1. Information we handle"
+          body:
+            - "DeskTour Studio may handle profile names, biographies, email addresses you choose to provide, post text, attached images, and item links added to a workspace."
+            - "We may also process technical information such as browser details, IP-derived operational logs, locale preferences, and moderation metadata that help keep the service stable and safe."
+        - heading: "2. How the information is used"
+          body:
+            - "Information is used to display public profiles and posts, to support moderation and abuse prevention, and to improve the browsing and publishing experience."
+            - "Optional analytics or search-console style integrations may be used when enabled by the operator."
+        - heading: "3. Storage and retention"
+          body:
+            - "Public content remains available until it is deleted, hidden for moderation, or otherwise removed from the service."
+            - "Device-side ownership cookies remain on your browser for a limited period so you can continue editing content from the same device."
+        - heading: "4. Your choices"
+          body:
+            - "You can stop using the service, remove your local cookies, or request content updates by editing content from the device that owns it."
+            - "If you need support for a profile you own, use the email address you provided when creating the profile."
+    terms:
+      title: "Terms of Service"
+      description: "The basic rules for using DeskTour Studio."
+      eyebrow: "Terms"
+      lead: "These terms describe the basic expectations for posting, browsing, and operating on DeskTour Studio."
+      summary_heading: "Summary"
+      summary_points:
+        - "Only publish content you have the right to share."
+        - "Do not post unlawful, abusive, misleading, or spammy material."
+        - "Moderation actions may remove or hide content when needed to protect the service."
+      updated_on: "March 12, 2026"
+      sections:
+        - heading: "1. Acceptable use"
+          body:
+            - "You may browse and publish workspace-related content for lawful purposes. Content should be accurate enough to avoid misleading other readers."
+            - "You are responsible for the images, descriptions, and links you submit."
+        - heading: "2. Prohibited conduct"
+          body:
+            - "Do not upload infringing material, illegal content, harassment, impersonation, deceptive affiliate placements, or anything that materially harms the service or other users."
+            - "Automated scraping, abuse, or attempts to bypass moderation may be restricted."
+        - heading: "3. Moderation and availability"
+          body:
+            - "DeskTour Studio may review, hide, or remove content when reports, safety concerns, or policy violations require it."
+            - "Features and availability may change over time without separate notice."
+        - heading: "4. External links"
+          body:
+            - "Posts may contain outbound product or reference links. DeskTour Studio does not control third-party sites and is not responsible for their content or policies."
+    cookie:
+      title: "Cookie Policy"
+      description: "How DeskTour Studio uses cookies and similar local storage."
+      eyebrow: "Cookies"
+      lead: "DeskTour Studio uses cookies and similar browser storage mainly to remember locale settings, ownership state, and basic interaction preferences."
+      summary_heading: "Summary"
+      summary_points:
+        - "Locale selection is stored so the site stays in your chosen language."
+        - "Ownership tokens are stored so you can edit profiles and posts from the same device."
+        - "Some analytics or operational cookies may appear if those features are enabled."
+      updated_on: "March 12, 2026"
+      sections:
+        - heading: "1. Types of cookies"
+          body:
+            - "We may use cookies or similar browser storage for language selection, ownership state, liked-post state, and basic session continuity."
+        - heading: "2. Why they are used"
+          body:
+            - "These values help the app remember your language, keep your editing rights on the current device, and maintain a smoother browsing experience."
+        - heading: "3. Managing cookies"
+          body:
+            - "You can clear cookies from your browser settings at any time. Doing so may remove access to profile or post editing on that device until ownership is re-established."
