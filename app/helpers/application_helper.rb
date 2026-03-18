@@ -893,6 +893,8 @@ module ApplicationHelper
   end
 
   def fallback_post_image_name(seed = nil)
+    return FALLBACK_POST_IMAGE unless seed.is_a?(Hash)
+
     pool = [ FALLBACK_POST_IMAGE, *DEMO_POST_IMAGES ]
     key = if seed.respond_to?(:id) && seed.id.present?
       seed.id.to_s
