@@ -11,8 +11,6 @@ const INTERACTIVE_SELECTOR = [
   "summary",
   "[role='button']",
   "[data-card-stop]",
-  "[data-open-report-modal]",
-  "[data-close-report-modal]",
   "[data-copy-url]"
 ].join(", ");
 
@@ -605,6 +603,15 @@ const initializeUiState = (scope = document) => {
 
 if (!window[UI_STATE_GUARD]) {
   window[UI_STATE_GUARD] = true;
+  let pageLoadingResetTimer = null;
+
+  const clearPageLoading = () => {
+    document.documentElement.classList.remove("ds-page-loading");
+    if (pageLoadingResetTimer) {
+      window.clearTimeout(pageLoadingResetTimer);
+      pageLoadingResetTimer = null;
+    }
+  };
 
   const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
   const lowBandwidth = Boolean(connection && (connection.saveData || /(^|[^0-9])2g/i.test(connection.effectiveType || "")));
@@ -629,18 +636,31 @@ if (!window[UI_STATE_GUARD]) {
 
   document.addEventListener("turbo:before-fetch-request", () => {
     document.documentElement.classList.add("ds-page-loading");
+    if (pageLoadingResetTimer) window.clearTimeout(pageLoadingResetTimer);
+    pageLoadingResetTimer = window.setTimeout(clearPageLoading, 2500);
   });
 
   document.addEventListener("turbo:fetch-request-error", () => {
-    document.documentElement.classList.remove("ds-page-loading");
+    clearPageLoading();
+  });
+
+  document.addEventListener("turbo:before-render", () => {
+    clearPageLoading();
+  });
+
+  document.addEventListener("turbo:render", () => {
+    clearPageLoading();
   });
 
   document.addEventListener("turbo:load", () => {
-    document.documentElement.classList.remove("ds-page-loading");
+    clearPageLoading();
     initializeUiState(document);
   });
 
+  window.addEventListener("pageshow", clearPageLoading);
+
   document.addEventListener("DOMContentLoaded", () => {
+    clearPageLoading();
     initializeUiState(document);
   });
 }

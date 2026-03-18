@@ -44,7 +44,7 @@
                    { label: t("ui.back"), href: (request.referer.presence || root_path) }
                  ] %>
 
-    <div class="rounded-lg border ds-tone-danger p-3 text-sm" role="alert" aria-live="assertive">
+    <div class="ds-feedback-panel ds-tone-danger" role="alert" aria-live="assertive">
         <ul class="list-disc pl-5">
             <% if profile_error.present? %>
             <li><a href="#post_user_id" class="underline"><%= profile_error %></a></li>

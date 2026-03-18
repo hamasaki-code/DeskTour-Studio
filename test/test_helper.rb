@@ -4,6 +4,8 @@ require "rails/test_help"
 
 module ActiveSupport
   class TestCase
+    include ActiveJob::TestHelper
+
     # Windows does not support UNIXServer used by DRb parallelization.
     unless Gem.win_platform?
       # Use process-based parallelization to avoid shared-connection issues on PostgreSQL.

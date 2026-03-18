@@ -35,13 +35,38 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.raise_delivery_errors = true
 
   # Disable caching for Action Mailer templates even if Action Controller
   # caching is enabled.
   config.action_mailer.perform_caching = false
 
   config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+
+  smtp_username = ENV["SMTP_USERNAME"].presence || ENV["MAIL_FROM"].presence || ENV["SUPPORT_INBOX_EMAIL"].presence
+  smtp_password = ENV["SMTP_PASSWORD"].presence
+  smtp_enabled = ENV["SMTP_ADDRESS"].present? || smtp_username.present? || ENV["SMTP_PASSWORD"].present?
+  smtp_ca_file = ENV["SMTP_CA_FILE"].presence || ENV["SSL_CERT_FILE"].presence
+  smtp_ca_path = ENV["SMTP_CA_PATH"].presence || ENV["SSL_CERT_DIR"].presence
+
+  if smtp_enabled
+    smtp_settings = {
+      address: ENV.fetch("SMTP_ADDRESS", "smtp.gmail.com"),
+      port: ENV.fetch("SMTP_PORT", "587").to_i,
+      domain: ENV.fetch("SMTP_DOMAIN", "gmail.com"),
+      user_name: smtp_username,
+      password: smtp_password,
+      authentication: ENV.fetch("SMTP_AUTHENTICATION", "plain").to_sym,
+      enable_starttls_auto: ENV.fetch("SMTP_ENABLE_STARTTLS_AUTO", "true") == "true",
+      openssl_verify_mode: ENV.fetch("SMTP_OPENSSL_VERIFY_MODE", "peer")
+    }
+
+    smtp_settings[:ca_file] = smtp_ca_file if smtp_ca_file.present? && File.file?(smtp_ca_file)
+    smtp_settings[:ca_path] = smtp_ca_path if smtp_ca_path.present? && File.directory?(smtp_ca_path)
+
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = smtp_settings
+  end
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
@@ -60,6 +85,7 @@ Rails.application.configure do
 
   # Highlight code that enqueued background job in logs.
   config.active_job.verbose_enqueue_logs = true
+  config.active_job.queue_adapter = :async
 
   # Suppress logger output for asset requests.
   config.assets.quiet = true

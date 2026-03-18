@@ -26,7 +26,6 @@ class PostsController < ApplicationController
   end
 
   def show
-    @report = @post.reports.new
     @unread_notifications_count = post_owner?(@post) ? @post.notifications.unread.count : 0
     @back_to_index_path = sanitize_internal_back_path(params[:from])
     @author_trust = author_trust_snapshot(@post.user)
@@ -93,7 +92,7 @@ class PostsController < ApplicationController
   def destroy
     @post.destroy
     remove_post_owner_token(@post)
-    redirect_to root_path, notice: t("posts.flash.deleted")
+    redirect_to gallery_path, notice: t("posts.flash.deleted")
   end
 
   def like
@@ -179,7 +178,7 @@ class PostsController < ApplicationController
   def require_post_owner!
     return if post_owner?(@post)
 
-    redirect_target = @post.published? ? post_path(@post) : root_path
+    redirect_target = @post.published? ? post_path(@post) : gallery_path
     redirect_to redirect_target, alert: t("posts.flash.not_allowed")
   end
 

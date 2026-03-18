@@ -133,7 +133,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_difference("Post.count", -1) do
       delete post_url(post_record)
     end
-    assert_redirected_to root_url
+    assert_redirected_to gallery_url
   end
 
   private
@@ -142,7 +142,10 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     post users_url, params: {
       user: {
         name: "Owned User",
-        bio: "Owned user bio"
+        username: "owned_user_#{SecureRandom.hex(4)}",
+        bio: "Owned user bio",
+        password: "password123",
+        password_confirmation: "password123"
       }
     }
     User.order(:id).last

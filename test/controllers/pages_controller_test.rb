@@ -20,4 +20,19 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     get onboarding_url
     assert_response :success
   end
+
+  test "should get support" do
+    get support_url
+    assert_response :success
+  end
+
+  test "should get about" do
+    get about_url
+    assert_response :success
+  end
+
+  test "should get login" do
+    get login_url
+    assert_response :success
+  end
 end

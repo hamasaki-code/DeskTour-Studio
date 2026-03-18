@@ -21,6 +21,12 @@ module ApplicationHelper
   }.freeze
 
   FALLBACK_POST_IMAGE = "default-desk.svg"
+  DEMO_POST_IMAGES = %w[
+    demo-desk-1.svg
+    demo-desk-2.svg
+    demo-desk-3.svg
+    demo-desk-4.svg
+  ].freeze
 
   FLASH_VISUALS = {
     "notice" => {
@@ -150,17 +156,17 @@ module ApplicationHelper
 
   def og_image_url(post = nil)
     if post&.desk_image&.attached?
-      url_for(post.desk_image.variant(variant_options(:og)))
+      url_for(optimized_post_image_source(post, variant: :og))
     else
-      "#{request.base_url}#{image_path(FALLBACK_POST_IMAGE)}"
+      "#{request.base_url}#{image_path(fallback_post_image_name(post))}"
     end
   end
 
   def optimized_post_image_source(post, variant: :thumbnail)
     if post&.desk_image&.attached?
-      post.desk_image.variant(variant_options(variant))
+      image_variant_processing_available? ? post.desk_image.variant(variant_options(variant)) : post.desk_image
     else
-      FALLBACK_POST_IMAGE
+      fallback_post_image_name(post)
     end
   end
 
@@ -195,6 +201,195 @@ module ApplicationHelper
     number_with_delimiter(value, locale: I18n.locale)
   end
 
+  def editorial_shell_page?
+    return false if controller_path.start_with?("admin/")
+
+    (controller_name == "pages" && action_name == "home") ||
+      (controller_name == "pages" && action_name == "onboarding") ||
+      (controller_name == "pages" && action_name == "login") ||
+      (controller_name == "pages" && action_name == "support") ||
+      (controller_name == "pages" && action_name == "operator") ||
+      (controller_name == "password_resets" && action_name.in?(%w[new create edit update])) ||
+      (controller_name == "support_requests" && action_name == "create") ||
+      (controller_name == "sessions" && action_name == "create") ||
+      (controller_name == "pages" && action_name.in?(%w[privacy terms cookie])) ||
+      (controller_name == "posts" && action_name.in?(%w[index show new edit])) ||
+      (controller_name == "users" && action_name.in?(%w[index show new edit]))
+  end
+
+  def editorial_demo_content_enabled?
+    return true unless Rails.env.production?
+
+    ENV["ENABLE_EDITORIAL_DEMO_CONTENT"] == "true"
+  end
+
+  def editorial_demo_posts(limit: nil)
+    posts = [
+      {
+        id: "demo-1",
+        title: t("editorial.demo_posts.one.title"),
+        description: t("editorial.demo_posts.one.description"),
+        author_name: t("editorial.demo_posts.one.author"),
+        category: t("editorial.demo_posts.categories.workspace"),
+        theme: t("editorial.demo_posts.themes.natural_light"),
+        tags: [
+          t("editorial.demo_posts.tags.minimal"),
+          t("editorial.demo_posts.tags.focus"),
+          t("editorial.demo_posts.tags.wood")
+        ],
+        likes_count: 124,
+        created_at: Date.new(2026, 2, 18),
+        image_src: DEMO_POST_IMAGES[0]
+      },
+      {
+        id: "demo-2",
+        title: t("editorial.demo_posts.two.title"),
+        description: t("editorial.demo_posts.two.description"),
+        author_name: t("editorial.demo_posts.two.author"),
+        category: t("editorial.demo_posts.categories.studio"),
+        theme: t("editorial.demo_posts.themes.night_shift"),
+        tags: [
+          t("editorial.demo_posts.tags.dark"),
+          t("editorial.demo_posts.tags.dual"),
+          t("editorial.demo_posts.tags.studio")
+        ],
+        likes_count: 98,
+        created_at: Date.new(2026, 1, 29),
+        image_src: DEMO_POST_IMAGES[1]
+      },
+      {
+        id: "demo-3",
+        title: t("editorial.demo_posts.three.title"),
+        description: t("editorial.demo_posts.three.description"),
+        author_name: t("editorial.demo_posts.three.author"),
+        category: t("editorial.demo_posts.categories.productivity"),
+        theme: t("editorial.demo_posts.themes.light_desk"),
+        tags: [
+          t("editorial.demo_posts.tags.light"),
+          t("editorial.demo_posts.tags.clean"),
+          t("editorial.demo_posts.tags.notebook")
+        ],
+        likes_count: 76,
+        created_at: Date.new(2025, 12, 20),
+        image_src: DEMO_POST_IMAGES[2]
+      },
+      {
+        id: "demo-4",
+        title: t("editorial.demo_posts.four.title"),
+        description: t("editorial.demo_posts.four.description"),
+        author_name: t("editorial.demo_posts.four.author"),
+        category: t("editorial.demo_posts.categories.lifestyle"),
+        theme: t("editorial.demo_posts.themes.slow_evening"),
+        tags: [
+          t("editorial.demo_posts.tags.cozy"),
+          t("editorial.demo_posts.tags.audio"),
+          t("editorial.demo_posts.tags.reading")
+        ],
+        likes_count: 63,
+        created_at: Date.new(2025, 11, 8),
+        image_src: DEMO_POST_IMAGES[3]
+      }
+    ]
+
+    limit.present? ? posts.first(limit) : posts
+  end
+
+  def filtered_editorial_demo_posts(query:, category:, theme:, tag:, sort:, limit: nil)
+    normalized_query = query.to_s.strip.downcase
+    normalized_category = category.to_s.strip.downcase
+    normalized_theme = theme.to_s.strip.downcase
+    normalized_tag = tag.to_s.strip.downcase
+    tokens = normalized_query.split(/\s+/).reject(&:blank?)
+
+    posts = editorial_demo_posts.select do |entry|
+      search_fields = [
+        editorial_entry_title(entry),
+        editorial_entry_description(entry),
+        editorial_entry_author_name(entry),
+        editorial_entry_category(entry),
+        editorial_entry_theme(entry),
+        *editorial_entry_tags(entry)
+      ].map { |value| value.to_s.downcase }
+
+      matches_query = tokens.empty? || tokens.all? { |token| search_fields.any? { |field| field.include?(token) } }
+      matches_category = normalized_category.blank? || editorial_entry_category(entry).to_s.downcase == normalized_category
+      matches_theme = normalized_theme.blank? || editorial_entry_theme(entry).to_s.downcase.include?(normalized_theme)
+      matches_tag = normalized_tag.blank? || editorial_entry_tags(entry).any? { |value| value.to_s.downcase == normalized_tag }
+
+      matches_query && matches_category && matches_theme && matches_tag
+    end
+
+    sorted =
+      case sort.to_s
+      when "popular"
+        posts.sort_by { |entry| [ -editorial_entry_likes(entry), -(editorial_entry_created_at(entry)&.to_time&.to_i || 0) ] }
+      when "recently_updated", "newest"
+        posts.sort_by { |entry| [ -(editorial_entry_created_at(entry)&.to_time&.to_i || 0), -editorial_entry_likes(entry) ] }
+      else
+        posts
+      end
+
+    limit.present? ? sorted.first(limit) : sorted
+  end
+
+  def editorial_entry_title(entry)
+    entry.respond_to?(:title) ? entry.title : entry[:title]
+  end
+
+  def editorial_entry_description(entry)
+    entry.respond_to?(:description) ? entry.description : entry[:description]
+  end
+
+  def editorial_entry_author_name(entry)
+    if entry.respond_to?(:user) && entry.user.present?
+      entry.user.name
+    else
+      entry[:author_name]
+    end
+  end
+
+  def editorial_entry_tags(entry)
+    tags = entry.respond_to?(:tags) ? entry.tags : entry[:tags]
+    Array(tags).map(&:to_s).reject(&:blank?)
+  end
+
+  def editorial_entry_category(entry)
+    entry.respond_to?(:category) ? entry.category : entry[:category]
+  end
+
+  def editorial_entry_theme(entry)
+    entry.respond_to?(:theme) ? entry.theme : entry[:theme]
+  end
+
+  def editorial_entry_likes(entry)
+    entry.respond_to?(:likes_count) ? entry.likes_count.to_i : entry[:likes_count].to_i
+  end
+
+  def editorial_entry_created_at(entry)
+    entry.respond_to?(:created_at) ? entry.created_at : entry[:created_at]
+  end
+
+  def editorial_entry_date_label(entry)
+    formatted_date(editorial_entry_created_at(entry))
+  end
+
+  def editorial_entry_image_tag(entry, variant: :thumbnail, **options)
+    if entry.respond_to?(:desk_image)
+      optimized_post_image_tag(entry, variant: variant, **options)
+    else
+      image_tag(
+        entry[:image_src],
+        **default_image_tag_options(entry, variant).merge(options)
+      )
+    end
+  end
+
+  def editorial_entry_destination(entry, fallback: nil)
+    return fallback if entry.is_a?(Hash)
+
+    post_path(entry)
+  end
+
   def context_breadcrumbs
     base = [{ label: "DeskTour Studio", href: root_path }]
 
@@ -205,8 +400,6 @@ module ApplicationHelper
       case controller_path
       when "admin/posts"
         base << { label: t("navigation.admin_posts"), href: admin_posts_path }
-      when "admin/reports"
-        base << { label: t("navigation.admin_reports"), href: admin_reports_path }
       end
 
       return base
@@ -216,7 +409,7 @@ module ApplicationHelper
 
     case controller_name
     when "posts"
-      base << { label: t("posts.index.title"), href: root_path }
+      base << { label: t("posts.index.title"), href: gallery_path }
 
       if action_name == "show" && defined?(@post) && @post.present?
         base << { label: truncate(@post.title, length: 40), href: post_path(@post) }
@@ -244,7 +437,9 @@ module ApplicationHelper
         "privacy" => { label: t("footer.privacy_policy"), href: privacy_policy_path },
         "terms" => { label: t("footer.terms"), href: terms_path },
         "cookie" => { label: t("footer.cookie_policy"), href: cookie_policy_path },
-        "onboarding" => { label: t("navigation.onboarding"), href: onboarding_path }
+        "onboarding" => { label: t("navigation.onboarding"), href: onboarding_path },
+        "support" => { label: t("support.page.link_label"), href: support_path },
+        "operator" => { label: t("operator.page.link_label"), href: about_path }
       }
       candidate = page_map[action_name]
       base << candidate if candidate.present?
@@ -304,6 +499,14 @@ module ApplicationHelper
     return "" if value.blank?
 
     l(value.to_date, format: :default)
+  end
+
+  def editorial_filter_label(key)
+    t("editorial.gallery.filter_labels.#{key}")
+  end
+
+  def policy_page_content(page_key)
+    t("policies.#{page_key}")
   end
 
   def formatted_datetime(value)
@@ -499,6 +702,10 @@ module ApplicationHelper
         tag.path(path_attrs.merge(d: "m14.25 9.75-4.5 4.5m0-4.5 4.5 4.5")),
         tag.path(path_attrs.merge(d: "M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"))
       ]
+    when :x_mark
+      [
+        tag.path(path_attrs.merge(d: "m6 6 12 12M18 6 6 18"))
+      ]
     when :information_circle
       [
         tag.path(path_attrs.merge(d: "m11.25 11.25.041-.02a.75.75 0 0 1 1.06.852l-.708 2.836a.75.75 0 0 0 1.06.852l.041-.02")),
@@ -668,10 +875,10 @@ module ApplicationHelper
 
   def default_image_tag_options(post, variant)
     width, height = POST_IMAGE_DIMENSIONS.fetch(variant, POST_IMAGE_DIMENSIONS[:main])
-    fallback_url = asset_path(FALLBACK_POST_IMAGE)
+    fallback_url = asset_path(fallback_post_image_name(post))
 
     base = {
-      alt: post&.title.presence || t("images.desk_alt"),
+      alt: editorial_entry_title(post).presence || t("images.desk_alt"),
       decoding: "async",
       width: width,
       height: height,
@@ -683,5 +890,41 @@ module ApplicationHelper
     else
       base.merge(loading: "eager", fetchpriority: "high", sizes: "100vw")
     end
+  end
+
+  def fallback_post_image_name(seed = nil)
+    pool = [FALLBACK_POST_IMAGE, *DEMO_POST_IMAGES]
+    key = if seed.respond_to?(:id) && seed.id.present?
+      seed.id.to_s
+    elsif seed.respond_to?(:title) && seed.title.present?
+      seed.title.to_s
+    else
+      seed.to_s
+    end
+
+    return pool.first if key.blank?
+
+    pool[key.each_byte.sum % pool.length]
+  end
+
+  def image_variant_processing_available?
+    return @image_variant_processing_available unless @image_variant_processing_available.nil?
+
+    processor = Rails.application.config.active_storage.variant_processor
+    @image_variant_processing_available =
+      case processor
+      when :vips
+        command_available?("vips", "--version")
+      when :mini_magick
+        command_available?("magick", "-version") || command_available?("convert", "-version")
+      else
+        false
+      end
+  end
+
+  def command_available?(*command)
+    system(*command, out: File::NULL, err: File::NULL)
+  rescue StandardError
+    false
   end
 end

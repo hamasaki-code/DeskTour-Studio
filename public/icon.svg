@@ -1,3 +1,7 @@
-<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
-  <rect width="100%" height="100%" fill="red"/>
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="256" height="256" rx="32" fill="#F7F6F2"/>
+  <ellipse cx="128" cy="128" rx="86" ry="58" stroke="#3A392F" stroke-width="5"/>
+  <rect x="57" y="111" width="142" height="34" fill="#F7F6F2"/>
+  <text x="128" y="130" text-anchor="middle" fill="#111111" font-size="41" font-family="Georgia, Times New Roman, serif" font-weight="700" letter-spacing="-1.2">DT</text>
+  <text x="128" y="150" text-anchor="middle" fill="#2B2A24" font-size="13" font-family="Arial, Helvetica, sans-serif" letter-spacing="2.4">STUDIO</text>
 </svg>

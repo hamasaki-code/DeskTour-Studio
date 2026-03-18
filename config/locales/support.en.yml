@@ -1,0 +1,22 @@
+en:
+  support:
+    page:
+      title: "Support"
+      description: "Get help with account access, posting, and profile setup."
+      eyebrow: "Support"
+      heading: "User support for account access and publishing."
+      lead: "If you have trouble logging in, publishing a post, or updating your profile, contact support and include as much context as you can."
+      response_heading: "Best contact route"
+      response_body: "Email is the fastest route for account, profile, and posting support."
+      contact_eyebrow: "Contact"
+      contact_heading: "Send a message to support."
+      contact_body: "Include your username, the page you were using, and a short description of what happened."
+      topics_eyebrow: "Common topics"
+      topics_heading: "We can help with these cases."
+      topics:
+        - "Login trouble after creating an account"
+        - "Profile edits or password setup on an older account"
+        - "Publishing issues, image upload trouble, or profile ownership questions"
+      open_signup: "Open sign up"
+      cta: "User support"
+      link_label: "User support"

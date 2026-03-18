@@ -1,81 +1,80 @@
 <% content_for :title, t("onboarding.title") %>
 <% content_for :description, t("onboarding.description") %>
 
-<section class="mx-auto w-full max-w-5xl space-y-content" data-page-content>
-    <header class="rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(125,211,252,0.18),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(34,211,238,0.12),transparent_30%),linear-gradient(135deg,#161A22_0%,#1B2230_100%)] px-6 py-7 text-white shadow-[0_24px_64px_rgba(0,0,0,0.34)] sm:px-8 sm:py-9">
-        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400"><%= t("onboarding.progress_title") %></p>
-        <h1 class="mt-2 ds-heading-xl"><%= t("onboarding.heading") %></h1>
-        <p class="mt-3 max-w-2xl ds-text-support ds-text-inverse-support">
-            <%= t("onboarding.lead") %>
-        </p>
-    </header>
+<section class="space-y-8 text-[#1a1a1a]" data-page-content>
+    <div class="rounded-[32px] border border-[#d8d4ca] bg-[#f7f6f2] px-6 py-8 shadow-[0_24px_80px_rgba(26,26,26,0.08)] lg:px-8 lg:py-10">
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end">
+            <div class="space-y-4">
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-[#6b6b6b]"><%= t("editorial.onboarding.eyebrow") %></p>
+                <h1 class="text-4xl font-medium tracking-[-0.03em] lg:text-5xl"><%= t("onboarding.heading") %></h1>
+                <p class="max-w-2xl text-base leading-7 text-[#6b6b6b]"><%= t("onboarding.lead") %></p>
+            </div>
 
-    <section class="ds-card ds-surface-panel p-4 sm:p-5" aria-label="<%= t('onboarding.progress_title') %>">
-        <div class="flex items-center justify-between gap-2">
-            <p class="ds-text-support font-semibold"><%= t("onboarding.progress_title") %></p>
-            <p class="ds-text-meta"><%= t("onboarding.progress_value") %></p>
+            <div class="rounded-[24px] border border-[#e8e6e1] bg-white p-5">
+                <p class="text-sm font-medium text-[#1a1a1a]"><%= t("editorial.onboarding.note_heading") %></p>
+                <p class="mt-3 text-sm leading-6 text-[#6b6b6b]"><%= t("editorial.onboarding.note_body") %></p>
+            </div>
+        </div>
+    </div>
+
+    <section class="rounded-[32px] border border-[#d8d4ca] bg-white p-6 shadow-[0_18px_60px_rgba(26,26,26,0.08)] lg:p-8" aria-label="<%= t('onboarding.progress_title') %>">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("onboarding.progress_title") %></p>
+                <p class="mt-2 text-2xl font-medium tracking-[-0.02em]"><%= t("onboarding.progress_value") %></p>
+            </div>
+            <ol class="flex flex-wrap gap-2">
+                <li class="rounded-full border border-[#d8d4ca] bg-[#f7f6f2] px-4 py-2 text-sm font-medium text-[#6b6b6b]"><%= t("onboarding.step") %> 1</li>
+                <li class="rounded-full border border-[#d8d4ca] bg-[#f7f6f2] px-4 py-2 text-sm font-medium text-[#6b6b6b]"><%= t("onboarding.step") %> 2</li>
+                <li class="rounded-full border border-[#1a1a1a] bg-[#1a1a1a] px-4 py-2 text-sm font-medium text-white"><%= t("onboarding.step") %> 3</li>
+            </ol>
         </div>
 
-        <div class="mt-2 ds-progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="3" aria-label="<%= t('onboarding.progress_title') %>">
-            <div class="ds-progress-fill" style="width: 100%"></div>
+        <div class="mt-5 h-2 overflow-hidden rounded-full bg-[#ece8df]" role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="3" aria-label="<%= t('onboarding.progress_title') %>">
+            <div class="h-full w-full rounded-full bg-[#1a1a1a]"></div>
         </div>
-
-        <ol class="mt-3 grid grid-cols-3 gap-2 text-center">
-            <li class="rounded-full border px-2 py-1 text-xs font-semibold ds-badge-inactive"><%= t("onboarding.step") %> 1</li>
-            <li class="rounded-full border px-2 py-1 text-xs font-semibold ds-badge-inactive"><%= t("onboarding.step") %> 2</li>
-            <li class="rounded-full border px-2 py-1 text-xs font-semibold ds-tone-info"><%= t("onboarding.step") %> 3</li>
-        </ol>
     </section>
 
-    <ol class="grid gap-4 lg:grid-cols-3">
-        <li class="ds-card ds-surface-panel p-4 sm:p-5">
-            <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("onboarding.step") %> 1</p>
-            <h2 class="mt-1 ds-heading-md ds-text-strong"><%= t("onboarding.browse_title") %></h2>
-            <p class="mt-1 ds-text-support"><%= t("onboarding.browse_body") %></p>
-            <div class="mt-3">
-                <%= render "shared/experiment_cta", href: root_path, label: t("onboarding.browse_cta"), tone: "secondary", variant: "control" %>
+    <ol class="grid gap-6 lg:grid-cols-3">
+        <li class="rounded-[28px] border border-[#d8d4ca] bg-white p-6 shadow-[0_18px_60px_rgba(26,26,26,0.06)]">
+            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("onboarding.step") %> 1</p>
+            <h2 class="mt-2 text-2xl font-medium tracking-[-0.03em]"><%= t("onboarding.browse_title") %></h2>
+            <p class="mt-3 text-sm leading-7 text-[#6b6b6b]"><%= t("onboarding.browse_body") %></p>
+            <div class="mt-5">
+                <%= link_to t("onboarding.browse_cta"), gallery_path, class: "inline-flex items-center justify-center rounded-full border border-[#d8d4ca] bg-[#f7f6f2] px-5 py-3 text-sm font-medium text-[#1a1a1a] transition hover:border-[#c7c1b4] hover:bg-[#fcfbf8]" %>
             </div>
         </li>
 
-        <li class="ds-card ds-surface-panel p-4 sm:p-5">
-            <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("onboarding.step") %> 2</p>
-            <h2 class="mt-1 ds-heading-md ds-text-strong"><%= t("onboarding.post_title") %></h2>
-            <p class="mt-1 ds-text-support"><%= t("onboarding.post_body") %></p>
-            <div class="mt-3 flex flex-wrap gap-2">
-                <%= render "shared/experiment_cta", href: new_user_path, label: t("onboarding.create_profile"), tone: "secondary", variant: "compact" %>
-                <%= render "shared/experiment_cta", href: new_post_path, label: t("onboarding.create_post"), tone: "primary", variant: "high-contrast" %>
+        <li class="rounded-[28px] border border-[#d8d4ca] bg-[#f7f6f2] p-6 shadow-[0_18px_60px_rgba(26,26,26,0.06)]">
+            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("onboarding.step") %> 2</p>
+            <h2 class="mt-2 text-2xl font-medium tracking-[-0.03em]"><%= t("onboarding.post_title") %></h2>
+            <p class="mt-3 text-sm leading-7 text-[#6b6b6b]"><%= t("onboarding.post_body") %></p>
+            <div class="mt-5">
+                <%= link_to t("onboarding.create_post"), new_post_path, class: "inline-flex items-center justify-center rounded-full bg-[#1a1a1a] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#303030]" %>
             </div>
         </li>
 
-        <li class="ds-card ds-surface-panel p-4 sm:p-5">
-            <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("onboarding.step") %> 3</p>
-            <h2 class="mt-1 ds-heading-md ds-text-strong"><%= t("onboarding.revisit_title") %></h2>
-            <p class="mt-1 ds-text-support"><%= t("onboarding.revisit_body") %></p>
-            <div class="mt-3">
-                <%= link_to t("onboarding.find_post"), "#{root_path}#index-search", class: "tap-target cta-secondary" %>
+        <li class="rounded-[28px] border border-[#d8d4ca] bg-white p-6 shadow-[0_18px_60px_rgba(26,26,26,0.06)]">
+            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("onboarding.step") %> 3</p>
+            <h2 class="mt-2 text-2xl font-medium tracking-[-0.03em]"><%= t("onboarding.revisit_title") %></h2>
+            <p class="mt-3 text-sm leading-7 text-[#6b6b6b]"><%= t("onboarding.revisit_body") %></p>
+            <div class="mt-5">
+                <%= link_to t("onboarding.find_post"), gallery_path, class: "inline-flex items-center justify-center rounded-full border border-[#d8d4ca] bg-[#f7f6f2] px-5 py-3 text-sm font-medium text-[#1a1a1a] transition hover:border-[#c7c1b4] hover:bg-[#fcfbf8]" %>
             </div>
         </li>
     </ol>
 
-    <div class="ds-legal-links border-t ds-border-subtle pt-3">
-        <span class="ds-text-weak"><%= t("legal.quick_links") %>:</span>
-        <%= link_to t("footer.terms"), terms_path %>
-        <%= link_to t("footer.privacy_policy"), privacy_policy_path %>
-        <%= link_to t("footer.cookie_policy"), cookie_policy_path %>
-    </div>
+    <section class="rounded-[28px] border border-[#d8d4ca] bg-white px-6 py-6 shadow-[0_18px_60px_rgba(26,26,26,0.06)]">
+        <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("editorial.onboarding.quick_links_heading") %></p>
+        <div class="mt-4 flex flex-wrap gap-3 text-sm text-[#6b6b6b]">
+            <%= link_to t("footer.terms"), terms_path, class: "transition hover:text-[#1a1a1a]" %>
+            <%= link_to t("footer.privacy_policy"), privacy_policy_path, class: "transition hover:text-[#1a1a1a]" %>
+            <%= link_to t("footer.cookie_policy"), cookie_policy_path, class: "transition hover:text-[#1a1a1a]" %>
+            <%= link_to t("support.page.link_label"), support_path, class: "transition hover:text-[#1a1a1a]" %>
+        </div>
+    </section>
 </section>
 
-<section class="mx-auto hidden w-full max-w-5xl" data-page-skeleton aria-hidden="true">
-    <div class="space-y-4">
-        <div class="ds-skeleton-block rounded-3xl aspect-[16/6]"></div>
-        <div class="grid gap-4 lg:grid-cols-3">
-            <% 3.times do %>
-            <div class="ds-card p-5">
-                <div class="ds-skeleton-line w-1/3"></div>
-                <div class="mt-3 ds-skeleton-line"></div>
-                <div class="mt-2 ds-skeleton-line w-5/6"></div>
-            </div>
-            <% end %>
-        </div>
-    </div>
+<section class="hidden" data-page-skeleton aria-hidden="true">
+    <%= render "shared/screen_skeleton", variant: :guide %>
 </section>

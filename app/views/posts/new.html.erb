@@ -1,18 +1,29 @@
 <% content_for :title, t("posts.new.title") %>
 <% content_for :description, t("posts.new.description") %>
 
-<section class="space-y-content" data-page-content>
-    <div class="space-y-3">
-        <h1 class="ds-heading-xl ds-text-strong"><%= t("posts.new.heading") %></h1>
-        <p class="ds-text-support">
-            <%= t("posts.new.lead") %>
-        </p>
-        <p class="ds-text-muted">
-            <%= link_to t("navigation.onboarding"), onboarding_path, class: "ds-link-underlined ds-hover-link" %>
-        </p>
+<section class="space-y-8 text-[#1a1a1a]" data-page-content>
+    <div class="rounded-[32px] border border-[#d8d4ca] bg-[#f7f6f2] px-6 py-8 shadow-[0_24px_80px_rgba(26,26,26,0.08)] lg:px-8 lg:py-10">
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end">
+            <div class="space-y-4">
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-[#6b6b6b]"><%= t("editorial.new.eyebrow") %></p>
+                <h1 class="text-4xl font-medium tracking-[-0.03em] lg:text-5xl"><%= t("posts.new.heading") %></h1>
+                <p class="max-w-2xl text-base leading-7 text-[#6b6b6b]"><%= t("posts.new.lead") %></p>
+            </div>
+            <div class="rounded-[24px] border border-[#e8e6e1] bg-white p-5">
+                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("editorial.new.checklist_heading") %></p>
+                <ul class="mt-4 space-y-3 text-sm leading-6 text-[#6b6b6b]">
+                    <li><%= t("editorial.new.checklist.one") %></li>
+                    <li><%= t("editorial.new.checklist.two") %></li>
+                    <li><%= t("editorial.new.checklist.three") %></li>
+                </ul>
+                <p class="mt-4 text-sm">
+                    <%= link_to t("navigation.onboarding"), onboarding_path, class: "font-medium text-[#1a1a1a] underline decoration-[#d8d4ca] underline-offset-4 transition hover:decoration-[#1a1a1a]" %>
+                </p>
+            </div>
+        </div>
     </div>
 
-    <div class="rounded-2xl border ds-border-subtle ds-surface-panel p-5 sm:p-6">
+    <div class="rounded-[32px] border border-[#d8d4ca] bg-white p-5 shadow-[0_18px_60px_rgba(26,26,26,0.08)] sm:p-6 lg:p-8">
         <%= render "form",
                post: @post,
                owned_users: @owned_users,

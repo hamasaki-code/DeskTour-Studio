@@ -1,936 +1,137 @@
 <% content_for :title, t("posts.index.title") %>
 <% content_for :description, t("posts.index.description") %>
 <% keyword = params[:q].to_s.strip %>
-<% active_filters = {
-  category: params[:category].to_s.strip,
-  theme: params[:theme].to_s.strip,
-  tag: params[:tag].to_s.strip
-}.select { |_, value| value.present? } %>
-<% active_filter_chips = [] %>
-<% active_filter_chips << { key: :q, value: keyword } if keyword.present? %>
-<% active_filters.each { |key, value| active_filter_chips << { key: key, value: value } } %>
-<% detailed_filters_open = params[:details] == "1" || active_filters.any? %>
-<% applied_filter_count = active_filter_chips.size %>
-<% filtered_results = active_filter_chips.any? %>
-<% no_filters_label = t("posts.index.no_filters") %>
-<% quick_search_label = t("posts.index.quick_search") %>
-<% filters_open_label = t("posts.index.open_filters") %>
-<% filters_close_label = t("posts.index.close_filters") %>
-<% filters_title = t("posts.index.filters_title") %>
-<% filters_hint = t("posts.index.filters_hint") %>
-<% details_applied_summary = t("posts.index.filters_applied") %>
-<% details_none_summary = t("posts.index.filters_none") %>
-<% no_results_title = t("posts.index.zero_title") %>
-<% no_results_hint = t("posts.index.zero_hint") %>
-<% clear_all_label = t("posts.index.clear_all") %>
-<% max_card_tags = 1 %>
-<% filter_labels = {
-  q: t("posts.index.keyword_label"),
-  category: t("posts.index.category_placeholder"),
-  theme: t("posts.index.theme_placeholder"),
-  tag: t("posts.index.tag_placeholder")
-} %>
-<% persisted_query = {
-  q: params[:q].presence,
-  category: params[:category].presence,
-  theme: params[:theme].presence,
-  tag: params[:tag].presence,
-  details: params[:details].presence,
-  sort: @sort_option.presence
-}.compact %>
-<% empty_primary_cta = t("posts.index.empty_primary") %>
-<% timeline_hint = t("posts.index.timeline_hint") %>
-<% return_path = request.fullpath %>
+<% selected_category = params[:category].to_s.strip %>
+<% selected_theme = params[:theme].to_s.strip %>
+<% selected_tag = params[:tag].to_s.strip %>
 <% sort_option = @sort_option.presence || "newest" %>
-<% hero_experiment_id = "hero_search_cta_20260308" %>
-<% zero_reason_text = if params[:q].present? && active_filters.size >= 2
-  t("posts.index.zero_reason_strict")
-elsif params[:q].present?
-  t("posts.index.zero_reason_keyword")
-elsif active_filters.size >= 2
-  t("posts.index.zero_reason_filters")
-else
-  t("posts.index.zero_reason_general")
-end %>
+<% active_filters = {
+  q: keyword,
+  category: selected_category,
+  theme: selected_theme,
+  tag: selected_tag
+}.select { |_, value| value.present? } %>
+<% demo_posts = editorial_demo_content_enabled? ? filtered_editorial_demo_posts(query: keyword, category: selected_category, theme: selected_theme, tag: selected_tag, sort: sort_option, limit: 4) : [] %>
+<% use_demo_posts = editorial_demo_content_enabled? && @posts.blank? && @popular_tags.blank? && @search_suggestions.blank? && @categories.blank? && @themes.blank? %>
+<% display_posts = @posts.presence || (use_demo_posts ? demo_posts : []) %>
+<% display_tags = @popular_tags.presence || display_posts.flat_map { |entry| editorial_entry_tags(entry) }.uniq.first(8) %>
 
-<section class="space-y-section text-slate-100" data-page-content>
-    <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(125,211,252,0.20),transparent_38%),radial-gradient(circle_at_bottom_right,rgba(245,208,169,0.10),transparent_32%),linear-gradient(135deg,#161A22_0%,#1B2230_100%)] px-5 py-6 text-white shadow-[0_26px_70px_rgba(0,0,0,0.4)] sm:px-6 sm:py-8">
-        <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(15,17,21,0.10),rgba(15,17,21,0.24))]" aria-hidden="true"></div>
-        <div class="relative max-w-3xl">
-            <p class="mb-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                <%= t("branding.header_label", default: "Desk Setup Gallery") %>
-            </p>
-            <h1 class="ds-heading-xl"><%= t("posts.index.hero_title") %></h1>
-            <p class="mt-2 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-                <%= t("posts.index.hero_description") %>
-            </p>
-            <div class="mt-5 flex flex-wrap items-center gap-3">
-                <%= render "shared/experiment_cta",
-                   href: "#index-search",
-                   label: t("posts.index.search_button"),
-                   tone: "primary",
-                   variant: "control",
-                   experiment_id: hero_experiment_id,
-                   html_options: {
-                     class: "rounded-full",
-                     data: {
-                       hero_search_cta: true,
-                       ga_event: "post_index_search_jump_click",
-                       ga_category: "post_index",
-                       ga_label: "hero_search_jump"
-                     }
-                   } %>
-                <%= link_to t("posts.index.create_post_secondary"), new_post_path, class: "tap-target inline-flex items-center justify-center rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-sm font-medium text-slate-100 transition hover:bg-white/[0.09]" %>
-            </div>
-            <p class="mt-3 text-xs text-slate-400">
-                <%= link_to t("navigation.onboarding"), onboarding_path, class: "underline decoration-white/20 underline-offset-2 transition hover:text-white hover:decoration-white/50", data: { ga_event: "onboarding_open_click", ga_category: "onboarding", ga_label: "index_hero_secondary" } %>
-            </p>
-        </div>
-    </div>
-
-    <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">
-        <div id="index-search" class="ds-card ds-surface-panel rounded-2xl border p-4 sm:p-5" data-index-search-root>
-            <%= form_with url: posts_path, method: :get, local: true, class: "space-y-4", data: { search_form: true, ui_form: true, disabled_reason_prefix: t("ui.search_hint"), disabled_submit_notice: t("ui.search_hint") } do %>
-            <%= hidden_field_tag :details, detailed_filters_open ? "1" : "0", data: { details_state_input: true } %>
-
-            <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-4" data-quick-search-shell>
-                <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
-                    <div>
-                        <p class="ds-text-meta mb-2 font-semibold uppercase tracking-wide"><%= quick_search_label %></p>
-                        <%= text_field_tag :q, params[:q], class: "ds-form-control", placeholder: t("posts.index.search_placeholder"), list: "post-search-suggestions", data: { search_keyword_input: true } %>
-                        <p class="ds-field-guide"><%= t("posts.index.search_guide") %></p>
-                    </div>
-                    <%= submit_tag t("posts.index.search_button"), class: "tap-target cta-primary w-full rounded-full px-4 py-2.5 text-sm font-semibold lg:mt-7 lg:w-auto", data: { ga_event: "post_search_submit_click", ga_category: "post_search", ga_label: "index_search_submit_button" } %>
-                </div>
-
-                <p class="mt-2 hidden ds-loading-inline" data-search-progress role="status" aria-live="polite">
-                    <span class="ds-loading-dot"></span>
-                    <span class="ds-loading-dot"></span>
-                    <span class="ds-loading-dot"></span>
-                    <span><%= t("posts.index.search_loading") %></span>
+<div class="space-y-10 text-[#1a1a1a]">
+    <section class="overflow-hidden rounded-[32px] border border-[#d8d4ca] bg-[#f7f6f2] shadow-[0_24px_80px_rgba(0,0,0,0.12)]">
+        <div class="grid gap-8 px-6 py-8 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end lg:px-10 lg:py-10">
+            <div class="space-y-4">
+                <p class="text-xs font-semibold uppercase tracking-[0.26em] text-[#6b6b6b]"><%= t("editorial.gallery.eyebrow") %></p>
+                <h1 class="max-w-3xl text-4xl font-medium tracking-[-0.03em] lg:text-5xl">
+                    <%= t("editorial.gallery.heading") %>
+                </h1>
+                <p class="max-w-2xl text-base leading-7 text-[#6b6b6b]">
+                    <%= t("editorial.gallery.lead") %>
                 </p>
-
-                <div class="mt-3 flex flex-wrap items-center gap-2">
-                    <p class="ds-text-meta font-semibold"><%= t("posts.index.filters_now") %></p>
-                    <% if active_filter_chips.any? %>
-                    <% active_filter_chips.each do |chip| %>
-                    <% clear_params = persisted_query.except(chip[:key]) %>
-                    <%= link_to posts_path(clear_params), class: "tap-target ds-badge-active ds-chip-tap-target", data: { ga_event: "post_search_filter_clear_click", ga_category: "post_search", ga_label: "index_clear_#{chip[:key]}" } do %>
-                    <span><%= "#{filter_labels[chip[:key]]}: #{chip[:value]}" %></span>
-                    <span aria-hidden="true">&times;</span>
-                    <% end %>
-                    <% end %>
-                    <% else %>
-                    <span class="ds-badge-info"><%= no_filters_label %></span>
-                    <% end %>
-                </div>
             </div>
 
-            <div class="ds-filter-shell <%= detailed_filters_open ? '' : 'ds-filter-shell-collapsed' %> rounded-xl border border-white/10 bg-white/[0.02] p-3 sm:p-4" data-details-shell>
-                <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="rounded-[28px] border border-[#e8e6e1] bg-white p-5">
+                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("editorial.gallery.summary_eyebrow") %></p>
+                <dl class="mt-4 grid gap-4">
                     <div>
-                        <p class="text-sm font-semibold ds-text-strong"><%= filters_title %></p>
-                        <p class="ds-text-muted mt-0.5"><%= active_filters.any? ? format(details_applied_summary, count: active_filters.size) : details_none_summary %></p>
-                    </div>
-                    <button type="button" data-details-toggle aria-expanded="<%= detailed_filters_open %>" class="tap-target cta-tertiary" data-ga-event="post_search_details_toggle_click" data-ga-category="post_search" data-ga-label="index_search_details_toggle">
-                        <span class="inline-flex items-center gap-1.5">
-                            <span data-details-toggle-label data-label-open="<%= filters_open_label %>" data-label-close="<%= filters_close_label %>"><%= detailed_filters_open ? filters_close_label : filters_open_label %></span>
-                            <%= ui_icon(:chevron_down, class_name: "js-details-toggle-icon h-4 w-4 ds-text-weak transition-transform #{detailed_filters_open ? 'rotate-180' : ''}") %>
-                        </span>
-                    </button>
-                </div>
-
-                <div data-details-panel class="mt-3 space-y-3 <%= detailed_filters_open ? '' : 'hidden' %>">
-                    <p class="ds-text-muted"><%= filters_hint %></p>
-                    <div class="grid gap-2.5 sm:grid-cols-3">
-                        <%= select_tag :category, options_for_select([[t("posts.index.category_placeholder"), ""]] + @categories.map { |c| [c, c] }, params[:category]), class: "ds-form-control", data: { search_filter_input: "category" } %>
-                        <%= text_field_tag :theme, params[:theme], class: "ds-form-control", placeholder: t("posts.index.theme_placeholder"), data: { search_filter_input: "theme" } %>
-                        <%= text_field_tag :tag, params[:tag], class: "ds-form-control", placeholder: t("posts.index.tag_placeholder"), data: { search_filter_input: "tag" } %>
-                    </div>
-
-                    <div class="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center">
-                        <div>
-                            <%= label_tag :sort, t("posts.index.sort_label"), class: "sr-only" %>
-                            <%= select_tag :sort, options_for_select([[sort_option_label("newest"), "newest"], [sort_option_label("popular"), "popular"], [sort_option_label("recently_updated"), "recently_updated"]], sort_option), class: "ds-form-control", data: { search_sort_input: true } %>
-                            <p class="ds-field-guide"><%= sort_option_hint(sort_option) %></p>
-                        </div>
-                        <button type="button" class="tap-target cta-tertiary cta-compact" data-clear-filters><%= t("posts.index.reset_button") %></button>
-                        <button type="button" class="tap-target cta-tertiary cta-compact" data-restore-filters><%= t("posts.index.restore_last_filters") %></button>
-                    </div>
-                </div>
-            </div>
-            <% end %>
-
-            <% if @search_suggestions.any? %>
-            <datalist id="post-search-suggestions">
-                <% @search_suggestions.each do |suggestion| %>
-                <option value="<%= suggestion %>"></option>
-                <% end %>
-            </datalist>
-            <% end %>
-        </div>
-
-        <aside class="space-y-4">
-            <% if @popular_tags.any? %>
-            <section class="ds-card ds-surface-panel rounded-2xl border p-4 sm:p-5" aria-label="<%= t('posts.index.try_popular_tags') %>">
-                <h2 class="ds-heading-sm ds-text-strong"><%= t("posts.index.try_popular_tags") %></h2>
-                <div class="mt-3 flex flex-wrap gap-2">
-                    <% @popular_tags.first(6).each do |tag| %>
-                    <%= link_to "##{tag}", posts_path(tag: tag, details: "1", sort: sort_option), class: "tap-target ds-badge-inactive ds-chip-tap-target", data: { ga_event: "post_quick_tag_try_click", ga_category: "post_index", ga_label: "hero_quick_tag" } %>
-                    <% end %>
-                </div>
-            </section>
-            <% end %>
-
-            <section class="ds-card ds-surface-panel hidden rounded-2xl border p-4 sm:p-5" data-first-visit-panel>
-                <h2 class="ds-heading-sm ds-text-strong"><%= t("posts.index.first_visit_heading") %></h2>
-                <p class="mt-1 ds-text-support"><%= t("posts.index.first_visit_lead") %></p>
-                <ol class="mt-3 space-y-2" data-first-visit-guide>
-                    <li class="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm"><strong><%= t("posts.index.onboarding_step_search_title") %></strong><br><span class="ds-text-muted"><%= t("posts.index.onboarding_step_search_body") %></span></li>
-                    <li class="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm"><strong><%= t("posts.index.onboarding_step_read_title") %></strong><br><span class="ds-text-muted"><%= t("posts.index.onboarding_step_read_body") %></span></li>
-                    <li class="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm"><strong><%= t("posts.index.onboarding_step_post_title") %></strong><br><span class="ds-text-muted"><%= t("posts.index.onboarding_step_post_body") %></span></li>
-                </ol>
-                <div class="mt-3 flex flex-wrap items-center gap-2">
-                    <a href="#index-search" class="tap-target cta-primary rounded-full px-4 py-2.5 text-sm font-semibold"><%= t("posts.index.search_button") %></a>
-                    <button type="button" class="tap-target cta-tertiary cta-compact" data-dismiss-first-visit-guide><%= t("posts.index.dismiss_first_guide") %></button>
-                </div>
-            </section>
-
-            <section class="ds-card ds-surface-panel hidden rounded-2xl border p-4 sm:p-5" data-revisit-root>
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                    <h2 class="ds-heading-sm ds-text-strong"><%= t("posts.index.revisit_heading") %></h2>
-                    <button type="button" class="tap-target cta-tertiary cta-compact" data-restore-filters><%= t("posts.index.restore_last_filters") %></button>
-                </div>
-                <div class="mt-2 space-y-3">
-                    <div>
-                        <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("posts.index.recently_viewed") %></p>
-                        <ul class="mt-2 space-y-1.5 text-sm" data-recently-viewed-list>
-                            <li class="ds-text-weak"><%= t("posts.index.recently_viewed_empty") %></li>
-                        </ul>
+                        <dt class="text-sm text-[#6b6b6b]"><%= t("editorial.gallery.visible_workspaces") %></dt>
+                        <dd class="mt-1 text-3xl font-medium"><%= localized_number(display_posts.size) %></dd>
                     </div>
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-wide ds-text-weak"><%= t("posts.index.saved_posts") %></p>
-                        <ul class="mt-2 space-y-1.5 text-sm" data-saved-post-list>
-                            <li class="ds-text-weak"><%= t("posts.index.saved_posts_empty") %></li>
-                        </ul>
+                        <dt class="text-sm text-[#6b6b6b]"><%= t("editorial.gallery.popular_themes") %></dt>
+                        <dd class="mt-1 text-3xl font-medium"><%= localized_number(display_tags.size) %></dd>
                     </div>
-                </div>
-            </section>
-        </aside>
-    </div>
-
-    <section class="ds-card ds-surface-panel rounded-2xl border p-3 sm:p-4" aria-label="<%= t('posts.index.search_status') %>">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-            <p class="font-semibold text-slate-200" data-result-count-label role="status" aria-live="polite">
-                <%= t("posts.index.result_count", count: localized_number(@posts.size)) %>
-            </p>
-            <div class="flex flex-wrap items-center gap-2">
-                <span class="ds-badge-info">
-                    <%= active_filter_chips.any? ? format(details_applied_summary, count: active_filter_chips.size) : details_none_summary %>
-                </span>
-                <% if filtered_results %>
-                <%= link_to t("posts.index.reset_button"), posts_path, class: "tap-target cta-tertiary cta-compact", data: { ga_event: "post_search_reset_click", ga_category: "post_search", ga_label: "index_result_status_reset" } %>
-                <% end %>
+                </dl>
             </div>
         </div>
     </section>
 
-    <% if @posts.any? %>
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <% @posts.each do |post| %>
-        <% ranked_tags = prioritized_post_tags(post, query: params[:q], category: params[:category], selected_tag: params[:tag]) %>
-        <% visible_tags = ranked_tags.first(max_card_tags) %>
-        <% hidden_tag_count = [ranked_tags.size - visible_tags.size, 0].max %>
-        <% card_url = post_path(post, from: return_path) %>
-        <article class="ds-card ds-surface-panel-strong ds-shadow-soft ds-card-interactive relative flex h-full flex-col overflow-hidden rounded-2xl border transition hover:-translate-y-1 hover:border-white/20" data-card-href="<%= card_url %>" data-card-context="search_result" data-post-id="<%= post.id %>" data-post-title="<%= post.title %>" data-post-url="<%= card_url %>">
-            <button type="button" class="ds-icon-button absolute right-2 top-2 z-10 border border-white/15 bg-[#0F1115]/85 text-slate-200 shadow-sm" data-card-stop data-favorite-toggle data-post-id="<%= post.id %>" data-post-title="<%= post.title %>" data-post-url="<%= card_url %>" aria-pressed="false" data-ga-event="post_list_secondary_cta_click" data-ga-category="post_index" data-ga-label="card_save_toggle">
-                <span class="sr-only" data-favorite-label><%= t("posts.index.save_post") %></span>
-                <span aria-hidden="true" data-favorite-icon><%= ui_icon(:bookmark, class_name: "h-4 w-4") %></span>
-            </button>
-
-            <div class="ds-media-frame ds-media-frame-card ds-media-skeleton border-b border-white/10" data-media-skeleton data-image-shell>
-                <%= optimized_post_image_tag(post, variant: :thumbnail, class: "h-full w-full object-cover", data: { fallback_src: asset_path(ApplicationHelper::FALLBACK_POST_IMAGE) }) %>
-                <div class="ds-image-fallback hidden" data-image-fallback>
-                    <p><%= t("images.fallback_text") %></p>
-                    <button type="button" data-image-retry><%= t("images.retry") %></button>
-                </div>
+    <section class="rounded-[32px] border border-[#d8d4ca] bg-white p-6 shadow-[0_18px_60px_rgba(26,26,26,0.08)] lg:p-8">
+        <%= form_with url: gallery_path, method: :get, local: true, class: "space-y-5" do %>
+        <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_12rem_auto]">
+            <label class="relative block">
+                <span class="sr-only"><%= t("posts.index.search_button") %></span>
+                <%= text_field_tag :q, keyword, class: "w-full rounded-full border border-[#d8d4ca] bg-[#f7f6f2] px-5 py-3.5 text-sm text-[#1a1a1a] placeholder:text-[#8a8479] focus:border-[#1a1a1a] focus:outline-none", placeholder: t("posts.index.search_placeholder"), list: "post-search-suggestions" %>
+            </label>
+            <%= select_tag :sort, options_for_select([[t("posts.index.sort_newest"), "newest"], [t("posts.index.sort_popular"), "popular"], [t("posts.index.sort_recently_updated"), "recently_updated"]], sort_option), class: "rounded-full border border-[#d8d4ca] bg-[#f7f6f2] px-4 py-3.5 text-sm text-[#1a1a1a] focus:border-[#1a1a1a] focus:outline-none" %>
+            <div class="flex flex-wrap gap-3">
+                <%= submit_tag t("posts.index.search_button"), class: "inline-flex cursor-pointer items-center justify-center rounded-full bg-[#1a1a1a] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#303030]" %>
+                <% if active_filters.any? || sort_option != "newest" %>
+                <%= link_to t("posts.index.reset_button"), gallery_path, class: "inline-flex items-center justify-center rounded-full border border-[#d8d4ca] bg-white px-5 py-3 text-sm font-medium text-[#1a1a1a] transition hover:border-[#c7c1b4] hover:bg-[#fcfbf8]" %>
+                <% end %>
             </div>
+        </div>
 
-            <div class="flex h-full flex-col p-4">
-                <div class="flex flex-wrap items-center gap-2">
-                    <% if post.category.present? %>
-                    <span class="text-xs font-medium text-slate-400"><%= post.category %></span>
-                    <% end %>
-                    <% visible_tags.each do |tag| %>
-                    <%= link_to "##{tag}", posts_path(tag: tag, details: params[:details], sort: sort_option), class: "tap-target ds-badge-info ds-chip-tap-target ds-chip-interactive", data: { ga_event: "post_tag_filter_click", ga_category: "post_index", ga_label: "tag_filter_from_card", card_stop: true } %>
-                    <% end %>
-                    <% if hidden_tag_count.positive? %>
-                    <span class="ds-badge-info">+<%= hidden_tag_count %></span>
-                    <% end %>
-                </div>
-
-                <h2 class="mt-2 ds-heading-sm ds-line-clamp-2 ds-break-words leading-6 text-slate-100"><%= post.title %></h2>
-
-                <p class="mt-2 ds-text-meta text-slate-400">
-                    <%= t("posts.index.author_label") %>:
-                    <%= link_to post.user.name, user_path(post.user), class: "font-medium text-slate-100 underline decoration-white/25 underline-offset-2 transition hover:decoration-white/60", data: { ga_event: "post_author_open", ga_category: "post_index", ga_label: "author_profile_click", card_stop: true } %>
-                </p>
-
-                <div class="mt-auto flex items-center justify-between gap-3 border-t border-white/10 pt-3">
-                    <p class="ds-text-meta inline-flex items-center gap-1.5 text-slate-400">
-                        <%= ui_icon(:heart, class_name: "h-3.5 w-3.5") %>
-                        <span><%= localized_number(post.likes_count) %></span>
-                        <span aria-hidden="true">&bull;</span>
-                        <%= timestamp_tag(post.created_at, style: :date) %>
-                    </p>
-
-                    <%= link_to t("posts.index.open_post"), card_url, class: "text-sm font-medium text-slate-200 underline decoration-white/15 underline-offset-4 transition hover:text-white hover:decoration-white/40", aria: { label: t("posts.index.open_post_with_title", title: post.title) }, data: { post_card_link: true, post_id: post.id, ga_event: "post_list_primary_cta_click", ga_category: "post_index", ga_label: filtered_results ? "filtered_card_primary" : "default_card_primary", card_stop: true } %>
-                </div>
-            </div>
-        </article>
+        <div class="grid gap-4 lg:grid-cols-3">
+            <%= select_tag :category, options_for_select([[t("posts.index.category_placeholder"), ""]] + @categories.map { |category| [category, category] }, selected_category), class: "rounded-[20px] border border-[#d8d4ca] bg-[#f7f6f2] px-4 py-3 text-sm text-[#1a1a1a] focus:border-[#1a1a1a] focus:outline-none" %>
+            <%= text_field_tag :theme, selected_theme, class: "rounded-[20px] border border-[#d8d4ca] bg-[#f7f6f2] px-4 py-3 text-sm text-[#1a1a1a] placeholder:text-[#8a8479] focus:border-[#1a1a1a] focus:outline-none", placeholder: t("posts.index.theme_placeholder"), list: "theme-options" %>
+            <%= text_field_tag :tag, selected_tag, class: "rounded-[20px] border border-[#d8d4ca] bg-[#f7f6f2] px-4 py-3 text-sm text-[#1a1a1a] placeholder:text-[#8a8479] focus:border-[#1a1a1a] focus:outline-none", placeholder: t("posts.index.tag_placeholder") %>
+        </div>
         <% end %>
-    </div>
-    <% else %>
-    <div class="ds-surface-empty rounded-xl border border-dashed px-4 py-10 text-center">
-        <% if filtered_results %>
-        <%= render "shared/state_action",
-                   level: :warning,
-                   title: no_results_title,
-                   body: "#{no_results_hint} #{zero_reason_text}",
-                   primary_action: { label: clear_all_label, href: posts_path, data: { ga_event: "post_search_reset_click", ga_category: "post_search", ga_label: "index_empty_clear_all" } } %>
+
+        <% if display_tags.any? %>
+        <div class="mt-5 border-t border-[#ece8df] pt-5">
+            <p class="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("editorial.gallery.popular_tags") %></p>
+            <div class="flex flex-wrap gap-2">
+                <%= link_to t("editorial.gallery.all_tags"), gallery_path(q: keyword.presence, category: selected_category.presence, theme: selected_theme.presence, sort: sort_option), class: "rounded-full border px-4 py-2 text-sm font-medium transition #{selected_tag.blank? ? 'border-[#1a1a1a] bg-[#1a1a1a] text-white' : 'border-[#d8d4ca] bg-[#f7f6f2] text-[#1a1a1a] hover:border-[#c7c1b4] hover:bg-[#fcfbf8]'}" %>
+                <% display_tags.each do |tag| %>
+                <%= link_to tag, gallery_path(q: keyword.presence, category: selected_category.presence, theme: selected_theme.presence, tag: tag, sort: sort_option), class: "rounded-full border px-4 py-2 text-sm font-medium transition #{selected_tag == tag ? 'border-[#1a1a1a] bg-[#1a1a1a] text-white' : 'border-[#d8d4ca] bg-[#f7f6f2] text-[#1a1a1a] hover:border-[#c7c1b4] hover:bg-[#fcfbf8]'}" %>
+                <% end %>
+            </div>
+        </div>
+        <% end %>
+
+        <% if @search_suggestions.any? %>
+        <datalist id="post-search-suggestions">
+            <% @search_suggestions.each do |suggestion| %>
+            <option value="<%= suggestion %>"></option>
+            <% end %>
+        </datalist>
+        <% end %>
+
+        <% if @themes.any? %>
+        <datalist id="theme-options">
+            <% @themes.each do |theme| %>
+            <option value="<%= theme %>"></option>
+            <% end %>
+        </datalist>
+        <% end %>
+    </section>
+
+    <section class="space-y-5">
+        <div class="flex flex-col gap-3 rounded-[28px] border border-[#d8d4ca] bg-[#f7f6f2] px-6 py-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("editorial.gallery.results_eyebrow") %></p>
+                <h2 class="mt-2 text-2xl font-medium tracking-[-0.03em]">
+                    <%= t("posts.index.result_count", count: localized_number(display_posts.size)) %>
+                </h2>
+            </div>
+            <% if active_filters.any? %>
+            <p class="max-w-xl text-sm leading-6 text-[#6b6b6b]">
+                <%= t("editorial.gallery.filtered_by", filters: active_filters.map { |key, value| "#{editorial_filter_label(key)}: #{value}" }.join(" / ")) %>
+            </p>
+            <% else %>
+            <p class="max-w-xl text-sm leading-6 text-[#6b6b6b]">
+                <%= t("editorial.gallery.results_lead") %>
+            </p>
+            <% end %>
+        </div>
+
+        <% if display_posts.any? %>
+        <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <% display_posts.each do |post| %>
+            <% destination = post.is_a?(Hash) ? nil : post_path(post, from: request.fullpath) %>
+            <%= render "shared/editorial_post_card", post: post, destination: destination %>
+            <% end %>
+        </div>
         <% else %>
-        <%= render "shared/state_action",
-                   level: :info,
-                   title: t("posts.index.empty_state"),
-                   body: timeline_hint,
-                   primary_action: { label: empty_primary_cta, href: new_post_path } %>
+        <div class="rounded-[28px] border border-[#d8d4ca] bg-white px-6 py-14 text-center shadow-[0_18px_60px_rgba(26,26,26,0.08)]">
+            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6b6b]"><%= t("editorial.gallery.no_matches_eyebrow") %></p>
+            <h2 class="mt-3 text-3xl font-medium tracking-[-0.03em]"><%= t("posts.index.zero_title") %></h2>
+            <p class="mx-auto mt-3 max-w-xl text-sm leading-7 text-[#6b6b6b]"><%= t("posts.index.zero_hint") %></p>
+            <div class="mt-6">
+                <%= link_to t("posts.index.reset_button"), gallery_path, class: "inline-flex items-center justify-center rounded-full bg-[#1a1a1a] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#303030]" %>
+            </div>
+        </div>
         <% end %>
-    </div>
-    <% end %>
-
-    <%= render "shared/ad_slot", slot: ENV["ADSENSE_SLOT_INDEX_BOTTOM"] %>
-</section>
-
-<section class="hidden space-y-4" data-page-skeleton aria-hidden="true">
-    <%= render "shared/screen_skeleton", variant: :list %>
-</section>
-
-<script>
-    if (!window.__postIndexSearchBindingInstalled) {
-        window.__postIndexSearchBindingInstalled = true;
-        const LIST_SCROLL_KEY = "post_index_scroll_y";
-        const LIST_RESTORE_KEY = "post_index_restore";
-        const FILTER_STATE_KEY = "post_index_last_filters";
-        const ZERO_RESULT_STATE_KEY = "post_index_zero_result_state";
-        const RECENTLY_VIEWED_KEY = "post_recently_viewed";
-        const FAVORITES_KEY = "post_favorites";
-        const VISIT_MODE_KEY = "post_index_visit_count";
-        const FIRST_VISIT_GUIDE_DISMISSED_KEY = "post_index_first_guide_dismissed";
-        const HERO_EXPERIMENT_ID = "<%= hero_experiment_id %>";
-        const HERO_VARIANT_KEY = `${HERO_EXPERIMENT_ID}_bucket`;
-        const HERO_ASSIGNMENT_EVENT_KEY = `${HERO_EXPERIMENT_ID}_assignment_sent`;
-        const HERO_ALLOWED_VARIANTS = ["control", "high-contrast"];
-        let lastCardTargetTap = {
-            target: "",
-            at: 0
-        };
-        let visitModeApplied = false;
-        const favoriteSavedMessage = "<%= j(t('posts.index.favorite_saved_notice')) %>";
-        const favoriteRemovedMessage = "<%= j(t('posts.index.favorite_removed_notice')) %>";
-        const filterChangedMessage = "<%= j(t('posts.index.filter_changed_notice')) %>";
-        const filtersRestoredMessage = "<%= j(t('posts.index.filters_restored_notice')) %>";
-        const firstGuideDismissedMessage = "<%= j(t('posts.index.first_guide_dismissed_notice')) %>";
-        const searchResultsChangedPrefix = "<%= j(t('posts.index.result_count_live_prefix')) %>";
-        const searchContext = {
-            hasSearchInput: < %= filtered_results ? "true" : "false" % > ,
-            resultCount: < %= @posts.size % > ,
-            zeroResults: < %= (filtered_results && @posts.empty ? ) ? "true" : "false" % > ,
-            appliedFilterCount: < %= applied_filter_count % > ,
-            hasKeyword: < %= params[: q].present ? ? "true" : "false" % >
-        };
-        const suggestionSet = new Set(Array.from(document.querySelectorAll("#post-search-suggestions option")).map((node) => node.value.trim()).filter((value) => value.length > 0));
-
-        const readJson = (key, fallback = []) => {
-            try {
-                const raw = localStorage.getItem(key);
-                if (!raw) return fallback;
-                const parsed = JSON.parse(raw);
-                return Array.isArray(parsed) || typeof parsed === "object" ? parsed : fallback;
-            } catch (_) {
-                return fallback;
-            }
-        };
-
-        const writeJson = (key, value) => {
-            try {
-                localStorage.setItem(key, JSON.stringify(value));
-            } catch (_) {}
-        };
-
-        const assignHeroCtaVariant = () => {
-            const cta = document.querySelector("[data-hero-search-cta]");
-            if (!cta) return;
-
-            const params = new URLSearchParams(window.location.search || "");
-            const forcedVariant = params.get("hero_variant");
-            const forced = HERO_ALLOWED_VARIANTS.includes(forcedVariant) ? forcedVariant : null;
-            let variant = forced || localStorage.getItem(HERO_VARIANT_KEY);
-            if (!HERO_ALLOWED_VARIANTS.includes(variant)) {
-                variant = Math.random() < 0.5 ? "control" : "high-contrast";
-                localStorage.setItem(HERO_VARIANT_KEY, variant);
-            }
-
-            cta.dataset.variant = variant;
-            cta.dataset.experimentId = HERO_EXPERIMENT_ID;
-
-            if (typeof window.gtag !== "function") return;
-            if (sessionStorage.getItem(HERO_ASSIGNMENT_EVENT_KEY) !== "1") {
-                window.gtag("event", "ui_experiment_assignment", {
-                    event_category: "experiment",
-                    event_label: HERO_EXPERIMENT_ID,
-                    experiment_id: HERO_EXPERIMENT_ID,
-                    variant: variant,
-                    forced: Boolean(forced)
-                });
-                sessionStorage.setItem(HERO_ASSIGNMENT_EVENT_KEY, "1");
-            }
-            window.gtag("event", "ui_experiment_impression", {
-                event_category: "experiment",
-                event_label: HERO_EXPERIMENT_ID,
-                experiment_id: HERO_EXPERIMENT_ID,
-                variant: variant
-            });
-        };
-
-        const favoritePosts = () => Array.isArray(readJson(FAVORITES_KEY, [])) ? readJson(FAVORITES_KEY, []) : [];
-
-        const renderSimpleList = (selector, items, emptyLabel) => {
-            const list = document.querySelector(selector);
-            if (!list) return;
-            if (!Array.isArray(items) || items.length === 0) {
-                list.innerHTML = `<li class="ds-text-weak">${emptyLabel}</li>`;
-                return;
-            }
-
-            list.innerHTML = "";
-            items.forEach((item) => {
-                const li = document.createElement("li");
-                li.innerHTML = `<a href="${item.url}" class="ds-link-primary ds-link-underlined">${item.title}</a>`;
-                list.appendChild(li);
-            });
-        };
-
-        const renderRevisitShortcuts = () => {
-            const recent = readJson(RECENTLY_VIEWED_KEY, []).slice(0, 6);
-            const favorites = favoritePosts().slice(0, 6);
-
-            renderSimpleList("[data-recently-viewed-list]", recent, "<%= j(t('posts.index.recently_viewed_empty')) %>");
-            renderSimpleList("[data-saved-post-list]", favorites, "<%= j(t('posts.index.saved_posts_empty')) %>");
-        };
-
-        const applyVisitMode = () => {
-            if (visitModeApplied) return;
-            visitModeApplied = true;
-            const firstVisitPanel = document.querySelector("[data-first-visit-panel]");
-            const revisitPanel = document.querySelector("[data-revisit-root]");
-            if (!firstVisitPanel || !revisitPanel) return;
-
-            const visitCount = Number(localStorage.getItem(VISIT_MODE_KEY) || "0") + 1;
-            localStorage.setItem(VISIT_MODE_KEY, String(visitCount));
-            const firstVisit = visitCount <= 1 && localStorage.getItem(FIRST_VISIT_GUIDE_DISMISSED_KEY) !== "1";
-
-            firstVisitPanel.classList.toggle("hidden", !firstVisit);
-            revisitPanel.classList.toggle("hidden", firstVisit);
-
-            if (typeof window.gtag === "function") {
-                window.gtag("event", "home_visit_mode", {
-                    event_category: "post_index",
-                    event_label: firstVisit ? "first_visit" : "return_visit",
-                    visit_count: visitCount
-                });
-            }
-        };
-
-        const setFavoriteButtonState = (button) => {
-            const id = String(button.dataset.postId || "");
-            if (!id) return;
-
-            const saved = favoritePosts().some((item) => String(item.id) === id);
-            button.setAttribute("aria-pressed", String(saved));
-            const label = button.querySelector("[data-favorite-label]");
-            if (label) {
-                label.textContent = saved ? "<%= j(t('posts.index.saved_post')) %>" : "<%= j(t('posts.index.save_post')) %>";
-            }
-            const icon = button.querySelector("[data-favorite-icon]");
-            if (icon) {
-                icon.innerHTML = saved ?
-                    "<%= j(ui_icon(:bookmark_solid, class_name: 'h-4 w-4').to_s) %>" :
-                    "<%= j(ui_icon(:bookmark, class_name: 'h-4 w-4').to_s) %>";
-            }
-            button.classList.toggle("font-semibold", saved);
-            button.classList.toggle("ds-text-link", saved);
-        };
-
-        const syncFavoriteButtons = () => {
-            document.querySelectorAll("[data-favorite-toggle]").forEach((button) => setFavoriteButtonState(button));
-            renderRevisitShortcuts();
-        };
-
-        const reportSearchState = () => {
-            if (typeof window.gtag !== "function") return;
-            window.gtag("event", "post_search_results_view", {
-                event_category: "post_search",
-                event_label: searchContext.zeroResults ? "zero_results" : "results",
-                search_used: searchContext.hasSearchInput,
-                has_keyword: searchContext.hasKeyword,
-                result_count: searchContext.resultCount,
-                applied_filter_count: searchContext.appliedFilterCount
-            });
-
-            if (!searchContext.hasSearchInput) {
-                localStorage.removeItem(ZERO_RESULT_STATE_KEY);
-                return;
-            }
-
-            const previous = readJson(ZERO_RESULT_STATE_KEY, {});
-            if (searchContext.zeroResults) {
-                const nextZeroViewCount = Number(previous.zero_result_view_count || 0) + 1;
-                writeJson(ZERO_RESULT_STATE_KEY, {
-                    pending: true,
-                    first_seen_at: previous.pending ? previous.first_seen_at : Date.now(),
-                    zero_result_view_count: nextZeroViewCount,
-                    retried: Boolean(previous.retried),
-                    retry_count: Number(previous.retry_count || 0),
-                    has_keyword: searchContext.hasKeyword,
-                    applied_filter_count: searchContext.appliedFilterCount
-                });
-                return;
-            }
-
-            if (previous.pending && previous.retried) {
-                window.gtag("event", "post_search_recovered_from_zero", {
-                    event_category: "post_search",
-                    event_label: "zero_to_results",
-                    retry_count: Number(previous.retry_count || 0),
-                    zero_result_view_count: Number(previous.zero_result_view_count || 0)
-                });
-            }
-            localStorage.removeItem(ZERO_RESULT_STATE_KEY);
-        };
-
-        const markLoadedMedia = (scope = document) => {
-            scope.querySelectorAll("[data-media-skeleton]").forEach((frame) => {
-                const image = frame.querySelector("img");
-                if (!image) {
-                    frame.classList.add("ds-media-loaded");
-                    return;
-                }
-
-                if (image.complete) {
-                    frame.classList.add("ds-media-loaded");
-                    return;
-                }
-
-                image.addEventListener("load", () => frame.classList.add("ds-media-loaded"), {
-                    once: true
-                });
-                image.addEventListener("error", () => frame.classList.add("ds-media-loaded"), {
-                    once: true
-                });
-            });
-        };
-
-        const announceLive = (message) => {
-            if (!message) return;
-            if (typeof window.dsAnnounce === "function") {
-                window.dsAnnounce(message);
-            } else if (typeof window.dsNotify === "function") {
-                window.dsNotify(message, "info");
-            }
-        };
-
-        const toggleSearchProgress = (busy) => {
-            const indicator = document.querySelector("[data-search-progress]");
-            if (!indicator) return;
-            indicator.classList.toggle("hidden", !busy);
-            indicator.setAttribute("aria-hidden", busy ? "false" : "true");
-        };
-
-        const announceResultSummary = () => {
-            const label = document.querySelector("[data-result-count-label]");
-            if (!label) return;
-            announceLive(`${searchResultsChangedPrefix} ${label.textContent.trim()}`);
-        };
-
-        document.addEventListener("click", (event) => {
-            const toggle = event.target.closest("[data-details-toggle]");
-            if (!toggle) return;
-
-            const form = toggle.closest("form");
-            const panel = form ? form.querySelector("[data-details-panel]") : null;
-            const icon = toggle.querySelector(".js-details-toggle-icon");
-            const toggleLabel = toggle.querySelector("[data-details-toggle-label]");
-            const stateInput = form ? form.querySelector("[data-details-state-input]") : null;
-            const detailsShell = form ? form.querySelector("[data-details-shell]") : null;
-            if (!panel) return;
-
-            const expanded = toggle.getAttribute("aria-expanded") == "true";
-            const nextExpanded = !expanded;
-            toggle.setAttribute("aria-expanded", String(nextExpanded));
-            panel.classList.toggle("hidden", !nextExpanded);
-            if (detailsShell) detailsShell.classList.toggle("ds-filter-shell-collapsed", !nextExpanded);
-            if (icon) icon.classList.toggle("rotate-180", nextExpanded);
-            if (toggleLabel) {
-                const openLabel = toggleLabel.dataset.labelOpen || "<%= j(t('posts.index.open_filters')) %>";
-                const closeLabel = toggleLabel.dataset.labelClose || "<%= j(t('posts.index.close_filters')) %>";
-                toggleLabel.textContent = nextExpanded ? closeLabel : openLabel;
-            }
-            if (stateInput) stateInput.value = nextExpanded ? "1" : "0";
-            announceLive(filterChangedMessage);
-        });
-
-        document.addEventListener("click", (event) => {
-            const link = event.target.closest("[data-post-card-link]");
-            if (!link) return;
-
-            sessionStorage.setItem(LIST_SCROLL_KEY, String(window.scrollY || window.pageYOffset || 0));
-            sessionStorage.setItem(LIST_RESTORE_KEY, "1");
-
-            const card = link.closest("[data-post-id]");
-            if (card) {
-                const id = String(card.dataset.postId || "");
-                const title = card.dataset.postTitle || "";
-                const url = card.dataset.postUrl || link.getAttribute("href") || "";
-                if (id && title && url) {
-                    const current = readJson(RECENTLY_VIEWED_KEY, []);
-                    const next = [{
-                        id,
-                        title,
-                        url,
-                        viewedAt: Date.now()
-                    }, ...current.filter((item) => String(item.id) !== id)].slice(0, 12);
-                    writeJson(RECENTLY_VIEWED_KEY, next);
-                }
-            }
-        });
-
-        document.addEventListener("click", (event) => {
-            const card = event.target.closest("[data-card-context='search_result']");
-            if (!card || typeof window.gtag !== "function") return;
-            if (event.target.closest("[data-post-card-link], [data-favorite-toggle], a, button, input, select, textarea")) return;
-
-            const cardRect = card.getBoundingClientRect();
-            const relativeY = Math.max(0, Math.min(1, (event.clientY - cardRect.top) / Math.max(cardRect.height, 1)));
-            const roughArea = relativeY > 0.73 ? "actions_zone" : "content_zone";
-            const now = Date.now();
-            const elapsed = now - Number(lastCardTargetTap.at || 0);
-            const previous = String(lastCardTargetTap.target || "");
-            const current = roughArea;
-
-            if (previous && previous !== current && elapsed > 0 && elapsed <= 600) {
-                window.gtag("event", "search_card_mistap_estimate", {
-                    event_category: "post_search",
-                    event_label: `${previous}_to_${current}`,
-                    elapsed_ms: elapsed
-                });
-            }
-            lastCardTargetTap = {
-                target: current,
-                at: now
-            };
-        });
-
-        document.addEventListener("click", (event) => {
-            const favoriteButton = event.target.closest("[data-favorite-toggle]");
-            if (!favoriteButton) return;
-
-            event.preventDefault();
-            event.stopPropagation();
-
-            const id = String(favoriteButton.dataset.postId || "");
-            const title = favoriteButton.dataset.postTitle || "";
-            const url = favoriteButton.dataset.postUrl || "";
-            if (!id || !title || !url) return;
-
-            const current = favoritePosts();
-            const exists = current.some((item) => String(item.id) === id);
-            const next = exists ? current.filter((item) => String(item.id) !== id) : [{
-                id,
-                title,
-                url,
-                savedAt: Date.now()
-            }, ...current].slice(0, 50);
-            writeJson(FAVORITES_KEY, next);
-            syncFavoriteButtons();
-            announceLive(exists ? favoriteRemovedMessage : favoriteSavedMessage);
-
-            if (typeof window.gtag === "function") {
-                window.gtag("event", "post_favorite_toggle", {
-                    event_category: "post_index",
-                    event_label: exists ? "unsave" : "save",
-                    post_id: id
-                });
-            }
-        });
-
-        const restoreFiltersFromStorage = () => {
-            const form = document.querySelector("[data-search-form]");
-            if (!form) return;
-
-            const stored = readJson(FILTER_STATE_KEY, {});
-            if (!stored || typeof stored !== "object") return;
-            ["q", "category", "theme", "tag", "sort"].forEach((name) => {
-                const field = form.querySelector(`[name='${name}']`);
-                if (!field) return;
-                field.value = String(stored[name] || "");
-            });
-
-            const detailsInput = form.querySelector("[data-details-state-input]");
-            const detailsToggle = form.querySelector("[data-details-toggle]");
-            const detailsPanel = form.querySelector("[data-details-panel]");
-            const detailsShell = form.querySelector("[data-details-shell]");
-            const icon = detailsToggle ? detailsToggle.querySelector(".js-details-toggle-icon") : null;
-            const nextExpanded = stored.details === "1";
-            if (detailsInput) detailsInput.value = nextExpanded ? "1" : "0";
-            if (detailsToggle) detailsToggle.setAttribute("aria-expanded", String(nextExpanded));
-            if (detailsPanel) detailsPanel.classList.toggle("hidden", !nextExpanded);
-            if (detailsShell) detailsShell.classList.toggle("ds-filter-shell-collapsed", !nextExpanded);
-            if (icon) icon.classList.toggle("rotate-180", nextExpanded);
-        };
-
-        document.addEventListener("click", (event) => {
-            const dismissGuideButton = event.target.closest("[data-dismiss-first-visit-guide]");
-            if (dismissGuideButton) {
-                localStorage.setItem(FIRST_VISIT_GUIDE_DISMISSED_KEY, "1");
-                const firstVisitPanel = document.querySelector("[data-first-visit-panel]");
-                const revisitPanel = document.querySelector("[data-revisit-root]");
-                if (firstVisitPanel) firstVisitPanel.classList.add("hidden");
-                if (revisitPanel) revisitPanel.classList.remove("hidden");
-                announceLive(firstGuideDismissedMessage);
-                return;
-            }
-
-            const restoreButton = event.target.closest("[data-restore-filters]");
-            if (restoreButton) {
-                restoreFiltersFromStorage();
-                announceLive(filtersRestoredMessage);
-                return;
-            }
-
-            const clearButton = event.target.closest("[data-clear-filters]");
-            if (!clearButton) return;
-            const form = clearButton.closest("form");
-            if (!form) return;
-            ["q", "category", "theme", "tag", "sort"].forEach((name) => {
-                const field = form.querySelector(`[name='${name}']`);
-                if (field) field.value = name == "sort" ? "newest" : "";
-            });
-            announceLive(filterChangedMessage);
-        });
-
-        let lastScrollY = window.scrollY || window.pageYOffset || 0;
-        const keyboardOpen = () => {
-            if (!window.visualViewport) return false;
-            return (window.innerHeight - window.visualViewport.height) > 130;
-        };
-
-        const syncMobileIndexCta = () => {
-            const cta = document.querySelector("[data-index-mobile-cta]");
-            const searchRoot = document.querySelector("[data-index-search-root]");
-            const form = document.querySelector("[data-search-form]");
-            if (!cta || !searchRoot || !form) return;
-
-            const keyword = (form.querySelector("[data-search-keyword-input]")?.value || "").trim();
-            const category = (form.querySelector("[name='category']")?.value || "").trim();
-            const theme = (form.querySelector("[name='theme']")?.value || "").trim();
-            const tag = (form.querySelector("[name='tag']")?.value || "").trim();
-            const sort = (form.querySelector("[name='sort']")?.value || "").trim();
-            const hasSearchState = [keyword, category, theme, tag].some((value) => value.length > 0) || sort === "popular" || sort === "recently_updated";
-            const focusedInSearch = searchRoot.contains(document.activeElement);
-            const detailsOpen = form.querySelector("[data-details-state-input]")?.value === "1";
-
-            const rect = searchRoot.getBoundingClientRect();
-            const searchVisible = rect.top < window.innerHeight && rect.bottom > 72;
-
-            const currentY = window.scrollY || window.pageYOffset || 0;
-            const scrollingDown = currentY > (lastScrollY + 6);
-            const shouldHide = keyboardOpen() || focusedInSearch || hasSearchState || searchVisible || (detailsOpen && searchVisible) || (scrollingDown && currentY > 72);
-
-            cta.classList.toggle("translate-y-full", shouldHide);
-            cta.classList.toggle("opacity-0", shouldHide);
-            cta.classList.toggle("pointer-events-none", shouldHide);
-            lastScrollY = currentY;
-        };
-
-        const restoreListPosition = () => {
-            if (sessionStorage.getItem(LIST_RESTORE_KEY) !== "1") return;
-            const storedY = Number(sessionStorage.getItem(LIST_SCROLL_KEY) || "0");
-            window.setTimeout(() => {
-                window.scrollTo({
-                    top: Number.isFinite(storedY) ? storedY : 0,
-                    behavior: "auto"
-                });
-                sessionStorage.setItem(LIST_RESTORE_KEY, "0");
-            }, 0);
-        };
-
-        document.addEventListener("scroll", syncMobileIndexCta, {
-            passive: true
-        });
-        window.addEventListener("resize", syncMobileIndexCta);
-        if (window.visualViewport) {
-            window.visualViewport.addEventListener("resize", syncMobileIndexCta);
-            window.visualViewport.addEventListener("scroll", syncMobileIndexCta);
-        }
-
-        document.addEventListener("input", (event) => {
-            if (!event.target.closest("[data-search-form]")) return;
-            syncMobileIndexCta();
-        });
-
-        document.addEventListener("change", (event) => {
-            if (!event.target.closest("[data-search-form]")) return;
-            syncMobileIndexCta();
-
-            if (event.target.matches("[data-search-keyword-input]") && typeof window.gtag === "function") {
-                const value = String(event.target.value || "").trim();
-                if (!value) return;
-                window.gtag("event", "post_search_suggestion_eval", {
-                    event_category: "post_search",
-                    event_label: suggestionSet.has(value) ? "suggestion_match" : "free_text",
-                    query_length: value.length
-                });
-            }
-        });
-
-        document.addEventListener("focusin", (event) => {
-            if (!event.target.closest("[data-index-search-root]")) return;
-            syncMobileIndexCta();
-        }, true);
-
-        document.addEventListener("focusout", () => {
-            window.setTimeout(syncMobileIndexCta, 0);
-        }, true);
-
-        document.addEventListener("submit", (event) => {
-            const form = event.target.closest("[data-search-form]");
-            toggleSearchProgress(true);
-            if (!form || typeof window.gtag !== "function") return;
-
-            const detailsOpen = form.querySelector("[data-details-state-input]")?.value === "1";
-            const keywordLength = (form.querySelector("[data-search-keyword-input]")?.value || "").trim().length;
-            const categorySet = (form.querySelector("[name='category']")?.value || "").trim().length > 0;
-            const themeSet = (form.querySelector("[name='theme']")?.value || "").trim().length > 0;
-            const tagSet = (form.querySelector("[name='tag']")?.value || "").trim().length > 0;
-            const sort = (form.querySelector("[name='sort']")?.value || "").trim();
-            const appliedFilterCount = [categorySet, themeSet, tagSet].filter(Boolean).length;
-            const zeroState = readJson(ZERO_RESULT_STATE_KEY, {});
-            const retryFromZero = Boolean(zeroState.pending);
-
-            writeJson(FILTER_STATE_KEY, {
-                q: (form.querySelector("[name='q']")?.value || "").trim(),
-                category: (form.querySelector("[name='category']")?.value || "").trim(),
-                theme: (form.querySelector("[name='theme']")?.value || "").trim(),
-                tag: (form.querySelector("[name='tag']")?.value || "").trim(),
-                sort: sort,
-                details: detailsOpen ? "1" : "0"
-            });
-
-            window.gtag("event", "post_search_submit", {
-                event_category: "post_search",
-                event_label: detailsOpen ? "details_open" : "details_closed",
-                keyword_length: keywordLength,
-                category_set: categorySet,
-                theme_set: themeSet,
-                tag_set: tagSet,
-                sort_option: sort,
-                applied_filter_count: appliedFilterCount,
-                retry_from_zero_results: retryFromZero
-            });
-
-            if (retryFromZero) {
-                const nextRetryCount = Number(zeroState.retry_count || 0) + 1;
-                window.gtag("event", "post_search_retry_after_zero", {
-                    event_category: "post_search",
-                    event_label: detailsOpen ? "details_open" : "details_closed",
-                    retry_count: nextRetryCount,
-                    keyword_length: keywordLength,
-                    applied_filter_count: appliedFilterCount
-                });
-                writeJson(ZERO_RESULT_STATE_KEY, {
-                    ...zeroState,
-                    pending: true,
-                    retried: true,
-                    retry_count: nextRetryCount,
-                    last_retry_at: Date.now()
-                });
-            }
-        });
-
-        document.addEventListener("submit", (event) => {
-            const form = event.target.closest("[data-search-form]");
-            if (!form) return;
-            toggleSearchProgress(true);
-
-            const detailsOpen = form.querySelector("[data-details-state-input]")?.value === "1";
-            writeJson(FILTER_STATE_KEY, {
-                q: (form.querySelector("[name='q']")?.value || "").trim(),
-                category: (form.querySelector("[name='category']")?.value || "").trim(),
-                theme: (form.querySelector("[name='theme']")?.value || "").trim(),
-                tag: (form.querySelector("[name='tag']")?.value || "").trim(),
-                sort: (form.querySelector("[name='sort']")?.value || "").trim(),
-                details: detailsOpen ? "1" : "0"
-            });
-        });
-
-        document.addEventListener("change", (event) => {
-            const target = event.target.closest("[data-search-filter-input]");
-            if (!target) return;
-            announceLive(filterChangedMessage);
-            if (typeof window.gtag !== "function") return;
-
-            window.gtag("event", "post_search_filter_change", {
-                event_category: "post_search",
-                event_label: `index_filter_${target.dataset.searchFilterInput}`,
-                filter_has_value: String((target.value || "").trim().length > 0)
-            });
-        });
-
-        document.addEventListener("turbo:load", () => {
-            markLoadedMedia();
-            syncMobileIndexCta();
-            restoreListPosition();
-            restoreFiltersFromStorage();
-            syncFavoriteButtons();
-            reportSearchState();
-            applyVisitMode();
-            assignHeroCtaVariant();
-            toggleSearchProgress(false);
-            announceResultSummary();
-        });
-
-        document.addEventListener("DOMContentLoaded", () => {
-            markLoadedMedia();
-            syncMobileIndexCta();
-            restoreListPosition();
-            restoreFiltersFromStorage();
-            syncFavoriteButtons();
-            reportSearchState();
-            applyVisitMode();
-            assignHeroCtaVariant();
-            toggleSearchProgress(false);
-            announceResultSummary();
-        });
-
-        window.setTimeout(() => {
-            markLoadedMedia();
-            syncMobileIndexCta();
-            restoreListPosition();
-            restoreFiltersFromStorage();
-            syncFavoriteButtons();
-            applyVisitMode();
-            assignHeroCtaVariant();
-            toggleSearchProgress(false);
-        }, 0);
-    }
-</script>
+    </section>
+</div>

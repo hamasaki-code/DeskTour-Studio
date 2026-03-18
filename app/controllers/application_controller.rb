@@ -5,6 +5,9 @@ class ApplicationController < ActionController::Base
                 :recaptcha_site_key,
                 :adsense_enabled?,
                 :owned_users,
+                :current_authenticated_user,
+                :authenticated_session_active?,
+                :owner_session_active?,
                 :user_owner?,
                 :post_owner?,
                 :locale_switch_path,
@@ -26,17 +29,40 @@ class ApplicationController < ActionController::Base
 
   def owned_users
     ids = owner_user_tokens.keys.map(&:to_i)
+    ids << current_authenticated_user.id if current_authenticated_user
+    ids.uniq!
     return User.none if ids.empty?
 
     User.where(id: ids).order(created_at: :desc)
   end
 
+  def current_authenticated_user
+    return @current_authenticated_user if defined?(@current_authenticated_user)
+
+    user_id = session[:authenticated_user_id].to_i
+    @current_authenticated_user = user_id.positive? ? User.find_by(id: user_id) : nil
+    session.delete(:authenticated_user_id) if user_id.positive? && @current_authenticated_user.nil?
+    @current_authenticated_user
+  end
+
+  def owner_session_active?
+    current_authenticated_user.present? || owner_user_tokens.present?
+  end
+
+  def authenticated_session_active?
+    current_authenticated_user.present?
+  end
+
   def user_owner?(user)
-    user&.owned_by_token?(owner_user_tokens[user.id.to_s])
+    return false unless user
+
+    current_authenticated_user&.id == user.id || user.owned_by_token?(owner_user_tokens[user.id.to_s])
   end
 
   def post_owner?(post)
-    post&.owned_by_token?(owner_post_tokens[post.id.to_s])
+    return false unless post
+
+    current_authenticated_user&.id == post.user_id || post.owned_by_token?(owner_post_tokens[post.id.to_s])
   end
 
   def store_user_owner_token(user, raw_token)
@@ -55,6 +81,12 @@ class ApplicationController < ActionController::Base
     tokens = owner_post_tokens
     tokens.delete(post.id.to_s)
     write_owner_post_tokens(tokens)
+  end
+
+  def clear_owner_session!
+    cookies.delete(:owner_user_tokens)
+    cookies.delete(:owner_post_tokens)
+    reset_session
   end
 
   def queue_analytics_event(name, params = {})

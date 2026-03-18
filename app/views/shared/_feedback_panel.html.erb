@@ -21,21 +21,24 @@ when :success then :check_circle
 else :information_circle
 end %>
 
-<div class="rounded-lg border px-4 py-3 text-sm <%= tone %>" role="<%= level == :error ? 'alert' : 'status' %>" aria-live="<%= level == :error ? 'assertive' : 'polite' %>">
-    <div class="flex items-start gap-2.5">
-        <%= status_badge(level: level, icon: icon, label: title.presence || status_level_label(level)) %>
+<div class="ds-feedback-panel <%= tone %>" role="<%= level == :error ? 'alert' : 'status' %>" aria-live="<%= level == :error ? 'assertive' : 'polite' %>">
+    <div class="flex items-start gap-3">
+        <span class="ds-feedback-icon-ring">
+            <%= ui_icon(icon, class_name: "h-4.5 w-4.5") %>
+        </span>
 
         <div class="min-w-0 flex-1 space-y-2">
-            <% if title.present? %>
-            <p class="font-semibold"><%= title %></p>
-            <% end %>
+            <div class="flex flex-wrap items-center gap-2">
+                <p class="ds-feedback-title"><%= title.presence || status_level_label(level) %></p>
+                <%= status_badge(level: level, icon: icon, label: status_level_label(level)) %>
+            </div>
 
             <% if body.present? %>
-            <p class="ds-break-words"><%= body %></p>
+            <p class="ds-feedback-body ds-break-words"><%= body %></p>
             <% end %>
 
             <% if actions.any? %>
-            <div class="flex flex-wrap gap-2 pt-1">
+            <div class="ds-feedback-actions">
                 <% actions.each do |action| %>
                 <% button_class = action[:class].presence || "tap-target cta-tertiary cta-compact" %>
 

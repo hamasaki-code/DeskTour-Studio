@@ -1,0 +1,31 @@
+ja:
+  operator:
+    page:
+      link_label: "運営者情報"
+      title: "運営者情報"
+      description: "DeskTour Studio の運営者情報、連絡方法、広告や編集方針に関する案内を掲載しています。"
+      eyebrow: "運営者情報"
+      heading: "DeskTour Studio の運営者情報。"
+      lead: "このページでは、サイトの運営主体、連絡方法、広告や編集方針に関する基本情報を案内しています。"
+      summary_heading: "このページでわかること"
+      summary_points:
+        - "サイトの基本的な運営情報"
+        - "サポートや権利関係の連絡方法"
+        - "広告掲載や開示方針の考え方"
+      info_eyebrow: "サイト情報"
+      info_heading: "運営情報"
+      fields:
+        site_name: "サイト名"
+        operator_name: "運営者"
+        contact: "連絡方法"
+        policy: "広告・開示方針"
+      defaults:
+        operator_name: "DeskTour Studio 運営"
+      contact_via_support_html: "ご連絡は %{support_link} ページからお願いします。"
+      policy_note: "広告掲載やアフィリエイト導入時の開示については、各ポリシーページで明示し、必要に応じて更新します。"
+      editorial_eyebrow: "編集方針"
+      editorial_heading: "このギャラリーの考え方"
+      editorial_body:
+        - "DeskTour Studio は、慌ただしい SNS ではなく、静かに見られるエディトリアルギャラリーとして設計しています。"
+        - "公開される投稿は、読みやすさ、独自の説明、写真主体の見せ方を重視して扱います。"
+        - "権利、プライバシー、修正依頼などがある場合は、サポートページからご連絡ください。"

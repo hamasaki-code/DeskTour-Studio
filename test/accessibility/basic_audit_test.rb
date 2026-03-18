@@ -23,7 +23,10 @@ class BasicAccessibilityAuditTest < ActionDispatch::IntegrationTest
     post users_url, params: {
       user: {
         name: "Audit User",
-        bio: "Profile for audit"
+        username: "audit_user",
+        bio: "Profile for audit",
+        password: "password123",
+        password_confirmation: "password123"
       }
     }
     assert_response :redirect

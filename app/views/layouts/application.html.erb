@@ -30,9 +30,10 @@
     <%= yield :head %>
 
     <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="icon" href="/icon.svg?v=2" type="image/svg+xml">
+    <link rel="icon" href="/icon.png?v=2" type="image/png" sizes="512x512">
+    <link rel="shortcut icon" href="/icon.png?v=2" type="image/png">
+    <link rel="apple-touch-icon" href="/icon.png?v=2">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
@@ -61,13 +62,23 @@
     <% end %>
 </head>
 
-<body class="lang-<%= I18n.locale %> min-h-screen bg-[var(--ds-color-page)] text-slate-100 antialiased" data-screen="<%= "#{controller_name}-#{action_name}" %>">
+<body class="lang-<%= I18n.locale %> min-h-screen antialiased <%= editorial_shell_page? ? 'bg-[#f7f6f2] text-[#1a1a1a]' : 'bg-[var(--ds-color-page)] text-slate-100' %>" data-screen="<%= "#{controller_name}-#{action_name}" %>">
     <% tracked_events = analytics_events %>
     <% mobile_sticky_active = controller_name == "posts" && action_name.in?(%w[index show]) %>
     <% main_padding_class = mobile_sticky_active ? "pb-40 sm:pb-12" : "pb-14 sm:pb-12" %>
-    <% main_width_class = if controller_name == "pages" && action_name.in?(%w[privacy terms cookie])
-      "max-w-3xl"
-    elsif controller_name == "pages" && action_name == "onboarding"
+    <% main_width_class = if editorial_shell_page? && controller_name == "posts" && action_name == "show"
+      "max-w-5xl"
+    elsif editorial_shell_page? && controller_name == "posts" && action_name.in?(%w[new edit])
+      "max-w-6xl"
+    elsif editorial_shell_page? && controller_name == "users" && action_name == "show"
+      "max-w-5xl"
+    elsif editorial_shell_page? && controller_name == "users" && action_name.in?(%w[new edit])
+      "max-w-6xl"
+    elsif editorial_shell_page? && ((controller_name == "pages" && action_name.in?(%w[login support])) || (controller_name == "sessions" && action_name == "create") || (controller_name == "password_resets" && action_name.in?(%w[new create edit update])) || (controller_name == "support_requests" && action_name == "create"))
+      "max-w-6xl"
+    elsif editorial_shell_page? && controller_name == "pages" && action_name == "onboarding"
+      "max-w-6xl"
+    elsif editorial_shell_page? && controller_name == "pages" && action_name.in?(%w[privacy terms cookie operator])
       "max-w-5xl"
     elsif controller_name == "posts" && action_name.in?(%w[show new edit notifications])
       "max-w-4xl"
@@ -79,141 +90,19 @@
 
     <div class="ds-page-atmosphere pointer-events-none fixed inset-0 -z-10"></div>
 
-    <header class="ds-header-shell sticky top-0 z-40 border-b" data-mobile-header-root>
-        <div class="mx-auto flex w-full max-w-7xl items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
-            <div class="min-w-0 flex-1">
-                <%= link_to root_path, class: "block min-w-0", data: { ga_event: "navigation_home_click", ga_category: "navigation", ga_label: "header_logo" } do %>
-                <div class="flex items-center gap-3">
-                    <span class="hidden rounded-full border border-white/[0.15] bg-white/[0.04] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400 sm:inline-flex">
-                        <%= t("branding.header_label", default: "Desk Setup Gallery") %>
-                    </span>
-                    <div class="min-w-0">
-                        <span class="block truncate text-base font-semibold tracking-[-0.02em] text-slate-100 sm:text-lg">
-                            DeskTour Studio
-                        </span>
-                        <span class="hidden truncate text-xs text-slate-400 lg:block">
-                            <%= t("branding.tagline", default: "Discover workspaces from makers, developers, and creatives.") %>
-                        </span>
-                    </div>
-                </div>
-                <% end %>
-            </div>
-
-            <nav class="hidden items-center gap-1 lg:flex" aria-label="<%= t('navigation.primary', default: 'Primary navigation') %>">
-                <%= link_to t("posts.index.title"), root_path, class: "rounded-full px-4 py-2 text-sm font-medium text-slate-300 transition hover:bg-white/[0.06] hover:text-white", data: { ga_event: "navigation_home_click", ga_category: "navigation", ga_label: "desktop_primary_home" } %>
-                <%= link_to t("navigation.onboarding"), onboarding_path, class: "rounded-full px-4 py-2 text-sm font-medium text-slate-300 transition hover:bg-white/[0.06] hover:text-white", data: { ga_event: "navigation_onboarding_click", ga_category: "navigation", ga_label: "desktop_primary_onboarding" } %>
-            </nav>
-
-            <div class="ml-auto hidden items-center gap-2 sm:flex">
-                <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target cta-primary rounded-full px-4 py-2.5 shadow-[0_12px_32px_rgba(168,209,242,0.22)] transition hover:-translate-y-0.5", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "desktop_header_create_post" } %>
-
-                <div class="relative" data-desktop-utility-root>
-                    <button type="button" data-desktop-utility-toggle aria-expanded="false" aria-controls="desktop-utility-menu" class="tap-target inline-flex items-center rounded-full border border-white/[0.15] bg-white/[0.04] px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:bg-white/[0.08]" data-ga-event="navigation_desktop_utility_toggle_click" data-ga-category="navigation" data-ga-label="desktop_utility_toggle">
-                        <span class="inline-flex items-center gap-1.5">
-                            <span><%= t("navigation.utility_menu") %></span>
-                            <%= ui_icon(:chevron_down, class_name: "h-4 w-4 text-slate-400") %>
-                        </span>
-                    </button>
-
-                    <div id="desktop-utility-menu" data-desktop-utility-menu class="ds-panel-elevated absolute right-0 top-full z-30 mt-3 hidden w-80 rounded-2xl border p-4 ds-motion-popover">
-                        <div class="space-y-5">
-                            <section>
-                                <p class="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500"><%= t("navigation.utility_create") %></p>
-                                <div class="space-y-1">
-                                    <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target flex w-full items-center rounded-xl px-3 py-2.5 text-sm font-medium text-slate-200 transition hover:bg-white/[0.06] hover:text-white", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "desktop_utility_create_post" } %>
-                                    <%= link_to t("navigation.create_profile"), new_user_path, class: "tap-target flex w-full items-center rounded-xl px-3 py-2.5 text-sm font-medium text-slate-200 transition hover:bg-white/[0.06] hover:text-white", data: { ga_event: "navigation_profile_create_click", ga_category: "navigation", ga_label: "desktop_utility_create_profile" } %>
-                                </div>
-                            </section>
-
-                            <section class="border-t border-white/10 pt-4">
-                                <p class="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500"><%= t("navigation.utility_browse") %></p>
-                                <div class="space-y-1">
-                                    <%= link_to t("navigation.users_index"), users_path, class: "tap-target flex w-full items-center rounded-xl px-3 py-2.5 text-sm font-medium text-slate-200 transition hover:bg-white/[0.06] hover:text-white", data: { ga_event: "navigation_user_index_click", ga_category: "navigation", ga_label: "desktop_utility_users" } %>
-                                    <% if owned_users.any? %>
-                                    <%= link_to t("navigation.my_profile"), user_path(owned_users.first), class: "tap-target flex w-full items-center rounded-xl px-3 py-2.5 text-sm font-medium text-slate-200 transition hover:bg-white/[0.06] hover:text-white", data: { ga_event: "navigation_profile_click", ga_category: "navigation", ga_label: "desktop_header_my_profile" } %>
-                                    <% end %>
-                                </div>
-                            </section>
-
-                            <section class="border-t border-white/10 pt-4">
-                                <p class="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500"><%= t("navigation.utility_settings") %></p>
-                                <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
-                                    <p class="mb-2 text-xs font-semibold text-slate-300"><%= t("language.switch_aria") %></p>
-                                    <div class="ds-locale-switch flex gap-2" role="group" aria-label="<%= t('language.switch_aria') %>">
-                                        <%= link_to locale_switch_path(:ja), class: "ds-locale-pill inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold #{locale_selected?(:ja) ? 'bg-slate-100 text-slate-950' : 'border border-white/[0.15] bg-white/[0.04] text-slate-300'}", aria: { current: (locale_selected?(:ja) ? "true" : nil) }, data: { locale_switch_link: true, target_locale: "ja", ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "desktop_locale_ja" } do %>
-                                        <span><%= t("language.option_ja") %></span>
-                                        <% if locale_selected?(:ja) %>
-                                        <%= ui_icon(:check, class_name: "h-3 w-3") %>
-                                        <% end %>
-                                        <% end %>
-
-                                        <%= link_to locale_switch_path(:en), class: "ds-locale-pill inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold #{locale_selected?(:en) ? 'bg-slate-100 text-slate-950' : 'border border-white/[0.15] bg-white/[0.04] text-slate-300'}", aria: { current: (locale_selected?(:en) ? "true" : nil) }, data: { locale_switch_link: true, target_locale: "en", ga_event: "navigation_language_switch_click", ga_category: "navigation", ga_label: "desktop_locale_en" } do %>
-                                        <span><%= t("language.option_en") %></span>
-                                        <% if locale_selected?(:en) %>
-                                        <%= ui_icon(:check, class_name: "h-3 w-3") %>
-                                        <% end %>
-                                        <% end %>
-                                    </div>
-                                </div>
-
-                                <div class="mt-3 flex flex-wrap gap-x-3 gap-y-2 text-xs text-slate-400">
-                                    <%= link_to t("footer.terms"), terms_path, class: "transition hover:text-slate-100" %>
-                                    <%= link_to t("footer.privacy_policy"), privacy_policy_path, class: "transition hover:text-slate-100" %>
-                                    <%= link_to t("footer.cookie_policy"), cookie_policy_path, class: "transition hover:text-slate-100" %>
-                                </div>
-                            </section>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <%= link_to new_post_path, class: "tap-target cta-primary rounded-full px-3.5 py-2 text-sm font-semibold shadow-[0_10px_28px_rgba(168,209,242,0.24)] sm:hidden", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "mobile_header_create_post_direct" } do %>
-            <span><%= t("navigation.create_post") %></span>
-            <% end %>
-
-            <button type="button" data-mobile-header-toggle aria-expanded="false" aria-controls="mobile-header-menu" class="tap-target inline-flex items-center justify-center rounded-full border border-white/[0.15] bg-white/[0.04] p-2.5 text-slate-300 sm:hidden" data-ga-event="navigation_mobile_menu_toggle_click" data-ga-category="navigation" data-ga-label="mobile_header_menu_toggle">
-                <%= ui_icon(:bars_3, class_name: "h-5 w-5") %>
-                <span class="sr-only">Menu</span>
-            </button>
-        </div>
-
-        <div id="mobile-header-menu" data-mobile-header-menu class="hidden border-t border-white/10 bg-[var(--ds-surface-overlay)] backdrop-blur-xl sm:hidden">
-            <div class="mx-auto w-full max-w-7xl space-y-4 px-4 py-4">
-                <section>
-                    <p class="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500"><%= t("navigation.utility_browse") %></p>
-                    <div class="space-y-1">
-                        <%= link_to t("posts.index.title"), root_path, class: "tap-target flex w-full items-center rounded-xl px-3 py-3 text-sm font-medium text-slate-200 transition hover:bg-white/[0.06]", data: { mobile_header_action: true, ga_event: "navigation_home_click", ga_category: "navigation", ga_label: "mobile_header_home" } %>
-                        <%= link_to t("navigation.onboarding"), onboarding_path, class: "tap-target flex w-full items-center rounded-xl px-3 py-3 text-sm font-medium text-slate-200 transition hover:bg-white/[0.06]", data: { mobile_header_action: true, ga_event: "navigation_onboarding_click", ga_category: "navigation", ga_label: "mobile_header_onboarding" } %>
-                        <%= link_to t("navigation.users_index"), users_path, class: "tap-target flex w-full items-center rounded-xl px-3 py-3 text-sm font-medium text-slate-200 transition hover:bg-white/[0.06]", data: { mobile_header_action: true, ga_event: "navigation_user_index_click", ga_category: "navigation", ga_label: "mobile_header_users" } %>
-                    </div>
-                </section>
-
-                <section class="border-t border-white/10 pt-4">
-                    <p class="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500"><%= t("navigation.utility_create") %></p>
-                    <div class="grid grid-cols-2 gap-2">
-                        <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target cta-primary inline-flex items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold", data: { mobile_header_action: true, ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "mobile_header_create_post_menu" } %>
-                        <% if owned_users.any? %>
-                        <%= link_to t("navigation.my_profile"), user_path(owned_users.first), class: "tap-target inline-flex items-center justify-center rounded-xl border border-white/[0.15] bg-white/[0.04] px-4 py-3 text-slate-200", data: { mobile_header_action: true, ga_event: "navigation_profile_click", ga_category: "navigation", ga_label: "mobile_header_my_profile" } %>
-                        <% else %>
-                        <%= link_to t("navigation.create_profile"), new_user_path, class: "tap-target inline-flex items-center justify-center rounded-xl border border-white/[0.15] bg-white/[0.04] px-4 py-3 text-slate-200", data: { mobile_header_action: true, ga_event: "navigation_profile_create_click", ga_category: "navigation", ga_label: "mobile_header_create_profile" } %>
-                        <% end %>
-                    </div>
-                </section>
-            </div>
-        </div>
-    </header>
+    <%= render "shared/editorial_header" %>
 
     <main class="mx-auto w-full <%= main_width_class %> px-4 pt-8 <%= main_padding_class %> sm:px-6 sm:pt-10 lg:px-8">
         <% breadcrumbs = context_breadcrumbs %>
         <% if breadcrumbs.size > 1 %>
         <nav aria-label="<%= t('navigation.breadcrumb') %>" class="mb-6">
-            <ol class="flex flex-wrap items-center gap-2 text-xs font-medium text-slate-300">
+            <ol class="flex flex-wrap items-center gap-2 text-xs font-medium <%= editorial_shell_page? ? 'text-[#6b6b6b]' : 'text-slate-300' %>">
                 <% breadcrumbs.each_with_index do |crumb, idx| %>
                 <li class="inline-flex items-center gap-2">
                     <% if idx < breadcrumbs.size - 1 %>
-                    <%= link_to crumb[:label], crumb[:href], class: "transition hover:text-slate-100" %>
+                    <%= link_to crumb[:label], crumb[:href], class: "transition #{editorial_shell_page? ? 'hover:text-[#1a1a1a]' : 'hover:text-slate-100'}" %>
                     <% else %>
-                    <span aria-current="page" class="font-semibold text-slate-100"><%= crumb[:label] %></span>
+                    <span aria-current="page" class="font-semibold <%= editorial_shell_page? ? 'text-[#1a1a1a]' : 'text-slate-100' %>"><%= crumb[:label] %></span>
                     <% end %>
                     <% if idx < breadcrumbs.size - 1 %>
                     <span aria-hidden="true">/</span>
@@ -232,13 +121,24 @@
         <% flash.each do |type, message| %>
         <% next if type.to_s == "analytics_events" %>
         <% visual = flash_visual(type) %>
-        <% tone = case visual[:level]
+        <% tone = if editorial_shell_page?
+          case visual[:level]
+          when :error
+            "border-rose-300 bg-rose-50 text-rose-900"
+          when :warning
+            "border-amber-300 bg-amber-50 text-amber-900"
+          else
+            "border-emerald-300 bg-emerald-50 text-emerald-900"
+          end
+        else
+          case visual[:level]
         when :error
           "border-rose-400/30 bg-rose-500/[0.08] text-rose-100"
         when :warning
           "border-amber-300/30 bg-amber-500/[0.08] text-amber-100"
         else
           "border-emerald-400/30 bg-emerald-500/[0.07] text-emerald-100"
+          end
         end %>
         <% toast_level = case visual[:level]
         when :error
@@ -250,11 +150,11 @@
         end %>
         <% role = visual[:level] == :error ? "alert" : "status" %>
         <% live = visual[:level] == :error ? "assertive" : "polite" %>
-        <div class="mb-6 rounded-2xl border px-4 py-3 text-sm shadow-[0_10px_28px_rgba(0,0,0,0.24)] backdrop-blur <%= tone %>" role="<%= role %>" aria-live="<%= live %>" data-flash-message="<%= message %>" data-flash-level="<%= toast_level %>">
-            <div class="flex items-start gap-2.5">
-                <%= status_badge(level: visual[:level], icon: visual[:icon], label: t(visual[:label_key])) %>
-                <p class="pt-0.5"><%= message %></p>
-            </div>
+        <div class="mb-6" role="<%= role %>" aria-live="<%= live %>" data-flash-message="<%= message %>" data-flash-level="<%= toast_level %>">
+            <%= render "shared/feedback_panel",
+                       level: visual[:level],
+                       title: t(visual[:label_key]),
+                       body: message %>
         </div>
         <% end %>
 
@@ -264,49 +164,33 @@
     <% if controller_name == "posts" && action_name == "index" %>
     <div class="mobile-sticky-bar ds-motion-slide sm:hidden" data-index-mobile-cta>
         <div class="mx-auto w-full max-w-7xl px-4 pb-4 lg:px-8">
-            <div class="rounded-2xl border border-white/10 bg-[var(--ds-surface-overlay)] p-3 shadow-[0_18px_44px_rgba(0,0,0,0.4)] backdrop-blur-xl">
+            <div class="rounded-2xl border border-[#d8d4ca] bg-[var(--ds-surface-overlay)] p-3 shadow-[0_18px_44px_rgba(26,26,26,0.12)] backdrop-blur-xl">
                 <%= link_to t("navigation.create_post"), new_post_path, class: "tap-target cta-primary inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold", data: { ga_event: "navigation_post_create_click", ga_category: "navigation", ga_label: "mobile_create_post_bottom_bar" } %>
             </div>
         </div>
     </div>
     <% end %>
 
-    <footer class="mt-16 border-t border-white/10 bg-transparent">
-        <div class="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-            <div class="grid gap-8 md:grid-cols-[1.2fr_0.8fr] md:items-end">
-                <div class="max-w-xl">
-                    <p class="mb-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
-                        DeskTour Studio
-                    </p>
-                    <h2 class="text-2xl font-semibold tracking-[-0.03em] text-slate-100 sm:text-3xl">
-                        <%= t("branding.footer_heading", default: "Inspiring desk setups, curated.") %>
-                    </h2>
-                    <p class="mt-3 text-sm leading-7 text-slate-400">
-                        <%= t("branding.footer_tagline", default: "Explore desk setups shared by creators, developers, and makers around the world.") %>
-                    </p>
-                </div>
-                <div class="md:justify-self-end">
-                    <div class="flex flex-wrap gap-x-5 gap-y-3 text-sm text-slate-400">
-                        <%= link_to t("footer.terms"), terms_path, class: "transition hover:text-slate-100" %>
-                        <%= link_to t("footer.privacy_policy"), privacy_policy_path, class: "transition hover:text-slate-100" %>
-                        <%= link_to t("footer.cookie_policy"), cookie_policy_path, class: "transition hover:text-slate-100" %>
-                    </div>
-                    <p class="mt-6 text-xs text-slate-500">
-                        &copy; <%= Date.current.year %> DeskTour Studio
-                    </p>
+    <%= render "shared/editorial_footer" %>
+
+    <dialog id="ui-confirm-dialog" class="ds-confirm-dialog w-full max-w-lg rounded-[28px] border p-0" data-confirm-level="primary">
+        <div class="ds-confirm-shell">
+            <div class="ds-confirm-heading">
+                <span class="ds-confirm-icon-ring" data-confirm-icon-wrap>
+                    <span data-confirm-icon>
+                        <%= ui_icon(:exclamation_triangle, class_name: "h-5 w-5") %>
+                    </span>
+                </span>
+                <div class="min-w-0">
+                    <p class="ds-confirm-kicker">DeskTour Studio</p>
+                    <h2 class="ds-confirm-title" data-confirm-title><%= t("ui.confirm_title") %></h2>
                 </div>
             </div>
-        </div>
-    </footer>
-
-    <dialog id="ui-confirm-dialog" class="w-full max-w-md rounded-2xl border border-white/[0.12] bg-[var(--ds-color-surface-1)] p-0 text-slate-100 shadow-[0_28px_72px_rgba(0,0,0,0.5)]">
-        <div class="border-b border-white/10 px-4 py-3">
-            <h2 class="text-base font-semibold text-slate-100" data-confirm-title><%= t("ui.confirm_title") %></h2>
-            <p class="mt-1 text-xs text-slate-400" data-confirm-message><%= t("ui.confirm_message") %></p>
-        </div>
-        <div class="flex justify-end gap-2 px-4 py-4">
-            <button type="button" class="tap-target inline-flex items-center justify-center rounded-full border border-white/[0.15] bg-white/[0.04] px-4 py-2 text-sm font-semibold text-slate-200" data-confirm-cancel><%= t("ui.cancel") %></button>
-            <button type="button" class="tap-target cta-primary rounded-full px-4 py-2 text-sm font-semibold" data-confirm-ok><%= t("ui.confirm") %></button>
+            <p class="ds-confirm-message" data-confirm-message><%= t("ui.confirm_message") %></p>
+            <div class="ds-confirm-actions">
+                <button type="button" class="tap-target ds-confirm-cancel" data-confirm-cancel><%= t("ui.cancel") %></button>
+                <button type="button" class="tap-target ds-confirm-ok ds-confirm-ok-primary" data-confirm-ok><%= t("ui.confirm") %></button>
+            </div>
         </div>
     </dialog>
 
@@ -404,6 +288,7 @@
             let toastRendering = false;
             let lastToastFingerprint = "";
             let lastToastAt = 0;
+            const maxQueuedToasts = 2;
 
             const toastPolicies = {
                 success: {
@@ -457,6 +342,10 @@
                 if (fingerprint === lastToastFingerprint && (now - lastToastAt) <= 1200) return;
                 lastToastFingerprint = fingerprint;
                 lastToastAt = now;
+                if (toastQueue.length >= maxQueuedToasts) {
+                    toastQueue.sort((a, b) => a.priority - b.priority);
+                    toastQueue.shift();
+                }
                 toastQueue.push({
                     message,
                     ...policy
@@ -474,6 +363,7 @@
                 const messageNode = dialog.querySelector("[data-confirm-message]");
                 const cancelButton = dialog.querySelector("[data-confirm-cancel]");
                 const okButton = dialog.querySelector("[data-confirm-ok]");
+                const iconNode = dialog.querySelector("[data-confirm-icon]");
                 const previousFocus = document.activeElement;
                 const level = options.level === "danger" ? "danger" : options.level === "warning" ? "warning" : "primary";
 
@@ -481,10 +371,14 @@
                 if (messageNode) messageNode.textContent = options.message || "<%= j(t('ui.confirm_message')) %>";
                 if (okButton) okButton.textContent = options.confirmLabel || "<%= j(t('ui.confirm')) %>";
                 if (cancelButton) cancelButton.textContent = options.cancelLabel || "<%= j(t('ui.cancel')) %>";
+                dialog.dataset.confirmLevel = level;
+                if (iconNode) {
+                    iconNode.className = level === "danger" ? "h-5 w-5 text-rose-700" : level === "warning" ? "h-5 w-5 text-amber-700" : "h-5 w-5 text-[#1a1a1a]";
+                }
 
                 if (okButton) {
-                    okButton.className = "tap-target rounded-full px-4 py-2 text-sm font-semibold";
-                    okButton.classList.add(level === "danger" ? "cta-danger" : level === "warning" ? "cta-warning" : "cta-primary");
+                    okButton.className = "tap-target ds-confirm-ok";
+                    okButton.classList.add(level === "danger" ? "ds-confirm-ok-danger" : level === "warning" ? "ds-confirm-ok-warning" : "ds-confirm-ok-primary");
                 }
 
                 return new Promise((resolve) => {

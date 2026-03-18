@@ -1,11 +1,15 @@
 one:
   name: Desk Owner One
+  username: desk_owner_one
   bio: Ruby engineer who likes minimalist desk layouts.
   email: owner1@example.com
+  password_digest: pbkdf2_sha256$20000$a1b2c3d4e5f60718293a4b5c6d7e8f90$ba4c95bfb88dd29744f67342ec9824026c3ef054d763e3349171f64ba5911728
   owner_token_digest: 8e69be240e1c76e8ab3259acbb2fcb540a746ef90979bd1857684cdc0ac2beeb
 
 two:
   name: Desk Owner Two
+  username: desk_owner_two
   bio: Designer focused on warm and natural desk themes.
   email: owner2@example.com
+  password_digest: pbkdf2_sha256$20000$a1b2c3d4e5f60718293a4b5c6d7e8f90$ba4c95bfb88dd29744f67342ec9824026c3ef054d763e3349171f64ba5911728
   owner_token_digest: 77fb66af69028dac493d88fa3945db824f95a238342604cc9c10fd14660596db

@@ -18,7 +18,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       post users_url, params: {
         user: {
           name: "New Profile",
-          bio: "New profile bio"
+          username: "new_profile",
+          bio: "New profile bio",
+          password: "password123",
+          password_confirmation: "password123"
         }
       }
     end
@@ -35,7 +38,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     post users_url, params: {
       user: {
         name: "Editable Profile",
-        bio: "Editable bio"
+        username: "editable_profile",
+        bio: "Editable bio",
+        password: "password123",
+        password_confirmation: "password123"
       }
     }
     user = User.order(:id).last
@@ -57,7 +63,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     post users_url, params: {
       user: {
         name: "Notify Profile",
-        bio: "Notify bio"
+        username: "notify_profile",
+        bio: "Notify bio",
+        password: "password123",
+        password_confirmation: "password123"
       }
     }
     user = User.order(:id).last

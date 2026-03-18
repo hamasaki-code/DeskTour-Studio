@@ -36,6 +36,7 @@ class UsersController < ApplicationController
 
     if @user.save
       store_user_owner_token(@user, raw_owner_token)
+      session[:authenticated_user_id] = @user.id
       queue_analytics_event("profile_form_completed", user_id: @user.id, trigger_action: "create")
       redirect_to @user, notice: t("users.flash.created")
     else
@@ -79,6 +80,6 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:name, :bio, :email)
+    params.require(:user).permit(:name, :username, :bio, :email, :password, :password_confirmation)
   end
 end

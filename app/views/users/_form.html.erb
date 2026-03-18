@@ -1,8 +1,11 @@
 <% field_error = ->(attr) { user.errors.full_messages_for(attr).first } %>
 <% input_class = ->(error) { "ds-form-control #{error.present? ? 'ds-form-control-error' : ''}" } %>
 <% name_error = field_error.call(:name) %>
+<% username_error = field_error.call(:username) %>
 <% bio_error = field_error.call(:bio) %>
 <% email_error = field_error.call(:email) %>
+<% password_error = field_error.call(:password) %>
+<% password_confirmation_error = field_error.call(:password_confirmation) %>
 
 <%= form_with model: user,
               class: "space-y-form ds-loading-shell",
@@ -28,11 +31,14 @@
                    { label: t("ui.back"), href: (request.referer.presence || root_path) }
                  ] %>
 
-    <div class="rounded-lg border ds-tone-danger p-3 text-sm" role="alert" aria-live="assertive">
+    <div class="ds-feedback-panel ds-tone-danger" role="alert" aria-live="assertive">
         <ul class="list-disc pl-5">
             <% if name_error.present? %><li><a href="#user_name" class="underline"><%= name_error %></a></li><% end %>
+            <% if username_error.present? %><li><a href="#user_username" class="underline"><%= username_error %></a></li><% end %>
             <% if bio_error.present? %><li><a href="#user_bio" class="underline"><%= bio_error %></a></li><% end %>
             <% if email_error.present? %><li><a href="#user_email" class="underline"><%= email_error %></a></li><% end %>
+            <% if password_error.present? %><li><a href="#user_password" class="underline"><%= password_error %></a></li><% end %>
+            <% if password_confirmation_error.present? %><li><a href="#user_password_confirmation" class="underline"><%= password_confirmation_error %></a></li><% end %>
         </ul>
     </div>
 </div>
@@ -57,6 +63,21 @@
 </div>
 
 <div>
+    <%= f.label :username, t("auth.form.username_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
+    <%= f.text_field :username,
+                     required: true,
+                     maxlength: 32,
+                     autocomplete: "username",
+                     class: input_class.call(username_error),
+                     placeholder: t("auth.form.username_placeholder"),
+                     aria: { invalid: username_error.present? ? "true" : nil, describedby: "user_username_guide user_username_error" } %>
+    <p id="user_username_guide" class="ds-field-guide"><%= t("auth.form.username_guide") %></p>
+    <% if username_error.present? %>
+    <p id="user_username_error" class="ds-field-error"><%= username_error %></p>
+    <% end %>
+</div>
+
+<div>
     <%= f.label :bio, t("users.form.bio_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
     <%= f.text_area :bio,
                     rows: 5,
@@ -70,6 +91,34 @@
     <p id="user_bio_counter" class="ds-char-counter" aria-live="polite"></p>
     <% if bio_error.present? %>
     <p id="user_bio_error" class="ds-field-error"><%= bio_error %></p>
+    <% end %>
+</div>
+
+<div>
+    <%= f.label :password, t("auth.form.password_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
+    <%= f.password_field :password,
+                         required: !user.persisted?,
+                         autocomplete: (user.persisted? ? "new-password" : "new-password"),
+                         class: input_class.call(password_error),
+                         placeholder: t(user.persisted? ? "auth.form.password_placeholder_optional" : "auth.form.password_placeholder"),
+                         aria: { invalid: password_error.present? ? "true" : nil, describedby: "user_password_guide user_password_error" } %>
+    <p id="user_password_guide" class="ds-field-guide"><%= t(user.persisted? ? "auth.form.password_guide_optional" : "auth.form.password_guide") %></p>
+    <% if password_error.present? %>
+    <p id="user_password_error" class="ds-field-error"><%= password_error %></p>
+    <% end %>
+</div>
+
+<div>
+    <%= f.label :password_confirmation, t("auth.form.password_confirmation_label"), class: "mb-1 block text-sm font-medium ds-text-strong" %>
+    <%= f.password_field :password_confirmation,
+                         required: !user.persisted?,
+                         autocomplete: "new-password",
+                         class: input_class.call(password_confirmation_error),
+                         placeholder: t("auth.form.password_confirmation_placeholder"),
+                         aria: { invalid: password_confirmation_error.present? ? "true" : nil, describedby: "user_password_confirmation_guide user_password_confirmation_error" } %>
+    <p id="user_password_confirmation_guide" class="ds-field-guide"><%= t("auth.form.password_confirmation_guide") %></p>
+    <% if password_confirmation_error.present? %>
+    <p id="user_password_confirmation_error" class="ds-field-error"><%= password_confirmation_error %></p>
     <% end %>
 </div>
 
@@ -88,8 +137,8 @@
 
 <div class="flex flex-wrap items-center gap-3">
     <%= f.button type: :submit,
-                 class: "tap-target cta-primary ds-cta-experiment",
-                 data: { variant: "compact", ga_event: "profile_form_submit_click", ga_category: "profile_form", ga_label: "submit_profile" } do %>
+                 class: "tap-target inline-flex items-center justify-center rounded-full bg-[#1a1a1a] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#303030]",
+                 data: { ga_event: "profile_form_submit_click", ga_category: "profile_form", ga_label: "submit_profile" } do %>
     <span class="inline-flex items-center gap-1.5">
         <%= ui_icon(:check_circle, class_name: "h-4 w-4") %>
         <span data-submit-label><%= submit_label %></span>
